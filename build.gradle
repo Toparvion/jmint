@@ -22,9 +22,9 @@ dependencies {
 
 jar {
     manifest {
-        attributes("Implementation-Title": "UPC Patcher",
+        attributes("Implementation-Title": "Dropper",
                 "Implementation-Version": version,
-                "Premain-Class": "ru.ftc.upc.testing.patcher.PatcherAgent")
+                "Premain-Class": "ru.ftc.upc.testing.dropper.DropperAgent")
     }
 
     from {

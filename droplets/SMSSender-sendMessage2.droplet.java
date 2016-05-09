@@ -1,6 +1,5 @@
 //droplet class: sms.SMSSenderImpl
 //droplet method: sendMessage
 //droplet cutpoint: BEFORE
-
-//droplet-text:
-log.warn("SMS message to be sent: '{}'", $2);
+//droplet text:
+log.warn("Текст отправляемой SMS: '{}'", $2);

@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.patcher;
+package ru.ftc.upc.testing.dropper;
 
 /**
  * Created by Plizga on 29.04.2016 11:58

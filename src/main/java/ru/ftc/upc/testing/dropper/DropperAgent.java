@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.patcher;
+package ru.ftc.upc.testing.dropper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,15 +19,15 @@ import static java.lang.String.format;
  * Created by Plizga on 28.04.2016 9:13
  */
 @SuppressWarnings("unused")
-public class PatcherAgent {
-  private static final Logger log = LoggerFactory.getLogger("UPC Patcher");
+public class DropperAgent {
+  private static final Logger log = LoggerFactory.getLogger("Dropper");
 
   private static final String DROPLET_LINE_PREFIX = "//droplet";
 
   public static void premain(String agentArgs, Instrumentation inst) {
-    System.out.println(PATCHER_LOGO);
+    System.out.println(DROPPER_LOGO);
 
-    Package pack = PatcherAgent.class.getPackage();
+    Package pack = DropperAgent.class.getPackage();
     log.info("{} started (version: {}).", pack.getImplementationTitle(), pack.getImplementationVersion());
 
     Set<Droplet> droplets = getDroplets(agentArgs);
@@ -52,7 +52,7 @@ public class PatcherAgent {
       try {
         File dropletFile = new File(token);
         if (!dropletFile.canRead()) {
-          System.out.println(format("Droplet '%s' can not be read by the agent.", token));
+          log.warn("Droplet '{}' can not be read by the agent.", token);
           continue;
         }
 
@@ -111,6 +111,7 @@ public class PatcherAgent {
         break;      // текст предполагается в конце дроплета, поэтому читать дальше смысла уже нет
       }
     }
+    bufferedReader.close();
 
     // убедимся, что все "запчасти" дроплета были считаны
     String missedField = droplet.getMissedField();
@@ -140,14 +141,12 @@ public class PatcherAgent {
   }
 
   //<editor-fold desc="Logo">
-  private static final String PATCHER_LOGO =
-          "  _    _ _____   _____    _____     _______ _____ _    _ ______ _____  \n" +
-          " | |  | |  __ \\ / ____|  |  __ \\ /\\|__   __/ ____| |  | |  ____|  __ \\ \n" +
-          " | |  | | |__) | |       | |__) /  \\  | | | |    | |__| | |__  | |__) |\n" +
-          " | |  | |  ___/| |       |  ___/ /\\ \\ | | | |    |  __  |  __| |  _  / \n" +
-          " | |__| | |    | |____   | |  / ____ \\| | | |____| |  | | |____| | \\ \\ \n" +
-          "  \\____/|_|     \\_____|  |_| /_/    \\_|_|  \\_____|_|  |_|______|_|  \\_\\\n" +
-          "                                                                       \n" +
-          "                                                                       ";
+  private static final String DROPPER_LOGO =
+          "██████╗ ██████╗  ██████╗ ██████╗ ██████╗ ███████╗██████╗ \n" +
+          "██╔══██╗██╔══██╗██╔═══██╗██╔══██╗██╔══██╗██╔════╝██╔══██╗\n" +
+          "██║  ██║██████╔╝██║   ██║██████╔╝██████╔╝█████╗  ██████╔╝\n" +
+          "██║  ██║██╔══██╗██║   ██║██╔═══╝ ██╔═══╝ ██╔══╝  ██╔══██╗\n" +
+          "██████╔╝██║  ██║╚██████╔╝██║     ██║     ███████╗██║  ██║\n" +
+          "╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═╝\n";
   //</editor-fold>
 }

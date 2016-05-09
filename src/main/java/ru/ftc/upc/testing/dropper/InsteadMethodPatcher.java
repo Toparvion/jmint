@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.patcher;
+package ru.ftc.upc.testing.dropper;
 
 import javassist.CannotCompileException;
 import javassist.CtMethod;

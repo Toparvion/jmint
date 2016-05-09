@@ -4,7 +4,7 @@
 // Имя модифицируемого метода
 //droplet method: fetchTransferStatus
 
-// Точка подключения; одна из: BEFORE, AFTER, INSTEAD
+// Точка вкрапления; одна из: BEFORE, AFTER, INSTEAD
 //droplet cutpoint: INSTEAD
 
 // Собственно вставляемый код
