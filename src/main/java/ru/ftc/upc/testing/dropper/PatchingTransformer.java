@@ -65,7 +65,7 @@ class PatchingTransformer implements ClassFileTransformer {
     MethodPatcher patcher = cutpoint.patcherClass.newInstance();
 
     patcher.apply(ctMethod, droplet);
-    log.info("Class {} has been patched with {}.", ctClass.getName(), patcher.getClass().getSimpleName());
+    log.info("Класс {} был пропатчен с помощью {}.", ctClass.getName(), patcher.getClass().getSimpleName());
     return ctClass.toBytecode();
   }
 }

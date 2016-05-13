@@ -28,17 +28,17 @@ public class DropperAgent {
     System.out.println(DROPPER_LOGO);
 
     Package pack = DropperAgent.class.getPackage();
-    log.info("{} started (version: {}).", pack.getImplementationTitle(), pack.getImplementationVersion());
+    log.info("{} запущен (версия: {}).", pack.getImplementationTitle(), pack.getImplementationVersion());
 
     Set<Droplet> droplets = getDroplets(agentArgs);
     for (Droplet droplet : droplets) {
-      log.info("Loaded droplet: {}", droplet);
+      log.info("Загружен дроплет: {}", droplet);
     }
 
     if (droplets.isEmpty()) {
-      log.warn("No droplets to inject left after arguments processing.");
+      log.warn("После обработки аргументов ни осталось ни одного дроплета.");
     } else {
-      log.info("Total {} droplets loaded.", droplets.size());
+      log.info("Всего загружено {} дроплет(а,ов).", droplets.size());
       inst.addTransformer(new PatchingTransformer(droplets));
     }
   }
@@ -142,12 +142,12 @@ public class DropperAgent {
 
   //<editor-fold desc="Logo">
   private static final String DROPPER_LOGO =
-    " _____                                     \n" +
-    "(____ \\                                    \n" +
-    " _   \\ \\ ____ ___  ____  ____   ____  ____ \n" +
-    "| |   | / ___) _ \\|  _ \\|  _ \\ / _  )/ ___)\n" +
-    "| |__/ / |  | |_| | | | | | | ( (/ /| |    \n" +
-    "|_____/|_|   \\___/| ||_/| ||_/ \\____)_|    \n" +
-    "                  |_|   |_|                ";
+    "     _____                                     \n" +
+    "    (____ \\                                    \n" +
+    "     _   \\ \\ ____ ___  ____  ____   ____  ____ \n" +
+    "    | |   | / ___) _ \\|  _ \\|  _ \\ / _  )/ ___)\n" +
+    "    | |__/ / |  | |_| | | | | | | ( (/ /| |    \n" +
+    "    |_____/|_|   \\___/| ||_/| ||_/ \\____)_|    \n" +
+    "                      |_|   |_|                ";
   //</editor-fold>
 }
