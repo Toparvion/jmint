@@ -28,17 +28,17 @@ public class DropperAgent {
     System.out.println(DROPPER_LOGO);
 
     Package pack = DropperAgent.class.getPackage();
-    log.info("{} запущен (версия: {}).", pack.getImplementationTitle(), pack.getImplementationVersion());
+    log.info("{} started (version: {}).", pack.getImplementationTitle(), pack.getImplementationVersion());
 
     Set<Droplet> droplets = getDroplets(agentArgs);
     for (Droplet droplet : droplets) {
-      log.info("Загружен дроплет: {}", droplet);
+      log.info("Loaded droplet: {}", droplet);
     }
 
     if (droplets.isEmpty()) {
-      log.warn("После обработки аргументов ни осталось ни одного дроплета.");
+      log.warn("No droplets to inject left after arguments processing.");
     } else {
-      log.info("Всего загружено {} дроплет(а,ов).", droplets.size());
+      log.info("Total {} droplets loaded.", droplets.size());
       inst.addTransformer(new PatchingTransformer(droplets));
     }
   }
