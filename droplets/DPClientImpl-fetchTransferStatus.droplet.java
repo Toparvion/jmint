@@ -15,7 +15,10 @@
     java.util.Properties stub = new java.util.Properties();
     stub.load(new java.io.FileReader(System.getProperty("user.dir") + java.io.File.separator + "dp-edit-mock.properties"));
     statusStr = stub.getProperty($1);
-    if (statusStr != null) log.warn("For oID={} transfer status {} was taken from mock.", $1, statusStr);
+    if (statusStr != null) {
+        statusStr = statusStr.trim();
+        log.warn("For oID={} transfer status '{}' was taken from mock.", $1, statusStr);
+    }
   } catch (java.io.IOException e) {
     log.error("Failed to load mocked transfer edit statuses.", e);
   }
