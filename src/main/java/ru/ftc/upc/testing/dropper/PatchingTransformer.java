@@ -11,7 +11,7 @@ import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
 import java.util.Set;
 
 import static java.lang.String.format;
@@ -22,7 +22,7 @@ import static java.lang.String.format;
 class PatchingTransformer implements ClassFileTransformer {
   private static final Logger log = LoggerFactory.getLogger(PatchingTransformer.class);
 
-  private final Map<String, Droplet> dropletMap = new HashMap<String, Droplet>();
+  private final DropletsMap dropletMap = new DropletsMap();
   private final ClassPool pool;
 
   PatchingTransformer(Set<Droplet> droplets) {
@@ -44,7 +44,7 @@ class PatchingTransformer implements ClassFileTransformer {
       return null;
     }
     try {
-      return applyDroplet(dropletMap.get(className), classFileBuffer);
+      return applyDroplets(dropletMap.get(className), classFileBuffer);
 
     } catch (Exception e) {
       log.error(format("Failed to patch class '%s'. Class skipped.", className), e);
@@ -52,20 +52,35 @@ class PatchingTransformer implements ClassFileTransformer {
     }
   }
 
-  private byte[] applyDroplet(Droplet droplet, byte[] classFileBuffer) throws Exception {
-    String className = droplet.getClazz();
+  private byte[] applyDroplets(Set<Droplet> droplets, byte[] classFileBuffer) throws Exception {
+    String className = droplets.iterator().next().getClazz();
     pool.insertClassPath(new ByteArrayClassPath(className, classFileBuffer));
     CtClass ctClass = pool.get(className);
     if (ctClass.isFrozen())
       throw new IllegalStateException(format("Class '%s' is frozen.", ctClass.getName()));
 
-    CtMethod ctMethod = ctClass.getDeclaredMethod(droplet.getMethod());
+    for (Droplet droplet : droplets) {
+      CtMethod ctMethod = ctClass.getDeclaredMethod(droplet.getMethod());
 
-    Cutpoint cutpoint = droplet.getCutpoint();
-    MethodPatcher patcher = cutpoint.patcherClass.newInstance();
+      Cutpoint cutpoint = droplet.getCutpoint();
+      MethodPatcher patcher = cutpoint.patcherClass.newInstance();
 
-    patcher.apply(ctMethod, droplet);
-    log.info("Class {} has been patched with {}.", ctClass.getName(), patcher.getClass().getSimpleName());
+      patcher.apply(ctMethod, droplet);
+      log.info("Method {} of class {} has been patched with {}.", ctMethod.getName(), ctClass.getName(),
+              patcher.getClass().getSimpleName());
+    }
     return ctClass.toBytecode();
+  }
+
+  static class DropletsMap extends HashMap<String, Set<Droplet>> {
+
+    void put(String key, Droplet value) {
+      Set<Droplet> droplets = this.get(key);
+      if (droplets == null) {
+        droplets = new HashSet<Droplet>();
+        super.put(key, droplets);
+      }
+      droplets.add(value);
+    }
   }
 }
