@@ -60,9 +60,9 @@ public class TargetMethod {
     return "TargetMethod{" +
             "name='" + name + '\'' +
             ", cutpoint=" + cutpoint +
-            ", text='" + text + '\'' +
             ", resultType=" + resultType +
             ", formalParams=" + listParamsToString(formalParams) +
+            ", text=" + (text == null || text.isEmpty() ? "" : "\n\t\t"+text+"\n\t") +
             '}';
   }
 

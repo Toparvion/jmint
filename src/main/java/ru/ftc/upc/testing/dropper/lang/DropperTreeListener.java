@@ -1,11 +1,7 @@
 package ru.ftc.upc.testing.dropper.lang;
 
-import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.RuleContext;
-import org.antlr.v4.runtime.tree.RuleNode;
-import org.antlr.v4.runtime.tree.TerminalNode;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaBaseListener;
-import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaBaseVisitor;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaVisitor;
 import ru.ftc.upc.testing.dropper.model.Argument;
@@ -20,17 +16,17 @@ import java.util.LinkedList;
  */
 public class DropperTreeListener extends DroppingJavaBaseListener {
 
-  private Deque<String> classStack = new LinkedList<String>();
+  private Deque<String> classNameStack = new LinkedList<String>();
   private TargetsMap targetsMap = new TargetsMap();
 
   @Override
   public void enterNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) {
-    classStack.push(ctx.Identifier().getText());
+    classNameStack.push(ctx.Identifier().getText());
   }
 
   @Override
   public void exitNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) {
-    classStack.pop();
+    classNameStack.pop();
   }
 
   @Override
@@ -39,7 +35,7 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
     String key = composeCurrentKey();
     DroppingJavaParser.MethodDeclaratorContext declarator = ctx.methodDeclarator();
     TargetMethod method = new TargetMethod(declarator.Identifier().getText());
-    targetsMap.appendMethod(key, method);
+    targetsMap.put(key, method);
 
     // store method's result type name
     DroppingJavaParser.ResultContext result = ctx.result();
@@ -75,13 +71,22 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
     }
   }
 
+  @Override
+  public void enterBlockStatements(DroppingJavaParser.BlockStatementsContext ctx) {
+    DroppingJavaVisitor<String> visitor = new BodyAssembleTreeVisitor();
+
+    String bodyText = visitor.visit(ctx);
+    TargetMethod currentMethod = targetsMap.get(composeCurrentKey()).getLast();
+    currentMethod.setText(bodyText);
+  }
+
   /**
-   * @return a key for target class map (basing on current state of the stack)
+   * @return a key for targets map (composed basing on current state of the stack)
    */
   private String composeCurrentKey() {
     StringBuilder sb = new StringBuilder();
     boolean first = true;
-    for (Iterator<String> iterator = classStack.descendingIterator(); iterator.hasNext(); ) {
+    for (Iterator<String> iterator = classNameStack.descendingIterator(); iterator.hasNext(); ) {
       String className = iterator.next();
       if (!first) {
         sb.append(".");
@@ -98,38 +103,9 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
     return targetsMap;
   }
 
-  private String getSpacedText(ParserRuleContext ctx) {
-    int childCount = ctx.getChildCount();
-    if (childCount == 0) {
-      return "";
-    }
-
-    StringBuilder sb = new StringBuilder(ctx.getChild(0).getText());
-    for (int i=1; i<childCount; i++) {
-      sb.append(" ").append(ctx.getChild(i));
-    }
-
-    return sb.toString();
-  }
-
   private String getPureTypeName(RuleContext typeCtx) {
     DroppingJavaVisitor<String> visitor = new FirstIdTreeVisitor();
     return visitor.visit(typeCtx);
   }
 
-  /**
-   * Simple visitor that reaches the very first terminal node (starting from the one specified in
-   * {@link #visitTerminal} method) and returns the node's text value.
-   */
-  private static class FirstIdTreeVisitor extends DroppingJavaBaseVisitor<String> {
-    @Override
-    public String visitTerminal(TerminalNode node) {
-      return node.getText();
-    }
-
-    @Override
-    protected boolean shouldVisitNextChild(RuleNode node, String currentResult) {
-      return (currentResult == null);
-    }
-  }
 }
