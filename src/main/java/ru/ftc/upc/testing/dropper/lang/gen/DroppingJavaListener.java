@@ -268,26 +268,6 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitPackageOrTypeName(DroppingJavaParser.PackageOrTypeNameContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DroppingJavaParser#expressionName}.
-	 * @param ctx the parse tree
-	 */
-	void enterExpressionName(DroppingJavaParser.ExpressionNameContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link DroppingJavaParser#expressionName}.
-	 * @param ctx the parse tree
-	 */
-	void exitExpressionName(DroppingJavaParser.ExpressionNameContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link DroppingJavaParser#ambiguousName}.
-	 * @param ctx the parse tree
-	 */
-	void enterAmbiguousName(DroppingJavaParser.AmbiguousNameContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link DroppingJavaParser#ambiguousName}.
-	 * @param ctx the parse tree
-	 */
-	void exitAmbiguousName(DroppingJavaParser.AmbiguousNameContext ctx);
-	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#compilationUnit}.
 	 * @param ctx the parse tree
 	 */
@@ -388,17 +368,15 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitClassDeclaration(DroppingJavaParser.ClassDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ClassName}
-	 * labeled alternative in {@link DroppingJavaParser#normalClassDeclaration}.
+	 * Enter a parse tree produced by {@link DroppingJavaParser#normalClassDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterClassName(DroppingJavaParser.ClassNameContext ctx);
+	void enterNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ClassName}
-	 * labeled alternative in {@link DroppingJavaParser#normalClassDeclaration}.
+	 * Exit a parse tree produced by {@link DroppingJavaParser#normalClassDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitClassName(DroppingJavaParser.ClassNameContext ctx);
+	void exitNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#classModifier}.
 	 * @param ctx the parse tree
@@ -499,6 +477,36 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitFieldDeclaration(DroppingJavaParser.FieldDeclarationContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DroppingJavaParser#fieldModifier}.
+	 * @param ctx the parse tree
+	 */
+	void enterFieldModifier(DroppingJavaParser.FieldModifierContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DroppingJavaParser#fieldModifier}.
+	 * @param ctx the parse tree
+	 */
+	void exitFieldModifier(DroppingJavaParser.FieldModifierContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DroppingJavaParser#variableDeclaratorList}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableDeclaratorList(DroppingJavaParser.VariableDeclaratorListContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DroppingJavaParser#variableDeclaratorList}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableDeclaratorList(DroppingJavaParser.VariableDeclaratorListContext ctx);
+	/**
+	 * Enter a parse tree produced by {@link DroppingJavaParser#variableDeclarator}.
+	 * @param ctx the parse tree
+	 */
+	void enterVariableDeclarator(DroppingJavaParser.VariableDeclaratorContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link DroppingJavaParser#variableDeclarator}.
+	 * @param ctx the parse tree
+	 */
+	void exitVariableDeclarator(DroppingJavaParser.VariableDeclaratorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#variableDeclaratorId}.
 	 * @param ctx the parse tree
@@ -660,17 +668,15 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitResult(DroppingJavaParser.ResultContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code MethodName}
-	 * labeled alternative in {@link DroppingJavaParser#methodDeclarator}.
+	 * Enter a parse tree produced by {@link DroppingJavaParser#methodDeclarator}.
 	 * @param ctx the parse tree
 	 */
-	void enterMethodName(DroppingJavaParser.MethodNameContext ctx);
+	void enterMethodDeclarator(DroppingJavaParser.MethodDeclaratorContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code MethodName}
-	 * labeled alternative in {@link DroppingJavaParser#methodDeclarator}.
+	 * Exit a parse tree produced by {@link DroppingJavaParser#methodDeclarator}.
 	 * @param ctx the parse tree
 	 */
-	void exitMethodName(DroppingJavaParser.MethodNameContext ctx);
+	void exitMethodDeclarator(DroppingJavaParser.MethodDeclaratorContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#formalParameterList}.
 	 * @param ctx the parse tree
@@ -844,16 +850,6 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitConstructorBody(DroppingJavaParser.ConstructorBodyContext ctx);
 	/**
-	 * Enter a parse tree produced by {@link DroppingJavaParser#explicitConstructorInvocation}.
-	 * @param ctx the parse tree
-	 */
-	void enterExplicitConstructorInvocation(DroppingJavaParser.ExplicitConstructorInvocationContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link DroppingJavaParser#explicitConstructorInvocation}.
-	 * @param ctx the parse tree
-	 */
-	void exitExplicitConstructorInvocation(DroppingJavaParser.ExplicitConstructorInvocationContext ctx);
-	/**
 	 * Enter a parse tree produced by the {@code EnumName}
 	 * labeled alternative in {@link DroppingJavaParser#enumDeclaration}.
 	 * @param ctx the parse tree
@@ -945,16 +941,6 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitConditionalExpression(DroppingJavaParser.ConditionalExpressionContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link DroppingJavaParser#primary}.
-	 * @param ctx the parse tree
-	 */
-	void enterPrimary(DroppingJavaParser.PrimaryContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link DroppingJavaParser#primary}.
-	 * @param ctx the parse tree
-	 */
-	void exitPrimary(DroppingJavaParser.PrimaryContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#interfaceDeclaration}.
 	 * @param ctx the parse tree

@@ -328,30 +328,6 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExpressionName(DroppingJavaParser.ExpressionNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExpressionName(DroppingJavaParser.ExpressionNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterAmbiguousName(DroppingJavaParser.AmbiguousNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitAmbiguousName(DroppingJavaParser.AmbiguousNameContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterCompilationUnit(DroppingJavaParser.CompilationUnitContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -472,13 +448,13 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterClassName(DroppingJavaParser.ClassNameContext ctx) { }
+	@Override public void enterNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitClassName(DroppingJavaParser.ClassNameContext ctx) { }
+	@Override public void exitNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -599,6 +575,42 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitFieldDeclaration(DroppingJavaParser.FieldDeclarationContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterFieldModifier(DroppingJavaParser.FieldModifierContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitFieldModifier(DroppingJavaParser.FieldModifierContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableDeclaratorList(DroppingJavaParser.VariableDeclaratorListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableDeclaratorList(DroppingJavaParser.VariableDeclaratorListContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterVariableDeclarator(DroppingJavaParser.VariableDeclaratorContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitVariableDeclarator(DroppingJavaParser.VariableDeclaratorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -796,13 +808,13 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterMethodName(DroppingJavaParser.MethodNameContext ctx) { }
+	@Override public void enterMethodDeclarator(DroppingJavaParser.MethodDeclaratorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitMethodName(DroppingJavaParser.MethodNameContext ctx) { }
+	@Override public void exitMethodDeclarator(DroppingJavaParser.MethodDeclaratorContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -1012,18 +1024,6 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterExplicitConstructorInvocation(DroppingJavaParser.ExplicitConstructorInvocationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitExplicitConstructorInvocation(DroppingJavaParser.ExplicitConstructorInvocationContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
 	@Override public void enterEnumName(DroppingJavaParser.EnumNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
@@ -1127,18 +1127,6 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitConditionalExpression(DroppingJavaParser.ConditionalExpressionContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterPrimary(DroppingJavaParser.PrimaryContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitPrimary(DroppingJavaParser.PrimaryContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

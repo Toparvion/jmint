@@ -29,33 +29,10 @@
  */
 
 /**
- * A Java 8 grammar for ANTLR 4 derived from the Java Language Specification
+ * A modified (and simplified) Java 8 grammar for ANTLR 4 derived from the Java Language Specification
  * chapter 19.
- *
- * NOTE: This grammar results in a generated parser that is much slower
- *       than the Java 7 grammar in the grammars-v4/java directory. This
- *     one is, however, extremely close to the spec.
- *
- * You can test with
- *
- *  $ antlr4 Java8.g4
- *  $ javac *.java
- *  $ grun Java8 compilationUnit *.java
- *
- * Or,
-~/antlr/code/grammars-v4/java8 $ java Test .
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8BaseListener.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8Lexer.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8Listener.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Java8Parser.java
-/Users/parrt/antlr/code/grammars-v4/java8/./Test.java
-Total lexer+parser time 30844ms.
  */
 grammar DroppingJava;
-
-/*
- * Productions from §3 (Lexical Structure)
- */
 
 /*
  * Productions from §4 (Types, Values, and Variables)
@@ -191,16 +168,6 @@ packageOrTypeName
 	|	packageOrTypeName '.' Identifier
 	;
 
-expressionName
-	:	Identifier
-	|	ambiguousName '.' Identifier
-	;
-
-ambiguousName
-	:	Identifier
-	|	ambiguousName '.' Identifier
-	;
-
 /*
  * Productions from §7 (Packages)
  */
@@ -256,7 +223,7 @@ classDeclaration
 	;
 
 normalClassDeclaration
-	:	classModifier* 'class' Identifier typeParameters? superclass? superinterfaces? classBody  # ClassName
+	:	classModifier* 'class' Identifier typeParameters? superclass? superinterfaces? classBody  // # ClassName
 	;
 
 classModifier
@@ -310,7 +277,26 @@ classMemberDeclaration
 	;
 
 fieldDeclaration
-	:	.+? ';'
+	:	fieldModifier* unannType variableDeclaratorList ';'
+	;
+
+fieldModifier
+	:	annotation
+	|	'public'
+	|	'protected'
+	|	'private'
+	|	'static'
+	|	'final'
+	|	'transient'
+	|	'volatile'
+	;
+
+variableDeclaratorList
+	:	variableDeclarator (',' variableDeclarator)*
+	;
+
+variableDeclarator
+	:	variableDeclaratorId ('=' variableInitializer)?
 	;
 
 variableDeclaratorId
@@ -401,7 +387,7 @@ result
 	;
 
 methodDeclarator
-	:	Identifier '(' formalParameterList? ')' dims?               # MethodName
+	:	Identifier '(' formalParameterList? ')' dims?
 	;
 
 formalParameterList
@@ -478,14 +464,7 @@ simpleTypeName
 	;
 
 constructorBody
-	:	'{' explicitConstructorInvocation? blockStatements? '}'
-	;
-
-explicitConstructorInvocation
-	:	typeArguments? 'this' '(' argumentList? ')' ';'
-	|	typeArguments? 'super' '(' argumentList? ')' ';'
-	|	expressionName '.' typeArguments? 'super' '(' argumentList? ')' ';'
-	|	primary '.' typeArguments? 'super' '(' argumentList? ')' ';'
+	:	'{' blockStatements '}'     // '{' explicitConstructorInvocation? blockStatements? '}'
 	;
 
 enumDeclaration
@@ -527,17 +506,6 @@ expression
 conditionalExpression
         :       .+?
         ;
-
-primary
-	    :       .+?
-        ;
-/* primary
-	:	(	primaryNoNewArray_lfno_primary
-		|	arrayCreationExpression
-		)
-		(	primaryNoNewArray_lf_primary
-		)*
-	; */
 
 /*
  * Productions from §9 (Interfaces)
@@ -667,11 +635,11 @@ variableInitializerList
  */
 
 block
-	:	'{' blockStatements? '}'
+	:	'{' blockStatements '}'
 	;
 
 blockStatements
-	:	.+?
+	:	.*?
 	;
 
 /*
