@@ -9,6 +9,7 @@ import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaBaseVisitor;
  * {@link #visitTerminal} method) and returns the node's text value.
  */
 class FirstIdTreeVisitor extends DroppingJavaBaseVisitor<String> {
+
   @Override
   public String visitTerminal(TerminalNode node) {
     return node.getText();

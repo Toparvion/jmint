@@ -1000,13 +1000,13 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterConstructorName(DroppingJavaParser.ConstructorNameContext ctx) { }
+	@Override public void enterSimpleTypeName(DroppingJavaParser.SimpleTypeNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitConstructorName(DroppingJavaParser.ConstructorNameContext ctx) { }
+	@Override public void exitSimpleTypeName(DroppingJavaParser.SimpleTypeNameContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

@@ -1,6 +1,5 @@
 // Generated from C:/lang/dropper/src/main/java/ru/ftc/upc/testing/dropper/lang\DroppingJava.g4 by ANTLR 4.5.1
 package ru.ftc.upc.testing.dropper.lang.gen;
-
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
 import org.antlr.v4.runtime.atn.ATNDeserializer;

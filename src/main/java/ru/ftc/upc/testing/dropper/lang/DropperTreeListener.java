@@ -29,6 +29,21 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
     classNameStack.pop();
   }
 
+  /**
+   * We treat constructors much like any other methods but still take in account some grammar differences.
+   */
+  @Override
+  public void enterConstructorDeclarator(DroppingJavaParser.ConstructorDeclaratorContext ctx) {
+    // as we consider constructor as methods, let's firstly save it
+    String key = composeCurrentKey();
+    TargetMethod method = new TargetMethod(ctx.simpleTypeName().getText());
+    targetsMap.put(key, method);
+
+    // There is no result type for constructors so we pass setting Method's result field. Proceed to formal parameters.
+    DroppingJavaParser.FormalParameterListContext anyParams = ctx.formalParameterList();
+    storeMethodParams(method, anyParams);
+  }
+
   @Override
   public void enterMethodHeader(DroppingJavaParser.MethodHeaderContext ctx) {
     // first of all let's save this method itself
@@ -44,6 +59,19 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
 
     // it's time to store method parameters, if any
     DroppingJavaParser.FormalParameterListContext anyParams = declarator.formalParameterList();
+    storeMethodParams(method, anyParams);
+  }
+
+  @Override
+  public void enterBlockStatements(DroppingJavaParser.BlockStatementsContext ctx) {
+    DroppingJavaVisitor<String> visitor = new BodyAssembleTreeVisitor();
+
+    String bodyText = visitor.visit(ctx);
+    TargetMethod currentMethod = targetsMap.get(composeCurrentKey()).getLast();
+    currentMethod.setText(bodyText);
+  }
+
+  private void storeMethodParams(TargetMethod method, DroppingJavaParser.FormalParameterListContext anyParams) {
     if (anyParams == null) return;
     String paramType;
     String paramName;
@@ -69,15 +97,6 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
       }
       method.getFormalParams().add(new Argument(paramType, paramName));
     }
-  }
-
-  @Override
-  public void enterBlockStatements(DroppingJavaParser.BlockStatementsContext ctx) {
-    DroppingJavaVisitor<String> visitor = new BodyAssembleTreeVisitor();
-
-    String bodyText = visitor.visit(ctx);
-    TargetMethod currentMethod = targetsMap.get(composeCurrentKey()).getLast();
-    currentMethod.setText(bodyText);
   }
 
   /**

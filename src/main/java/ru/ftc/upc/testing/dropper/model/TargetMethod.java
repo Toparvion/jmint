@@ -62,7 +62,7 @@ public class TargetMethod {
             ", cutpoint=" + cutpoint +
             ", resultType=" + resultType +
             ", formalParams=" + listParamsToString(formalParams) +
-            ", text=" + (text == null || text.isEmpty() ? "" : "\n\t\t"+text+"\n\t") +
+            ", text=" + (text == null || text.isEmpty() ? "(empty)" : "\n\t\t"+text+"\n\t") +
             '}';
   }
 

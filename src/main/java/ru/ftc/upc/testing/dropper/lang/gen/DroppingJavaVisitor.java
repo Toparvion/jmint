@@ -503,12 +503,11 @@ public interface DroppingJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstructorDeclarator(DroppingJavaParser.ConstructorDeclaratorContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code ConstructorName}
-	 * labeled alternative in {@link DroppingJavaParser#simpleTypeName}.
+	 * Visit a parse tree produced by {@link DroppingJavaParser#simpleTypeName}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitConstructorName(DroppingJavaParser.ConstructorNameContext ctx);
+	T visitSimpleTypeName(DroppingJavaParser.SimpleTypeNameContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DroppingJavaParser#constructorBody}.
 	 * @param ctx the parse tree

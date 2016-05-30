@@ -828,17 +828,15 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitConstructorDeclarator(DroppingJavaParser.ConstructorDeclaratorContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code ConstructorName}
-	 * labeled alternative in {@link DroppingJavaParser#simpleTypeName}.
+	 * Enter a parse tree produced by {@link DroppingJavaParser#simpleTypeName}.
 	 * @param ctx the parse tree
 	 */
-	void enterConstructorName(DroppingJavaParser.ConstructorNameContext ctx);
+	void enterSimpleTypeName(DroppingJavaParser.SimpleTypeNameContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code ConstructorName}
-	 * labeled alternative in {@link DroppingJavaParser#simpleTypeName}.
+	 * Exit a parse tree produced by {@link DroppingJavaParser#simpleTypeName}.
 	 * @param ctx the parse tree
 	 */
-	void exitConstructorName(DroppingJavaParser.ConstructorNameContext ctx);
+	void exitSimpleTypeName(DroppingJavaParser.SimpleTypeNameContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#constructorBody}.
 	 * @param ctx the parse tree

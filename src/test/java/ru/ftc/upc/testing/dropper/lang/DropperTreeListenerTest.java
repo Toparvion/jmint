@@ -52,8 +52,8 @@ public class DropperTreeListenerTest {
             "\t}\n" +
             "}\n";
     String actual = targetsMap.toString();
-    assertEquals(expected, actual);
     System.out.println(actual);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -61,22 +61,28 @@ public class DropperTreeListenerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/VariousMethodHeaders.java";
     TargetsMap targetsMap = loadDroplet(dropletPath);
     String expected = "VariousMethodHeaders -> {\n" +
-            "\tTargetMethod{name='method1', cutpoint=null, resultType=void, formalParams=(), text=}\n" +
-            "\tTargetMethod{name='method2', cutpoint=null, resultType=void, formalParams=(int a), text=}\n" +
-            "\tTargetMethod{name='method3', cutpoint=null, resultType=void, formalParams=(Map map), text=}\n" +
-            "\tTargetMethod{name='method4', cutpoint=null, resultType=void, formalParams=(List xs), text=}\n" +
-            "\tTargetMethod{name='method5', cutpoint=null, resultType=void, formalParams=(UUID u1, Date d2), text=}\n" +
-            "\tTargetMethod{name='method6', cutpoint=null, resultType=void, formalParams=(double d1, double d2), text=}\n" +
+            "\tTargetMethod{name='VariousMethodHeaders', cutpoint=null, resultType=null, formalParams=(), text=(empty)}\n" +
+            "\tTargetMethod{name='VariousMethodHeaders', cutpoint=null, resultType=null, formalParams=(Stack param1), text=(empty)}\n" +
+            "\tTargetMethod{name='VariousMethodHeaders', cutpoint=null, resultType=null, formalParams=(float arg), text=(empty)}\n" +
+            "\tTargetMethod{name='method1', cutpoint=null, resultType=void, formalParams=(), text=(empty)}\n" +
+            "\tTargetMethod{name='method2', cutpoint=null, resultType=void, formalParams=(int a), text=(empty)}\n" +
+            "\tTargetMethod{name='method3', cutpoint=null, resultType=void, formalParams=(Map map), text=(empty)}\n" +
+            "\tTargetMethod{name='method4', cutpoint=null, resultType=void, formalParams=(List xs), text=(empty)}\n" +
+            "\tTargetMethod{name='method5', cutpoint=null, resultType=void, formalParams=(UUID u1, Date d2), text=(empty)}\n" +
+            "\tTargetMethod{name='method6', cutpoint=null, resultType=void, formalParams=(double d1, double d2), text=(empty)}\n" +
             "\tTargetMethod{name='method7', cutpoint=null, resultType=double, formalParams=(), text=\n" +
             "\t\treturn Math . random ( ) ;\n" +
             "\t}\n" +
             "\tTargetMethod{name='method8', cutpoint=null, resultType=Set, formalParams=(EventObject eo), text=\n" +
             "\t\treturn Collections . emptySet ( ) ;\n" +
             "\t}\n" +
+            "}\n" +
+            "VariousMethodHeaders.InnerClass -> {\n" +
+            "\tTargetMethod{name='InnerClass', cutpoint=null, resultType=null, formalParams=(Deque arg), text=(empty)}\n" +
             "}\n";
     String actual = targetsMap.toString();
-    assertEquals(expected, actual);
     System.out.println(actual);
+    assertEquals(expected, actual);
   }
 
   @Test
@@ -84,13 +90,17 @@ public class DropperTreeListenerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/MethodBodies.java";
     TargetsMap targetsMap = loadDroplet(dropletPath);
     String expected = "MethodBodies -> {\n" +
+            "\tTargetMethod{name='MethodBodies', cutpoint=null, resultType=null, formalParams=(String name), text=\n" +
+            "\t\tSystem . out . println ( \"Hello from constructor :) \" ) ;\n" +
+            "\t}\n" +
+            "\tTargetMethod{name='MethodBodies', cutpoint=null, resultType=null, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='method1', cutpoint=null, resultType=boolean, formalParams=(), text=\n" +
             "\t\tif ( Math . random ( ) > 0.5d ) { return true ; } else { return false ; }\n" +
             "\t}\n" +
             "}\n";
     String actual = targetsMap.toString();
-    assertEquals(expected, actual);
     System.out.println(actual);
+    assertEquals(expected, actual);
   }
 
   private TargetsMap loadDroplet(String dropletPath) throws IOException {

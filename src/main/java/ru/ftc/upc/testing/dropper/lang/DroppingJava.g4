@@ -460,7 +460,7 @@ constructorDeclarator
 	;
 
 simpleTypeName
-	:	Identifier                              # ConstructorName
+	:	Identifier
 	;
 
 constructorBody

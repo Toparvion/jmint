@@ -591,7 +591,7 @@ public class DroppingJavaBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitConstructorName(DroppingJavaParser.ConstructorNameContext ctx) { return visitChildren(ctx); }
+	@Override public T visitSimpleTypeName(DroppingJavaParser.SimpleTypeNameContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

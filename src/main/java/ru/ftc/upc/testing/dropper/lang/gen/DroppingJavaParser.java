@@ -1,5 +1,6 @@
 // Generated from C:/lang/dropper/src/main/java/ru/ftc/upc/testing/dropper/lang\DroppingJava.g4 by ANTLR 4.5.1
 package ru.ftc.upc.testing.dropper.lang.gen;
+
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.atn.ATN;
 import org.antlr.v4.runtime.atn.ATNDeserializer;
@@ -5797,30 +5798,22 @@ public class DroppingJavaParser extends Parser {
 	}
 
 	public static class SimpleTypeNameContext extends ParserRuleContext {
+		public TerminalNode Identifier() { return getToken(DroppingJavaParser.Identifier, 0); }
 		public SimpleTypeNameContext(ParserRuleContext parent, int invokingState) {
 			super(parent, invokingState);
 		}
 		@Override public int getRuleIndex() { return RULE_simpleTypeName; }
-	 
-		public SimpleTypeNameContext() { }
-		public void copyFrom(SimpleTypeNameContext ctx) {
-			super.copyFrom(ctx);
-		}
-	}
-	public static class ConstructorNameContext extends SimpleTypeNameContext {
-		public TerminalNode Identifier() { return getToken(DroppingJavaParser.Identifier, 0); }
-		public ConstructorNameContext(SimpleTypeNameContext ctx) { copyFrom(ctx); }
 		@Override
 		public void enterRule(ParseTreeListener listener) {
-			if ( listener instanceof DroppingJavaListener ) ((DroppingJavaListener)listener).enterConstructorName(this);
+			if ( listener instanceof DroppingJavaListener ) ((DroppingJavaListener)listener).enterSimpleTypeName(this);
 		}
 		@Override
 		public void exitRule(ParseTreeListener listener) {
-			if ( listener instanceof DroppingJavaListener ) ((DroppingJavaListener)listener).exitConstructorName(this);
+			if ( listener instanceof DroppingJavaListener ) ((DroppingJavaListener)listener).exitSimpleTypeName(this);
 		}
 		@Override
 		public <T> T accept(ParseTreeVisitor<? extends T> visitor) {
-			if ( visitor instanceof DroppingJavaVisitor ) return ((DroppingJavaVisitor<? extends T>)visitor).visitConstructorName(this);
+			if ( visitor instanceof DroppingJavaVisitor ) return ((DroppingJavaVisitor<? extends T>)visitor).visitSimpleTypeName(this);
 			else return visitor.visitChildren(this);
 		}
 	}
@@ -5829,7 +5822,6 @@ public class DroppingJavaParser extends Parser {
 		SimpleTypeNameContext _localctx = new SimpleTypeNameContext(_ctx, getState());
 		enterRule(_localctx, 164, RULE_simpleTypeName);
 		try {
-			_localctx = new ConstructorNameContext(_localctx);
 			enterOuterAlt(_localctx, 1);
 			{
 			setState(868);
