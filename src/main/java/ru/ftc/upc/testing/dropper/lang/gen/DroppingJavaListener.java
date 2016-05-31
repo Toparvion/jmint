@@ -848,17 +848,15 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitConstructorBody(DroppingJavaParser.ConstructorBodyContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code EnumName}
-	 * labeled alternative in {@link DroppingJavaParser#enumDeclaration}.
+	 * Enter a parse tree produced by {@link DroppingJavaParser#enumDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterEnumName(DroppingJavaParser.EnumNameContext ctx);
+	void enterEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code EnumName}
-	 * labeled alternative in {@link DroppingJavaParser#enumDeclaration}.
+	 * Exit a parse tree produced by {@link DroppingJavaParser#enumDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitEnumName(DroppingJavaParser.EnumNameContext ctx);
+	void exitEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#enumBody}.
 	 * @param ctx the parse tree
@@ -950,17 +948,15 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitInterfaceDeclaration(DroppingJavaParser.InterfaceDeclarationContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code IfaceName}
-	 * labeled alternative in {@link DroppingJavaParser#normalInterfaceDeclaration}.
+	 * Enter a parse tree produced by {@link DroppingJavaParser#normalInterfaceDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterIfaceName(DroppingJavaParser.IfaceNameContext ctx);
+	void enterNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code IfaceName}
-	 * labeled alternative in {@link DroppingJavaParser#normalInterfaceDeclaration}.
+	 * Exit a parse tree produced by {@link DroppingJavaParser#normalInterfaceDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitIfaceName(DroppingJavaParser.IfaceNameContext ctx);
+	void exitNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#interfaceModifier}.
 	 * @param ctx the parse tree
@@ -1042,17 +1038,15 @@ public interface DroppingJavaListener extends ParseTreeListener {
 	 */
 	void exitInterfaceMethodModifier(DroppingJavaParser.InterfaceMethodModifierContext ctx);
 	/**
-	 * Enter a parse tree produced by the {@code AnnoName}
-	 * labeled alternative in {@link DroppingJavaParser#annotationTypeDeclaration}.
+	 * Enter a parse tree produced by {@link DroppingJavaParser#annotationTypeDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void enterAnnoName(DroppingJavaParser.AnnoNameContext ctx);
+	void enterAnnotationTypeDeclaration(DroppingJavaParser.AnnotationTypeDeclarationContext ctx);
 	/**
-	 * Exit a parse tree produced by the {@code AnnoName}
-	 * labeled alternative in {@link DroppingJavaParser#annotationTypeDeclaration}.
+	 * Exit a parse tree produced by {@link DroppingJavaParser#annotationTypeDeclaration}.
 	 * @param ctx the parse tree
 	 */
-	void exitAnnoName(DroppingJavaParser.AnnoNameContext ctx);
+	void exitAnnotationTypeDeclaration(DroppingJavaParser.AnnotationTypeDeclarationContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link DroppingJavaParser#annotationTypeBody}.
 	 * @param ctx the parse tree

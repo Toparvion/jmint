@@ -605,7 +605,7 @@ public class DroppingJavaBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitEnumName(DroppingJavaParser.EnumNameContext ctx) { return visitChildren(ctx); }
+	@Override public T visitEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -675,7 +675,7 @@ public class DroppingJavaBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitIfaceName(DroppingJavaParser.IfaceNameContext ctx) { return visitChildren(ctx); }
+	@Override public T visitNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -738,7 +738,7 @@ public class DroppingJavaBaseVisitor<T> extends AbstractParseTreeVisitor<T> impl
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public T visitAnnoName(DroppingJavaParser.AnnoNameContext ctx) { return visitChildren(ctx); }
+	@Override public T visitAnnotationTypeDeclaration(DroppingJavaParser.AnnotationTypeDeclarationContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
 	 *

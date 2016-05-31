@@ -515,12 +515,11 @@ public interface DroppingJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitConstructorBody(DroppingJavaParser.ConstructorBodyContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code EnumName}
-	 * labeled alternative in {@link DroppingJavaParser#enumDeclaration}.
+	 * Visit a parse tree produced by {@link DroppingJavaParser#enumDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitEnumName(DroppingJavaParser.EnumNameContext ctx);
+	T visitEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DroppingJavaParser#enumBody}.
 	 * @param ctx the parse tree
@@ -576,12 +575,11 @@ public interface DroppingJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInterfaceDeclaration(DroppingJavaParser.InterfaceDeclarationContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code IfaceName}
-	 * labeled alternative in {@link DroppingJavaParser#normalInterfaceDeclaration}.
+	 * Visit a parse tree produced by {@link DroppingJavaParser#normalInterfaceDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitIfaceName(DroppingJavaParser.IfaceNameContext ctx);
+	T visitNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DroppingJavaParser#interfaceModifier}.
 	 * @param ctx the parse tree
@@ -631,12 +629,11 @@ public interface DroppingJavaVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitInterfaceMethodModifier(DroppingJavaParser.InterfaceMethodModifierContext ctx);
 	/**
-	 * Visit a parse tree produced by the {@code AnnoName}
-	 * labeled alternative in {@link DroppingJavaParser#annotationTypeDeclaration}.
+	 * Visit a parse tree produced by {@link DroppingJavaParser#annotationTypeDeclaration}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
 	 */
-	T visitAnnoName(DroppingJavaParser.AnnoNameContext ctx);
+	T visitAnnotationTypeDeclaration(DroppingJavaParser.AnnotationTypeDeclarationContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link DroppingJavaParser#annotationTypeBody}.
 	 * @param ctx the parse tree

@@ -23,9 +23,26 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
   public void enterNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) {
     classNameStack.push(ctx.Identifier().getText());
   }
-
   @Override
   public void exitNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) {
+    classNameStack.pop();
+  }
+
+  @Override
+  public void enterEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx) {
+    classNameStack.push(ctx.Identifier().getText());
+  }
+  @Override
+  public void exitEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx) {
+    classNameStack.pop();
+  }
+
+  @Override
+  public void enterNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx) {
+    classNameStack.push(ctx.Identifier().getText());
+  }
+  @Override
+  public void exitNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx) {
     classNameStack.pop();
   }
 
@@ -123,7 +140,7 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
   }
 
   private String getPureTypeName(RuleContext typeCtx) {
-    DroppingJavaVisitor<String> visitor = new FirstIdTreeVisitor();
+    DroppingJavaVisitor<String> visitor = new PureTypeNameComposingVisitor();
     return visitor.visit(typeCtx);
   }
 

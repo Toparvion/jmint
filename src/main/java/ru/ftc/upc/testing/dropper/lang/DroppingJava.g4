@@ -223,7 +223,7 @@ classDeclaration
 	;
 
 normalClassDeclaration
-	:	classModifier* 'class' Identifier typeParameters? superclass? superinterfaces? classBody  // # ClassName
+	:	classModifier* 'class' Identifier typeParameters? superclass? superinterfaces? classBody
 	;
 
 classModifier
@@ -468,7 +468,7 @@ constructorBody
 	;
 
 enumDeclaration
-	:	classModifier* 'enum' Identifier superinterfaces? enumBody              # EnumName
+	:	classModifier* 'enum' Identifier superinterfaces? enumBody
 	;
 
 enumBody
@@ -496,7 +496,7 @@ argumentList
 	;
 
 /*
- * Lite grammar stubs
+ * Dropping grammar stubs
  */
 
 expression
@@ -517,7 +517,7 @@ interfaceDeclaration
 	;
 
 normalInterfaceDeclaration
-	:	interfaceModifier* 'interface' Identifier typeParameters? extendsInterfaces? interfaceBody  # IfaceName
+	:	interfaceModifier* 'interface' Identifier typeParameters? extendsInterfaces? interfaceBody
 	;
 
 interfaceModifier
@@ -547,7 +547,7 @@ interfaceMemberDeclaration
 	;
 
 constantDeclaration
-	:	constantModifier* unannType .+? ';' // constantModifier* unannType variableDeclaratorList ';'
+	:	constantModifier* unannType variableDeclaratorList ';'
 	;
 
 constantModifier
@@ -571,11 +571,11 @@ interfaceMethodModifier
 	;
 
 annotationTypeDeclaration
-	:	interfaceModifier* '@' 'interface' Identifier annotationTypeBody            # AnnoName
+	:	interfaceModifier* '@' 'interface' Identifier annotationTypeBody
 	;
 
 annotationTypeBody
-	:	'{' .+? '}'            // '{' annotationTypeMemberDeclaration* '}'
+	:	'{' .*? '}'            // '{' annotationTypeMemberDeclaration* '}'
 	;
 
 annotation

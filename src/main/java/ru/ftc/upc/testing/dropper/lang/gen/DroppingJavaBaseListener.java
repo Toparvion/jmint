@@ -1024,13 +1024,13 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterEnumName(DroppingJavaParser.EnumNameContext ctx) { }
+	@Override public void enterEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitEnumName(DroppingJavaParser.EnumNameContext ctx) { }
+	@Override public void exitEnumDeclaration(DroppingJavaParser.EnumDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -1144,13 +1144,13 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterIfaceName(DroppingJavaParser.IfaceNameContext ctx) { }
+	@Override public void enterNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitIfaceName(DroppingJavaParser.IfaceNameContext ctx) { }
+	@Override public void exitNormalInterfaceDeclaration(DroppingJavaParser.NormalInterfaceDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -1252,13 +1252,13 @@ public class DroppingJavaBaseListener implements DroppingJavaListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void enterAnnoName(DroppingJavaParser.AnnoNameContext ctx) { }
+	@Override public void enterAnnotationTypeDeclaration(DroppingJavaParser.AnnotationTypeDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
-	@Override public void exitAnnoName(DroppingJavaParser.AnnoNameContext ctx) { }
+	@Override public void exitAnnotationTypeDeclaration(DroppingJavaParser.AnnotationTypeDeclarationContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *

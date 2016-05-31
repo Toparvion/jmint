@@ -87,3 +87,5 @@ hs_err_pid*
 
 # droplets themselves are not the part of Dropper
 droplets/
+
+memo.txt
