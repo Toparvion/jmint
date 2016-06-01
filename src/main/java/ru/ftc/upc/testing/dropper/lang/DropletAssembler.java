@@ -1,23 +1,50 @@
 package ru.ftc.upc.testing.dropper.lang;
 
 import org.antlr.v4.runtime.RuleContext;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.tree.TerminalNode;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaBaseListener;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaVisitor;
 import ru.ftc.upc.testing.dropper.model.Argument;
 import ru.ftc.upc.testing.dropper.model.TargetMethod;
 
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * @author Toparvion
  */
-public class DropperTreeListener extends DroppingJavaBaseListener {
+class DropletAssembler extends DroppingJavaBaseListener {
 
-  private Deque<String> classNameStack = new LinkedList<String>();
-  private TargetsMap targetsMap = new TargetsMap();
+  /**
+   * Mapping between simple type names (e.g. "Droplet") and their FQ prefixes (e.g. "ru.ftc.upc.testing.dropper").
+   * The mapping is built from the import statements at the header of compilation unit and does not include any type
+   * import on demand.
+   */
+  private final Map<String, String> importsMap = new LinkedHashMap<String, String>(10);
+  /**
+   * Mapping between all target classes and lists of their methods. These methods are targets for byte
+   * code instrumenting.
+   */
+  private final TargetsMap targetsMap = new TargetsMap();
+
+  /**
+   * Package prefix for the target type(s), e.g. "tech.toparvion.dropper.lang.droplets."
+   */
+  private String packageDeclaration = "";
+  /**
+   * Internal data structure aimed to support depth tracking during parse tree traversing.
+   */
+  private final Deque<String> classNameStack = new LinkedList<String>();
+
+  @Override
+  public void enterPackageDeclaration(DroppingJavaParser.PackageDeclarationContext ctx) {
+    StringBuilder sb = new StringBuilder();
+    for (TerminalNode idNode : ctx.Identifier()) {
+      sb.append(idNode.getText()).append(".");
+    }
+    this.packageDeclaration = sb.toString();
+  }
 
   @Override
   public void enterNormalClassDeclaration(DroppingJavaParser.NormalClassDeclarationContext ctx) {
@@ -116,16 +143,39 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
     }
   }
 
+  @Override
+  public void enterSingleTypeImportDeclaration(DroppingJavaParser.SingleTypeImportDeclarationContext ctx) {
+    DroppingJavaParser.TypeNameContext typeName = ctx.typeName();
+    if (typeName.packageOrTypeName() == null) {
+      // in this case there is no profit in mapping a type to its import prefix so that we just ignore it
+      return;
+    }
+    importsMap.put(typeName.Identifier().getText(), typeName.packageOrTypeName().getText());
+  }
+
+  /**
+   * Type imports on demand are not supported in this version because they introduce quite complicated ambiguity. In
+   * order not to mute their existence we prefer to explicitly inform the user about them with the help of exception.
+   */
+  @Override
+  public void enterTypeImportOnDemandDeclaration(DroppingJavaParser.TypeImportOnDemandDeclarationContext ctx) {
+    Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
+    String offendingImportString = String.format("import %s.*;", ctx.packageOrTypeName().getText());
+    throw new DropletFormatException(String.format("Line %d:%d. Type imports on demand are not supported: '%s'. " +
+            "Please replace it with a set of single type imports.",
+            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString));
+  }
+
   /**
    * @return a key for targets map (composed basing on current state of the stack)
    */
   private String composeCurrentKey() {
-    StringBuilder sb = new StringBuilder();
+    StringBuilder sb = new StringBuilder(packageDeclaration);
     boolean first = true;
     for (Iterator<String> iterator = classNameStack.descendingIterator(); iterator.hasNext(); ) {
       String className = iterator.next();
       if (!first) {
-        sb.append(".");
+        sb.append("$");
       } else {
         first = false;
       }
@@ -135,8 +185,12 @@ public class DropperTreeListener extends DroppingJavaBaseListener {
     return sb.toString();
   }
 
-  public TargetsMap getTargetsMap() {
+  TargetsMap getTargetsMap() {
     return targetsMap;
+  }
+
+  Map<String, String> getImportsMap() {
+    return importsMap;
   }
 
   private String getPureTypeName(RuleContext typeCtx) {

@@ -10,19 +10,23 @@ import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaLexer;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
 
 import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Toparvion
  */
-public class DropperTreeListenerTest {
+public class DropletAssemblerTest {
 
   @Test
   public void nestedClassesAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/MultiNestedClasses.java";
-    TargetsMap targetsMap = loadDroplet(dropletPath);
-    String expected = "MultiNestedClasses -> {\n" +
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+    String expected = "ru.ftc.upc.testing.dropper.lang.droplets.MultiNestedClasses -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=null, resultType=int, formalParams=(), text=\n" +
             "\t\treturn 1 ;\n" +
             "\t}\n" +
@@ -33,7 +37,7 @@ public class DropperTreeListenerTest {
             "\t\treturn 7 ;\n" +
             "\t}\n" +
             "}\n" +
-            "MultiNestedClasses.InnerClass1 -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.MultiNestedClasses$InnerClass1 -> {\n" +
             "\tTargetMethod{name='method2', cutpoint=null, resultType=int, formalParams=(), text=\n" +
             "\t\treturn 2 ;\n" +
             "\t}\n" +
@@ -41,26 +45,26 @@ public class DropperTreeListenerTest {
             "\t\treturn 3 ;\n" +
             "\t}\n" +
             "}\n" +
-            "MultiNestedClasses.InnerClass2 -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.MultiNestedClasses$InnerClass2 -> {\n" +
             "\tTargetMethod{name='method5', cutpoint=null, resultType=int, formalParams=(), text=\n" +
             "\t\treturn 5 ;\n" +
             "\t}\n" +
             "}\n" +
-            "MultiNestedClasses.InnerClass2.InnerClass3 -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.MultiNestedClasses$InnerClass2$InnerClass3 -> {\n" +
             "\tTargetMethod{name='method6', cutpoint=null, resultType=int, formalParams=(), text=\n" +
             "\t\treturn 6 ;\n" +
             "\t}\n" +
             "}\n";
-    String actual = targetsMap.toString();
-    System.out.println(actual);
     assertEquals(expected, actual);
   }
 
   @Test
   public void methodHeadersAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/VariousMethodHeaders.java";
-    TargetsMap targetsMap = loadDroplet(dropletPath);
-    String expected = "VariousMethodHeaders -> {\n" +
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+    String expected = "ru.ftc.upc.testing.dropper.lang.droplets.VariousMethodHeaders -> {\n" +
             "\tTargetMethod{name='VariousMethodHeaders', cutpoint=null, resultType=null, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='VariousMethodHeaders', cutpoint=null, resultType=null, formalParams=(Stack param1), text=(empty)}\n" +
             "\tTargetMethod{name='VariousMethodHeaders', cutpoint=null, resultType=null, formalParams=(float arg), text=(empty)}\n" +
@@ -80,19 +84,19 @@ public class DropperTreeListenerTest {
             "\t\treturn ( T ) new BufferedInputStream ( source ) ;\n" +
             "\t}\n" +
             "}\n" +
-            "VariousMethodHeaders.InnerClass -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.VariousMethodHeaders$InnerClass -> {\n" +
             "\tTargetMethod{name='InnerClass', cutpoint=null, resultType=null, formalParams=(Deque arg), text=(empty)}\n" +
             "}\n";
-    String actual = targetsMap.toString();
-    System.out.println(actual);
     assertEquals(expected, actual);
   }
 
   @Test
   public void methodBodiesAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/MethodBodies.java";
-    TargetsMap targetsMap = loadDroplet(dropletPath);
-    String expected = "MethodBodies -> {\n" +
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+    String expected = "ru.ftc.upc.testing.dropper.lang.droplets.MethodBodies -> {\n" +
             "\tTargetMethod{name='MethodBodies', cutpoint=null, resultType=null, formalParams=(String name), text=\n" +
             "\t\tSystem . out . println ( \"Hello from constructor :) \" ) ;\n" +
             "\t}\n" +
@@ -101,16 +105,16 @@ public class DropperTreeListenerTest {
             "\t\tif ( Math . random ( ) > 0.5d ) { return true ; } else { return false ; }\n" +
             "\t}\n" +
             "}\n";
-    String actual = targetsMap.toString();
-    System.out.println(actual);
     assertEquals(expected, actual);
   }
 
   @Test
   public void enumTypesAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/RootEnumeration.java";
-    TargetsMap targetsMap = loadDroplet(dropletPath);
-    String expected = "RootEnumeration -> {\n" +
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+    String expected = "ru.ftc.upc.testing.dropper.lang.droplets.RootEnumeration -> {\n" +
             "\tTargetMethod{name='RootEnumeration', cutpoint=null, resultType=null, formalParams=(), text=\n" +
             "\t\tString nothing = \"I'm the most enumerated constructor ever!\" ;\n" +
             "\t}\n" +
@@ -118,21 +122,21 @@ public class DropperTreeListenerTest {
             "\t\tfor ( RootEnumeration rootEnum : values ( ) ) { if ( rootEnum . toString ( ) . equals ( name ) ) { return rootEnum ; } } throw new IllegalArgumentException ( \"Not found: \" + name ) ;\n" +
             "\t}\n" +
             "}\n" +
-            "RootEnumeration.InnerEnum -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.RootEnumeration$InnerEnum -> {\n" +
             "\tTargetMethod{name='isTheSame', cutpoint=null, resultType=boolean, formalParams=(Enum e), text=\n" +
             "\t\treturn INNER_ENUM . toString ( ) . equals ( e . toString ( ) ) ;\n" +
             "\t}\n" +
             "}\n";
-    String actual = targetsMap.toString();
-    System.out.println(actual);
     assertEquals(expected, actual);
   }
 
   @Test
   public void interfaceTypesAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/resources/RootInterface.java";
-    TargetsMap targetsMap = loadDroplet(dropletPath);
-    String expected = "RootInterface -> {\n" +
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+    String expected = "ru.ftc.upc.testing.dropper.lang.RootInterface -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=null, resultType=void, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='method2', cutpoint=null, resultType=boolean, formalParams=(int two), text=(empty)}\n" +
             "\tTargetMethod{name='method3', cutpoint=null, resultType=RootInterface, formalParams=(Set longs), text=(empty)}\n" +
@@ -143,76 +147,107 @@ public class DropperTreeListenerTest {
             "\t\treturn new Observable ( ) ;\n" +
             "\t}\n" +
             "}\n" +
-            "RootInterface.InnerIface -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.RootInterface$InnerIface -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=null, resultType=InputStream, formalParams=(), text=\n" +
             "\t\treturn new FileInputStream ( \"\" ) ;\n" +
             "\t}\n" +
             "}\n" +
-            "RootInterface.InnerIface.InnerInnerIface -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.RootInterface$InnerIface$InnerInnerIface -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=null, resultType=OutputStream, formalParams=(), text=\n" +
             "\t\treturn new FileOutputStream ( \"\" ) ;\n" +
             "\t}\n" +
             "}\n";
-    String actual = targetsMap.toString();
-    System.out.println(actual);
     assertEquals(expected, actual);
   }
 
   @Test
   public void typesCombinationsAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/droplets/TypesCombination.java";
-    TargetsMap targetsMap = loadDroplet(dropletPath);
-
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
     System.out.println(actual);
-    String expected = "SiblingClass -> {\n" +
+    String expected = "ru.ftc.upc.testing.dropper.lang.droplets.SiblingClass -> {\n" +
             "\tTargetMethod{name='method', cutpoint=null, resultType=double, formalParams=(), text=\n" +
             "\t\treturn Math . random ( ) ;\n" +
             "\t}\n" +
             "}\n" +
-            "SiblingEnum -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.SiblingEnum -> {\n" +
             "\tTargetMethod{name='SiblingEnum', cutpoint=null, resultType=null, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='getMe', cutpoint=null, resultType=SiblingEnum, formalParams=(), text=\n" +
             "\t\treturn this ;\n" +
             "\t}\n" +
             "}\n" +
-            "SiblingEnum.InnerInterface -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.SiblingEnum$InnerInterface -> {\n" +
             "\tTargetMethod{name='getThatEnum', cutpoint=null, resultType=TypesCombination.InnerInterface.InnerInnerClass.InnerInnerInnerEnum, formalParams=(), text=(empty)}\n" +
             "}\n" +
-            "SiblingInterface -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.SiblingInterface -> {\n" +
             "\tTargetMethod{name='method', cutpoint=null, resultType=Vector, formalParams=(Vector arg), text=(empty)}\n" +
             "}\n" +
-            "SiblingInterface.InnerEnum -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.SiblingInterface$InnerEnum -> {\n" +
             "\tTargetMethod{name='InnerEnum', cutpoint=null, resultType=null, formalParams=(), text=(empty)}\n" +
             "}\n" +
-            "TypesCombination -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.TypesCombination -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=null, resultType=void, formalParams=(), text=\n" +
             "\t\tSystem . console ( ) ;\n" +
             "\t}\n" +
             "}\n" +
-            "TypesCombination.InnerInterface -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.TypesCombination$InnerInterface -> {\n" +
             "\tTargetMethod{name='innerMethod', cutpoint=null, resultType=void, formalParams=(), text=(empty)}\n" +
             "}\n" +
-            "TypesCombination.InnerInterface.InnerInnerClass -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.TypesCombination$InnerInterface$InnerInnerClass -> {\n" +
             "\tTargetMethod{name='innerInnerMethod', cutpoint=null, resultType=void, formalParams=(), text=(empty)}\n" +
             "}\n" +
-            "TypesCombination.InnerInterface.InnerInnerClass.InnerInnerInnerEnum -> {\n" +
+            "ru.ftc.upc.testing.dropper.lang.droplets.TypesCombination$InnerInterface$InnerInnerClass$InnerInnerInnerEnum -> {\n" +
             "\tTargetMethod{name='doSomething', cutpoint=null, resultType=void, formalParams=(), text=(empty)}\n" +
             "}\n";
     assertEquals(expected, actual);
   }
 
-  private TargetsMap loadDroplet(String dropletPath) throws IOException {
+  @Test
+  public void importMapIsComposedCorrectly() throws Exception {
+    String dropletPath = "src/test/resources/Imports.java";
+    Map<String, String> importsMap = loadDroplet(dropletPath).getImportsMap();
+    String expected = "\tCurrency -> java.util\n" +
+            "\tBASE64Encoder -> sun.misc\n";
+    String actual = map2Str(importsMap);
+    System.out.println(actual);
+    assertEquals(expected, actual);
+  }
+
+  @Test(expected = DropletFormatException.class)
+  public void importsOnDemandAreNotSupported() throws Exception {
+    String dropletPath = "src/test/resources/FaultyImports.java";
+    Map<String, String> importsMap = loadDroplet(dropletPath).getImportsMap();
+
+    String actual = map2Str(importsMap);
+    System.out.println(actual);
+  }
+
+  private DropletAssembler loadDroplet(String dropletPath) throws IOException {
     ANTLRFileStream fileStream = new ANTLRFileStream(dropletPath);
     DroppingJavaLexer lexer = new DroppingJavaLexer(fileStream);
     TokenStream tokenStream = new CommonTokenStream(lexer);
     DroppingJavaParser parser = new DroppingJavaParser(tokenStream);
     ParseTree tree = parser.compilationUnit();
 
-    DropperTreeListener listener = new DropperTreeListener();
+    DropletAssembler listener = new DropletAssembler();
     ParseTreeWalker walker = new ParseTreeWalker();
     walker.walk(listener, tree);
 
-    return listener.getTargetsMap();
+    return listener;
+  }
+
+  private String map2Str(Map<String, String> map) {
+    Set<Map.Entry<String, String>> entries = map.entrySet();
+    StringBuilder sb = new StringBuilder();
+    for (Map.Entry<String, String> entry : entries) {
+      sb
+              .append("\t")
+              .append(entry.getKey())
+              .append(" -> ")
+              .append(entry.getValue())
+              .append("\n");
+    }
+    return sb.toString();
   }
 }
