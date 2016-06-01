@@ -8,6 +8,7 @@ import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaVisitor;
 import ru.ftc.upc.testing.dropper.model.Argument;
 import ru.ftc.upc.testing.dropper.model.TargetMethod;
+import ru.ftc.upc.testing.dropper.model.TargetsMap;
 
 import java.util.*;
 

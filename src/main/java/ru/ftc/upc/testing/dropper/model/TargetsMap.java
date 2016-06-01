@@ -1,6 +1,4 @@
-package ru.ftc.upc.testing.dropper.lang;
-
-import ru.ftc.upc.testing.dropper.model.TargetMethod;
+package ru.ftc.upc.testing.dropper.model;
 
 import java.util.Deque;
 import java.util.LinkedList;

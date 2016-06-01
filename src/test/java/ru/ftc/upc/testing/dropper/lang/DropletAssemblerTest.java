@@ -8,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaLexer;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
+import ru.ftc.upc.testing.dropper.model.TargetsMap;
 
 import java.io.IOException;
 import java.util.Map;
