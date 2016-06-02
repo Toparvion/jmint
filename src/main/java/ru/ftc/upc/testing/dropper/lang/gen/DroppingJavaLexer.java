@@ -132,6 +132,9 @@ public class DroppingJavaLexer extends Lexer {
 	}
 
 
+	    public static final int BLOCK_COMMENTS = 2;
+
+
 	public DroppingJavaLexer(CharStream input) {
 		super(input);
 		_interp = new LexerATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
@@ -152,6 +155,21 @@ public class DroppingJavaLexer extends Lexer {
 	@Override
 	public ATN getATN() { return _ATN; }
 
+	@Override
+	public void action(RuleContext _localctx, int ruleIndex, int actionIndex) {
+		switch (ruleIndex) {
+		case 151:
+			COMMENT_action((RuleContext)_localctx, actionIndex);
+			break;
+		}
+	}
+	private void COMMENT_action(RuleContext _localctx, int actionIndex) {
+		switch (actionIndex) {
+		case 0:
+			_channel = BLOCK_COMMENTS;
+			break;
+		}
+	}
 	@Override
 	public boolean sempred(RuleContext _localctx, int ruleIndex, int predIndex) {
 		switch (ruleIndex) {
@@ -562,7 +580,7 @@ public class DroppingJavaLexer extends Lexer {
 		"\3\2\2\2\u0432\u0434\13\2\2\2\u0433\u0432\3\2\2\2\u0434\u0437\3\2\2\2"+
 		"\u0435\u0436\3\2\2\2\u0435\u0433\3\2\2\2\u0436\u0438\3\2\2\2\u0437\u0435"+
 		"\3\2\2\2\u0438\u0439\7,\2\2\u0439\u043a\7\61\2\2\u043a\u043b\3\2\2\2\u043b"+
-		"\u043c\b\u0099\2\2\u043c\u0132\3\2\2\2\u043d\u043e\7\61\2\2\u043e\u043f"+
+		"\u043c\b\u0099\3\2\u043c\u0132\3\2\2\2\u043d\u043e\7\61\2\2\u043e\u043f"+
 		"\7\61\2\2\u043f\u0443\3\2\2\2\u0440\u0442\n\27\2\2\u0441\u0440\3\2\2\2"+
 		"\u0442\u0445\3\2\2\2\u0443\u0441\3\2\2\2\u0443\u0444\3\2\2\2\u0444\u0446"+
 		"\3\2\2\2\u0445\u0443\3\2\2\2\u0446\u0447\b\u009a\2\2\u0447\u0134\3\2\2"+
@@ -570,7 +588,7 @@ public class DroppingJavaLexer extends Lexer {
 		"\u02bc\u02c0\u02c5\u02cd\u02d0\u02d7\u02db\u02df\u02e5\u02e8\u02ef\u02f3"+
 		"\u02fb\u02fe\u0305\u0309\u030d\u0312\u0315\u0318\u031d\u0320\u0325\u032a"+
 		"\u0332\u033d\u0341\u0346\u034a\u035a\u0364\u036a\u0371\u0375\u037b\u0388"+
-		"\u040f\u0418\u0420\u042b\u0435\u0443\3\b\2\2";
+		"\u040f\u0418\u0420\u042b\u0435\u0443\4\b\2\2\3\u0099\2";
 	public static final ATN _ATN =
 		new ATNDeserializer().deserialize(_serializedATN.toCharArray());
 	static {

@@ -32,8 +32,12 @@
  * A modified (and simplified) Java 8 grammar for ANTLR 4 derived from the Java Language Specification
  * chapter 19.
  */
+
 grammar DroppingJava;
 
+@lexer::members {
+    public static final int BLOCK_COMMENTS = 2;
+}
 /*
  * Productions from §4 (Types, Values, and Variables)
  */
@@ -1076,7 +1080,7 @@ WS  :  [ \t\r\n\u000C]+ -> skip
     ;
 
 COMMENT
-    :   '/*' .*? '*/' -> skip
+    :   '/*' .*? '*/' -> channel(BLOCK_COMMENTS)
     ;
 
 LINE_COMMENT

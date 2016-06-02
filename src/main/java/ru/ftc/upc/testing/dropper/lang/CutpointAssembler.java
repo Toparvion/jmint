@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * @author Toparvion
  */
-public class CutpointAssembler extends JavadocParserBaseListener {
+class CutpointAssembler extends JavadocParserBaseListener {
 
   private static final String CUTPOINT_TAG_NAME = "cutpoint";
 
@@ -31,7 +31,7 @@ public class CutpointAssembler extends JavadocParserBaseListener {
     tagValue = tagValueEntries[0];
   }
 
-  public String getTagValue() {
+  String getTagValue() {
     return tagValue;
   }
 }

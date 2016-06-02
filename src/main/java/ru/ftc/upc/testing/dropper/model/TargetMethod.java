@@ -10,7 +10,7 @@ import java.util.List;
  */
 public class TargetMethod {
   private String name;
-  private Cutpoint cutpoint;
+  private Cutpoint cutpoint = Cutpoint.INSTEAD;     // by default cutpoint is INSTEAD
   private String text;
   private String resultType;
   private List<Argument> formalParams = new LinkedList<Argument>();
