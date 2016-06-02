@@ -1,14 +1,14 @@
 package ru.ftc.upc.testing.dropper.model;
 
 import java.util.Deque;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * @author Toparvion
  */
-public class TargetsMap extends TreeMap<String, Deque<TargetMethod>> {
+public class TargetsMap extends LinkedHashMap<String, Deque<TargetMethod>> {
 
   public void put(String key, TargetMethod method) {
     Deque<TargetMethod> methods = this.get(key);

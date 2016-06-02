@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 import static java.lang.String.format;
 
 /**
- * Created by Plizga on 28.04.2016 9:13
+ * Created by Toparvion on 28.04.2016 9:13
  */
 @SuppressWarnings("unused")
 public class DropperAgent {

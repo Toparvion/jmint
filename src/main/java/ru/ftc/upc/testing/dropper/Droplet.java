@@ -1,9 +1,9 @@
 package ru.ftc.upc.testing.dropper;
 
 /**
- * Created by Plizga on 29.04.2016 11:58
+ * Created by Toparvion on 29.04.2016 11:58
  */
-class Droplet {
+public class Droplet {
   private String clazz;
   private String method;
   private Cutpoint cutpoint;

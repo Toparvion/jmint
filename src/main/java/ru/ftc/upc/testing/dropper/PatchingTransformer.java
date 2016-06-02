@@ -6,6 +6,7 @@ import javassist.CtClass;
 import javassist.CtMethod;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ftc.upc.testing.dropper.modify.MethodModifier;
 
 import java.lang.instrument.ClassFileTransformer;
 import java.lang.instrument.IllegalClassFormatException;
@@ -17,7 +18,7 @@ import java.util.Set;
 import static java.lang.String.format;
 
 /**
- * Created by Plizga on 29.04.2016 12:50
+ * Created by Toparvion on 29.04.2016 12:50
  */
 class PatchingTransformer implements ClassFileTransformer {
   private static final Logger log = LoggerFactory.getLogger(PatchingTransformer.class);
@@ -47,7 +48,7 @@ class PatchingTransformer implements ClassFileTransformer {
       return applyDroplet(dropletMap.get(className), classFileBuffer);
 
     } catch (Exception e) {
-      log.error(format("Failed to patch class '%s'. Class skipped.", className), e);
+      log.error(format("Failed to modify class '%s'. Class skipped.", className), e);
       return null;
     }
   }
@@ -62,10 +63,10 @@ class PatchingTransformer implements ClassFileTransformer {
     CtMethod ctMethod = ctClass.getDeclaredMethod(droplet.getMethod());
 
     Cutpoint cutpoint = droplet.getCutpoint();
-    MethodPatcher patcher = cutpoint.patcherClass.newInstance();
+    MethodModifier patcher = cutpoint.patcherClass.newInstance();
 
     patcher.apply(ctMethod, droplet);
-    log.info("Class {} has been patched with {}.", ctClass.getName(), patcher.getClass().getSimpleName());
+    log.info("Class {} has been modified with {}.", ctClass.getName(), patcher.getClass().getSimpleName());
     return ctClass.toBytecode();
   }
 }
