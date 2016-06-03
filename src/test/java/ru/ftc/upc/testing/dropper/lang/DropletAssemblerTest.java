@@ -68,29 +68,26 @@ public class DropletAssemblerTest {
     System.out.println(actual);
     String expected = "ru.ftc.upc.testing.dropper.lang.samples.VariousMethodHeaders -> {\n" +
             "\tTargetMethod{name='VariousMethodHeaders', cutpoint=INSTEAD, resultType=null, formalParams=(), text=(empty)}\n" +
-            "\tTargetMethod{name='VariousMethodHeaders', cutpoint=INSTEAD, resultType=null, formalParams=(Stack param1), text=(empty)}\n" +
+            "\tTargetMethod{name='VariousMethodHeaders', cutpoint=INSTEAD, resultType=null, formalParams=(java.util.Stack param1), text=(empty)}\n" +
             "\tTargetMethod{name='VariousMethodHeaders', cutpoint=INSTEAD, resultType=null, formalParams=(float arg), text=(empty)}\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='method2', cutpoint=INSTEAD, resultType=void, formalParams=(int a), text=(empty)}\n" +
-            "\tTargetMethod{name='method3', cutpoint=INSTEAD, resultType=void, formalParams=(Map map), text=(empty)}\n" +
-            "\tTargetMethod{name='method4', cutpoint=INSTEAD, resultType=void, formalParams=(List xs), text=(empty)}\n" +
-            "\tTargetMethod{name='method5', cutpoint=INSTEAD, resultType=void, formalParams=(UUID u1, Date d2), text=(empty)}\n" +
+            "\tTargetMethod{name='method3', cutpoint=INSTEAD, resultType=void, formalParams=(java.util.Map map), text=(empty)}\n" +
+            "\tTargetMethod{name='method4', cutpoint=INSTEAD, resultType=void, formalParams=(java.util.List xs), text=(empty)}\n" +
+            "\tTargetMethod{name='method5', cutpoint=INSTEAD, resultType=void, formalParams=(java.util.UUID u1, java.util.Date d2), text=(empty)}\n" +
             "\tTargetMethod{name='method6', cutpoint=INSTEAD, resultType=void, formalParams=(double d1, double d2), text=(empty)}\n" +
             "\tTargetMethod{name='method7', cutpoint=INSTEAD, resultType=double, formalParams=(), text=\n" +
             "\t\treturn Math . random ( ) ;\n" +
             "\t}\n" +
-            "\tTargetMethod{name='method8', cutpoint=INSTEAD, resultType=Set, formalParams=(EventObject eo), text=\n" +
+            "\tTargetMethod{name='method8', cutpoint=INSTEAD, resultType=java.util.Set, formalParams=(java.util.EventObject eo), text=\n" +
             "\t\treturn java.util.Collections . emptySet ( ) ;\n" +
             "\t}\n" +
             "\tTargetMethod{name='method9', cutpoint=INSTEAD, resultType=T, formalParams=(T source, boolean flag), text=\n" +
             "\t\treturn ( T ) new java.io.BufferedInputStream ( source ) ;\n" +
             "\t}\n" +
-            "\tTargetMethod{name='method10', cutpoint=INSTEAD, resultType=Map.Entry, formalParams=(Map.Entry arg), text=\n" +
-            "\t\treturn new java.util.AbstractMap . SimpleEntry < Long , String > ( 23L , \"\" ) ;\n" +
-            "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.VariousMethodHeaders$InnerClass -> {\n" +
-            "\tTargetMethod{name='InnerClass', cutpoint=INSTEAD, resultType=null, formalParams=(Deque arg), text=(empty)}\n" +
+            "\tTargetMethod{name='InnerClass', cutpoint=INSTEAD, resultType=null, formalParams=(java.util.Deque arg), text=(empty)}\n" +
             "}\n";
     assertEquals(expected, actual);
   }
@@ -144,21 +141,21 @@ public class DropletAssemblerTest {
     String expected = "ru.ftc.upc.testing.dropper.lang.RootInterface -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='method2', cutpoint=INSTEAD, resultType=boolean, formalParams=(int two), text=(empty)}\n" +
-            "\tTargetMethod{name='method3', cutpoint=INSTEAD, resultType=RootInterface, formalParams=(Set longs), text=(empty)}\n" +
+            "\tTargetMethod{name='method3', cutpoint=INSTEAD, resultType=RootInterface, formalParams=(java.util.Set longs), text=(empty)}\n" +
             "\tTargetMethod{name='method5', cutpoint=INSTEAD, resultType=double, formalParams=(Float param1), text=\n" +
             "\t\treturn Math . random ( ) ;\n" +
             "\t}\n" +
-            "\tTargetMethod{name='newObservable', cutpoint=INSTEAD, resultType=Observable, formalParams=(List lof), text=\n" +
+            "\tTargetMethod{name='newObservable', cutpoint=INSTEAD, resultType=java.util.Observable, formalParams=(java.util.List lof), text=\n" +
             "\t\treturn new java.util.Observable ( ) ;\n" +
             "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.RootInterface$InnerIface -> {\n" +
-            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=InputStream, formalParams=(), text=\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=java.io.InputStream, formalParams=(), text=\n" +
             "\t\treturn new java.io.FileInputStream ( \"\" ) ;\n" +
             "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.RootInterface$InnerIface$InnerInnerIface -> {\n" +
-            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=OutputStream, formalParams=(), text=\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=java.io.OutputStream, formalParams=(), text=\n" +
             "\t\treturn new java.io.FileOutputStream ( \"\" ) ;\n" +
             "\t}\n" +
             "}\n";
@@ -197,10 +194,10 @@ public class DropletAssemblerTest {
             "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.SiblingEnum$InnerInterface -> {\n" +
-            "\tTargetMethod{name='getThatEnum', cutpoint=INSTEAD, resultType=TypesCombination.InnerInterface.InnerInnerClass.InnerInnerInnerEnum, formalParams=(), text=(empty)}\n" +
+            "\tTargetMethod{name='getThatEnum', cutpoint=INSTEAD, resultType=TypesCombination$InnerInterface$InnerInnerClass$InnerInnerInnerEnum, formalParams=(), text=(empty)}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.SiblingInterface -> {\n" +
-            "\tTargetMethod{name='method', cutpoint=INSTEAD, resultType=Vector, formalParams=(Vector arg), text=(empty)}\n" +
+            "\tTargetMethod{name='method', cutpoint=INSTEAD, resultType=java.util.Vector, formalParams=(java.util.Vector arg), text=(empty)}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.SiblingInterface$InnerEnum -> {\n" +
             "\tTargetMethod{name='InnerEnum', cutpoint=INSTEAD, resultType=null, formalParams=(), text=(empty)}\n" +
@@ -253,8 +250,23 @@ public class DropletAssemblerTest {
     String actual = targetsMap.toString();
     System.out.println(actual);
     String expected = "dp.DPClientImpl -> {\n" +
-            "\tTargetMethod{name='currencyRate', cutpoint=INSTEAD, resultType=QuickPay.AnsCurrencyRate, formalParams=(QuickPay.ReqCurrencyRate reqCurrencyRate), text=\n" +
+            "\tTargetMethod{name='currencyRate', cutpoint=INSTEAD, resultType=dp.models.QuickPay$AnsCurrencyRate, formalParams=(dp.models.QuickPay$ReqCurrencyRate reqCurrencyRate), text=\n" +
             "\t\ttry { java.io.FileReader stubReader = new java.io.FileReader ( System . getProperty ( \"user.dir\" ) + java.io.File . separator + \"AnsCurrencyRate.xml\" ) ; javax.xml.bind.Unmarshaller unmarshaller = quickPayJbcDoc . createUnmarshaller ( ) ; dp.models.QuickPay quickPay = ( dp.models.QuickPay ) unmarshaller . unmarshal ( stubReader ) ; log . info ( \"Rates were loaded from file AnsCurrencyRate.xml.\" ) ; stubReader . close ( ) ; return quickPay . getInfoService ( ) . getAnsCurrencyRate ( ) ; } catch ( Exception e ) { log . error ( \"Unable to load rates from file. Falling back to real service.\" , e ) ; dp . models . QuickPay quickPay = dp.models.QuickPay . infoService ( ) ; quickPay . getInfoService ( ) . setReqCurrencyRate ( $1 ) ; quickPay = sendQuickPay ( quickPay , false , false ) ; dp.models.QuickPay . AnsCurrencyRate ans = quickPay . getInfoService ( ) . getAnsCurrencyRate ( ) ; return ans ; }\n" +
+            "\t}\n" +
+            "}\n";
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void methodArgumentTypesAreResolvedCorrectly() throws Exception {
+    String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/NestedTypesAmongMethodArguments.java";
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+
+    String expected = "ru.ftc.upc.testing.dropper.lang.samples.NestedTypesAmongMethodArguments -> {\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=java.util.Map$Entry, formalParams=(java.security.KeyStore$SecretKeyEntry arg), text=\n" +
+            "\t\treturn new java.util.AbstractMap . SimpleEntry < Long , String > ( 23L , \"\" ) ;\n" +
             "\t}\n" +
             "}\n";
     assertEquals(expected, actual);

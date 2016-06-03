@@ -3,7 +3,17 @@ package ru.ftc.upc.testing.dropper.lang.samples;
 import java.io.BufferedInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.Collections;
+import java.util.Currency;
+import java.util.Date;
+import java.util.Deque;
+import java.util.EventObject;
+import java.util.List;
+import java.util.Map;
+import java.util.Observer;
+import java.util.Set;
+import java.util.Stack;
+import java.util.UUID;
 
 /**
  * @author Toparvion
@@ -45,9 +55,5 @@ public class VariousMethodHeaders {
   private <T extends InputStream> T method9(T source, boolean flag)
           throws FileNotFoundException {
     return (T) new BufferedInputStream(source);
-  }
-
-  protected Map.Entry<Long, String> method10(Map.Entry<Double, Integer> arg) {
-    return new AbstractMap.SimpleEntry<Long, String>(23L, "");
   }
 }

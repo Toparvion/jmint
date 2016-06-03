@@ -136,6 +136,9 @@ class DropletAssembler extends DroppingJavaBaseListener {
     // store method's result type name
     DroppingJavaParser.ResultContext result = ctx.result();
     String resultType = getPureTypeName(result);
+    if (!"void".equals(resultType)) {           // avoid excess work
+      resultType = resolveMethodArgumentType(resultType);
+    }
     method.setResultType(resultType);
 
     // it's time to store method parameters, if any
@@ -168,13 +171,14 @@ class DropletAssembler extends DroppingJavaBaseListener {
    */
   private void storeMethodParams(TargetMethod method, DroppingJavaParser.FormalParameterListContext anyParams) {
     if (anyParams == null) return;
-    String paramType;
+    String paramType;         // for the sake of brevity we use term 'paramType' instead of 'paramTypeName'
     String paramName;
     // first we check for any normal formal params
     DroppingJavaParser.FormalParametersContext formalParams = anyParams.formalParameters();
     if (formalParams != null) {
       for (DroppingJavaParser.FormalParameterContext param : formalParams.formalParameter()) {
         paramType = getPureTypeName(param.unannType());
+        paramType = resolveMethodArgumentType(paramType);
         paramName = param.variableDeclaratorId().Identifier().getText();
         method.getFormalParams().add(new Argument(paramType, paramName));
       }
@@ -190,8 +194,33 @@ class DropletAssembler extends DroppingJavaBaseListener {
         paramType = getPureTypeName(lastFormalParam.unannType());
         paramName = lastFormalParam.variableDeclaratorId().Identifier().getText();
       }
+      paramType = resolveMethodArgumentType(paramType);
       method.getFormalParams().add(new Argument(paramType, paramName));
     }
+  }
+
+  /**
+   * Applies 2 modifications to given type name: (1) prepends it with package path according to
+   * {@link #importsMap} of this droplet; (2) converts it to {@link ClassLoader binary} name format, i.e. replaces
+   * dots in non-package part with dollar signs (e.g. turns {@code Map.Entry} to {@code Map$Entry}).
+   * @param argumentType  original parameter or result type name as it was extracted from droplet parse tree
+   * @return resolved name (may appear the same)
+   */
+  private String resolveMethodArgumentType(String argumentType) {
+    if (argumentType == null || argumentType.isEmpty())
+      return argumentType;
+    // first we need to cut off any references to inner types
+    String[] typeEntries = argumentType.split("\\.");
+    String outerType = typeEntries[0];
+    // during resolving we must make the type name binary compatible (see java.lang.ClassLoader#name)
+    String binaryName = typeEntries.length > 1
+            ? argumentType.replaceAll("\\.", Matcher.quoteReplacement("$"))
+            : argumentType;
+    // then we can search for corresponding import
+    String fqPrefix = importsMap.get(outerType);
+    return (fqPrefix == null)
+            ? binaryName
+            : (fqPrefix + "." + binaryName);
   }
 
   /**
