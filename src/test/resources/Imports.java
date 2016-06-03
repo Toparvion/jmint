@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.dropper.lang.droplets;
+package ru.ftc.upc.testing.dropper.lang.samples;
 
 import java.util.Currency;
 import Object;                  // must be ignored by assembler

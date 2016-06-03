@@ -11,8 +11,12 @@ import ru.ftc.upc.testing.dropper.model.TargetMethod;
 import ru.ftc.upc.testing.dropper.model.TargetsMap;
 
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
+ * The main class responsible for extracting valuable data from droplet files. Built upon ANTLR parse tree event
+ * listener.
  * @author Toparvion
  */
 class DropletAssembler extends DroppingJavaBaseListener {
@@ -34,7 +38,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
    */
   private String packageDeclaration = "";
   /**
-   * Internal data structure aimed to support depth tracking during parse tree traversing.
+   * Internal stack aimed to support depth tracking during parse tree traversing.
    */
   private final Deque<String> classNameStack = new LinkedList<String>();
   /**
@@ -46,7 +50,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
     this.tokenStream = tokenStream;
   }
 
-  //region parse tree event listener methods
+  //region Parse tree event listener methods
   @Override
   public void enterPackageDeclaration(DroppingJavaParser.PackageDeclarationContext ctx) {
     StringBuilder sb = new StringBuilder();
@@ -54,6 +58,29 @@ class DropletAssembler extends DroppingJavaBaseListener {
       sb.append(idNode.getText()).append(".");
     }
     this.packageDeclaration = sb.toString();
+  }
+
+  @Override
+  public void enterSingleTypeImportDeclaration(DroppingJavaParser.SingleTypeImportDeclarationContext ctx) {
+    DroppingJavaParser.TypeNameContext typeName = ctx.typeName();
+    if (typeName.packageOrTypeName() == null) {
+      // in this case there is no profit in mapping a type to its import prefix so that we just ignore it
+      return;
+    }
+    importsMap.put(typeName.Identifier().getText(), typeName.packageOrTypeName().getText());
+  }
+
+  /**
+   * Type imports on demand are not supported in this version because they introduce quite complicated ambiguity. In
+   * order not to mute their existence we prefer to explicitly inform the user about them with the help of exception.
+   */
+  @Override
+  public void enterTypeImportOnDemandDeclaration(DroppingJavaParser.TypeImportOnDemandDeclarationContext ctx) {
+    Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
+    String offendingImportString = String.format("import %s.*;", ctx.packageOrTypeName().getText());
+    throw new DropletFormatException(String.format("Line %d:%d. Type imports on demand are not supported: '%s'. " +
+                    "Please replace it with a set of single type imports.",
+            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString));
   }
 
   @Override
@@ -127,35 +154,13 @@ class DropletAssembler extends DroppingJavaBaseListener {
     DroppingJavaVisitor<String> visitor = new BodyComposingVisitor();
 
     String bodyText = visitor.visit(ctx);
+    bodyText = makeTypeNamesFullyQualified(bodyText);
     TargetMethod currentMethod = targetsMap.get(composeCurrentKey()).getLast();
     currentMethod.setText(bodyText);
   }
-
-  @Override
-  public void enterSingleTypeImportDeclaration(DroppingJavaParser.SingleTypeImportDeclarationContext ctx) {
-    DroppingJavaParser.TypeNameContext typeName = ctx.typeName();
-    if (typeName.packageOrTypeName() == null) {
-      // in this case there is no profit in mapping a type to its import prefix so that we just ignore it
-      return;
-    }
-    importsMap.put(typeName.Identifier().getText(), typeName.packageOrTypeName().getText());
-  }
-
-  /**
-   * Type imports on demand are not supported in this version because they introduce quite complicated ambiguity. In
-   * order not to mute their existence we prefer to explicitly inform the user about them with the help of exception.
-   */
-  @Override
-  public void enterTypeImportOnDemandDeclaration(DroppingJavaParser.TypeImportOnDemandDeclarationContext ctx) {
-    Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
-    String offendingImportString = String.format("import %s.*;", ctx.packageOrTypeName().getText());
-    throw new DropletFormatException(String.format("Line %d:%d. Type imports on demand are not supported: '%s'. " +
-            "Please replace it with a set of single type imports.",
-            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString));
-  }
   //endregion
 
-  //region auxiliary methods of the assembler
+  //region Auxiliary methods of the assembler
   /**
    * Extracts formal parameters types and names and stores them into the given target method.
    * @param method target method to store extracted parameters into
@@ -243,7 +248,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
   }
 
   /**
-   * @return an actual key for targets map (composed basing on current state of the stack)
+   * @return an actual key for targets map (composed basing on current state of the {@linkplain #classNameStack})
    */
   private String composeCurrentKey() {
     StringBuilder sb = new StringBuilder(packageDeclaration);
@@ -260,9 +265,47 @@ class DropletAssembler extends DroppingJavaBaseListener {
 
     return sb.toString();
   }
+
+  /**
+   * Replaces all the type names in {@code bodyText} with their fully qualified equivalents according to
+   * {@link #importsMap} of the droplet. Skips names that are already fully qualified.
+   * Does nothing if some type has no import.
+   * @param bodyText text of method's body being processed
+   * @return the {@code bodyText} with fully qualified type names
+   */
+  private String makeTypeNamesFullyQualified(String bodyText) {
+    if (bodyText == null || bodyText.isEmpty())
+      return bodyText;
+    String processedText = bodyText;
+    for (Map.Entry<String, String> importEntry : importsMap.entrySet()) {
+      String simpleName = importEntry.getKey();
+      String fqName = importEntry.getValue() + "." + simpleName;
+      Pattern pattern = Pattern.compile("(\\b)" + simpleName + "(\\b)");
+      Matcher matcher = pattern.matcher(processedText);
+      StringBuffer sb = new StringBuffer(bodyText.length()+30);
+      while (matcher.find()) {
+        if (!isNameAlreadyQualified(processedText, matcher.start(2), fqName)) {
+          matcher.appendReplacement(sb, "$1" + fqName + "$2");
+        }
+      }
+      matcher.appendTail(sb);
+      processedText = sb.toString();
+    }
+    return processedText;
+  }
+
+  /**
+   * Detects whether type name on position denoted by {@code typeNameEndPosition} is fully qualified.
+   */
+  private boolean isNameAlreadyQualified(String wholeText, int typeNameEndPosition, String typeFqName) {
+    String sparseFqName = typeFqName.replaceAll("\\.", " . ");
+    int precursorStartPosition = Math.max(0, (typeNameEndPosition - sparseFqName.length()));
+    String precursor = wholeText.substring(precursorStartPosition, typeNameEndPosition);
+    return sparseFqName.equals(precursor);
+  }
   //endregion
 
-  //region getters
+  //region Getters
   TargetsMap getTargetsMap() {
     return targetsMap;
   }
