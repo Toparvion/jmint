@@ -8,7 +8,7 @@ import java.util.Properties;
 import dp.models.QuickPay;
 import dp.models.ReqTransferSearch;
 
-public class DPClientImpl2 {
+public class DPClientImpl {
 
   @Override
   public String fetchTransferStatus(String oID, boolean needFlag) throws Exception {

@@ -117,23 +117,22 @@ class DropletAssembler extends DroppingJavaBaseListener {
    */
   @Override
   public void enterConstructorDeclarator(DroppingJavaParser.ConstructorDeclaratorContext ctx) {
-    // as we consider constructor as methods, let's firstly save it
-    String key = composeCurrentKey();
+    // as we consider constructor as methods, let's firstly initialize it
     TargetMethod method = new TargetMethod(ctx.simpleTypeName().getText());
-    targetsMap.put(key, method);
 
     // There is no result type for constructors so we pass setting Method's result field. Proceed to formal parameters.
     DroppingJavaParser.FormalParameterListContext anyParams = ctx.formalParameterList();
     storeMethodParams(method, anyParams);
+
+    // now that we know everything about the method we can store into targets map
+    targetsMap.put(composeCurrentKey(), method);
   }
 
   @Override
   public void enterMethodHeader(DroppingJavaParser.MethodHeaderContext ctx) {
-    // first of all let's save this method itself
-    String key = composeCurrentKey();
+    // first of all let's initialize this method itself
     DroppingJavaParser.MethodDeclaratorContext declarator = ctx.methodDeclarator();
     TargetMethod method = new TargetMethod(declarator.Identifier().getText());
-    targetsMap.put(key, method);
 
     // store method's result type name
     DroppingJavaParser.ResultContext result = ctx.result();
@@ -152,6 +151,9 @@ class DropletAssembler extends DroppingJavaBaseListener {
     if (cutpointStr != null) {
       method.setCutpoint(Cutpoint.valueOf(cutpointStr.toUpperCase()));
     }
+
+    // finally we can store the method in targets map
+    targetsMap.put(composeCurrentKey(), method);
   }
 
   @Override
@@ -292,6 +294,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
       } else {
         first = false;
       }
+      className = className.replaceFirst("(?i)_?Droplet$", "");     // todo allow customizing through settings
       sb.append(className);
     }
 

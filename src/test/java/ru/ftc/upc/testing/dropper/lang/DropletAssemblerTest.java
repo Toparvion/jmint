@@ -278,12 +278,43 @@ public class DropletAssemblerTest {
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
     System.out.println(actual);
-    String expected = "dp.DPClientImpl2 -> {\n" +
+    String expected = "dp.DPClientImpl -> {\n" +
             "\tTargetMethod{name='fetchTransferStatus', cutpoint=INSTEAD, resultType=String, formalParams=(String oID, boolean needFlag), text=\n" +
             "\t\tString statusStr = null ; try { java.util.Properties stub = new java.util.Properties ( ) ; stub . load ( new java.io.FileReader ( System . getProperty ( \"user.dir\" ) + java.io.File . separator + \"dp-edit-mock.properties\" ) ) ; statusStr = stub . getProperty ( $1 ) ; if ( statusStr != null ) { statusStr = statusStr . trim ( ) ; log . warn ( \"For STRoID={} transfer status '{}' was taken from mock.\" , $1 , statusStr ) ; } } catch ( java.io.IOException e ) { log . error ( \"Failed to load mocked transfer edit statuses.\" , e ) ; } if ( statusStr == null ) { dp.models.QuickPay quickPay = dp.models.QuickPay . infoService ( ) ; dp.models.ReqTransferSearch req = new dp.models.ReqTransferSearch ( ) ; req . setOID ( getReserve ( ) . oID ) ; quickPay . getInfoService ( ) . setReqTransferSearch ( req ) ; quickPay = sendQuickPay ( quickPay , false , $2 ) ; statusStr = quickPay . getInfoService ( ) . getAnsTransferSearch ( ) . getTransferStatus ( ) ; } return statusStr ;\n" +
             "\t}\n" +
             "}\n";
     assertEquals(expected, actual);
+  }
+
+  @Test
+  public void dropletSuffixIsOmittedCorrectly() throws Exception {
+    String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/ClassWithSuffixDroplet.java";
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+
+    String expected = "ru.ftc.upc.testing.dropper.lang.samples.ClassWithSuffix -> {\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
+            "}\n" +
+            "ru.ftc.upc.testing.dropper.lang.samples.ClassWithSuffix$InnerClass -> {\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
+            "}\n" +
+            "ru.ftc.upc.testing.dropper.lang.samples.ClassWithSuffix$InnerClass2 -> {\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
+            "}\n" +
+            "ru.ftc.upc.testing.dropper.lang.samples.ClassWithSuffix$InnerClassDropletNotLatest -> {\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
+            "}\n";
+    assertEquals(expected, actual);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void methodDuplicatesAreDetectedCorrectly() throws Exception {
+    String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/DuplicatedMethodsDetection.java";
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+
   }
 
   private DropletAssembler loadDroplet(String dropletPath) throws IOException {
