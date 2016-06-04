@@ -83,7 +83,7 @@ public class DropletAssemblerTest {
             "\t\treturn java.util.Collections . emptySet ( ) ;\n" +
             "\t}\n" +
             "\tTargetMethod{name='method9', cutpoint=INSTEAD, resultType=T, formalParams=(T source, boolean flag), text=\n" +
-            "\t\treturn ( T ) new java.io.BufferedInputStream ( source ) ;\n" +
+            "\t\treturn ( T ) new java.io.BufferedInputStream ( $1 ) ;\n" +
             "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.VariousMethodHeaders$InnerClass -> {\n" +
@@ -121,12 +121,12 @@ public class DropletAssemblerTest {
             "\t\tString nothing = \"I'm the most enumerated constructor ever!\" ;\n" +
             "\t}\n" +
             "\tTargetMethod{name='getByName', cutpoint=INSTEAD, resultType=RootEnumeration, formalParams=(String name), text=\n" +
-            "\t\tfor ( RootEnumeration rootEnum : values ( ) ) { if ( rootEnum . toString ( ) . equals ( name ) ) { return rootEnum ; } } throw new IllegalArgumentException ( \"Not found: \" + name ) ;\n" +
+            "\t\tfor ( RootEnumeration rootEnum : values ( ) ) { if ( rootEnum . toString ( ) . equals ( $1 ) ) { return rootEnum ; } } throw new IllegalArgumentException ( \"Not found: \" + $1 ) ;\n" +
             "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.RootEnumeration$InnerEnum -> {\n" +
             "\tTargetMethod{name='isTheSame', cutpoint=INSTEAD, resultType=boolean, formalParams=(Enum e), text=\n" +
-            "\t\treturn INNER_ENUM . toString ( ) . equals ( e . toString ( ) ) ;\n" +
+            "\t\treturn INNER_ENUM . toString ( ) . equals ( $1 . toString ( ) ) ;\n" +
             "\t}\n" +
             "}\n";
     assertEquals(expected, actual);
@@ -272,6 +272,20 @@ public class DropletAssemblerTest {
     assertEquals(expected, actual);
   }
 
+  @Test
+  public void formalParamReferencesAreObfuscatedCorrectly() throws Exception {
+    String dropletPath = "src/test/resources/DPClientImpl2.java";
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+    String expected = "dp.DPClientImpl2 -> {\n" +
+            "\tTargetMethod{name='fetchTransferStatus', cutpoint=INSTEAD, resultType=String, formalParams=(String oID, boolean needFlag), text=\n" +
+            "\t\tString statusStr = null ; try { java.util.Properties stub = new java.util.Properties ( ) ; stub . load ( new java.io.FileReader ( System . getProperty ( \"user.dir\" ) + java.io.File . separator + \"dp-edit-mock.properties\" ) ) ; statusStr = stub . getProperty ( $1 ) ; if ( statusStr != null ) { statusStr = statusStr . trim ( ) ; log . warn ( \"For STRoID={} transfer status '{}' was taken from mock.\" , $1 , statusStr ) ; } } catch ( java.io.IOException e ) { log . error ( \"Failed to load mocked transfer edit statuses.\" , e ) ; } if ( statusStr == null ) { dp.models.QuickPay quickPay = dp.models.QuickPay . infoService ( ) ; dp.models.ReqTransferSearch req = new dp.models.ReqTransferSearch ( ) ; req . setOID ( getReserve ( ) . oID ) ; quickPay . getInfoService ( ) . setReqTransferSearch ( req ) ; quickPay = sendQuickPay ( quickPay , false , $2 ) ; statusStr = quickPay . getInfoService ( ) . getAnsTransferSearch ( ) . getTransferStatus ( ) ; } return statusStr ;\n" +
+            "\t}\n" +
+            "}\n";
+    assertEquals(expected, actual);
+  }
+
   private DropletAssembler loadDroplet(String dropletPath) throws IOException {
     ANTLRFileStream fileStream = new ANTLRFileStream(dropletPath);
     DroppingJavaLexer lexer = new DroppingJavaLexer(fileStream);
@@ -279,11 +293,11 @@ public class DropletAssemblerTest {
     DroppingJavaParser parser = new DroppingJavaParser(tokenStream);
     ParseTree tree = parser.compilationUnit();
 
-    DropletAssembler listener = new DropletAssembler(tokenStream);
+    DropletAssembler assembler = new DropletAssembler(tokenStream);
     ParseTreeWalker walker = new ParseTreeWalker();
-    walker.walk(listener, tree);
+    walker.walk(assembler, tree);
 
-    return listener;
+    return assembler;
   }
 
   private String map2Str(Map<String, String> map) {

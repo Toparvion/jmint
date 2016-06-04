@@ -14,6 +14,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.regex.Matcher.quoteReplacement;
+
 /**
  * The main class responsible for extracting valuable data from droplet files. Built upon ANTLR parse tree event
  * listener.
@@ -159,6 +161,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
     String bodyText = visitor.visit(ctx);
     bodyText = makeTypeNamesFullyQualified(bodyText);
     TargetMethod currentMethod = targetsMap.get(composeCurrentKey()).getLast();
+    bodyText = obfuscateParameterReferences(bodyText, currentMethod.getFormalParams());
     currentMethod.setText(bodyText);
   }
   //endregion
@@ -214,7 +217,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
     String outerType = typeEntries[0];
     // during resolving we must make the type name binary compatible (see java.lang.ClassLoader#name)
     String binaryName = typeEntries.length > 1
-            ? argumentType.replaceAll("\\.", Matcher.quoteReplacement("$"))
+            ? argumentType.replaceAll("\\.", quoteReplacement("$"))
             : argumentType;
     // then we can search for corresponding import
     String fqPrefix = importsMap.get(outerType);
@@ -313,7 +316,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
       Matcher matcher = pattern.matcher(processedText);
       StringBuffer sb = new StringBuffer(bodyText.length()+30);
       while (matcher.find()) {
-        if (!isNameAlreadyQualified(processedText, matcher.start(2), fqName)) {
+        // by the following check we exclude references to already qualified types (both fully and inner)
+        if (!isNameAlreadyQualified(processedText, matcher.start())) {
           matcher.appendReplacement(sb, "$1" + fqName + "$2");
         }
       }
@@ -324,13 +328,42 @@ class DropletAssembler extends DroppingJavaBaseListener {
   }
 
   /**
-   * Detects whether type name on position denoted by {@code typeNameEndPosition} is fully qualified.
+   * Detects whether the type name on position denoted by {@code typeNameStartPosition} is qualified in any way. This
+   * includes both cases when the name is fully qualified (e.g. {@code java.util.Map}) and when it is bounded within a
+   * containing type (e.g. {@code KeyStore.Builder}). In the latter case the resolving will be applied to containing
+   * type ({@code KeyStore}), not the contained one ({@code Builder}).
    */
-  private boolean isNameAlreadyQualified(String wholeText, int typeNameEndPosition, String typeFqName) {
-    String sparseFqName = typeFqName.replaceAll("\\.", " . ");
-    int precursorStartPosition = Math.max(0, (typeNameEndPosition - sparseFqName.length()));
-    String precursor = wholeText.substring(precursorStartPosition, typeNameEndPosition);
-    return sparseFqName.equals(precursor);
+  private boolean isNameAlreadyQualified(String wholeText, int typeNameStartPosition) {
+    int precedingSymbolStartPosition = Math.max(0, (typeNameStartPosition-2));
+    return ". ".equals(wholeText.substring(precedingSymbolStartPosition, typeNameStartPosition));
+  }
+
+  /**
+   * Replaces formal parameters references with symbolic equivalents according to Javassist notation (i.e. replaces
+   * explicit names with ordinal links, for example {@code callMethod(someParam)} with {@code callMethod($1)}).
+   * @param bodyText original method's body text
+   * @param formalParams  list of method's formal parameters
+   * @return reformatted body text (may be the same as original)
+   */
+  private String obfuscateParameterReferences(String bodyText, List<Argument> formalParams) {
+    if (bodyText == null || bodyText.isEmpty())
+      return bodyText;
+    String processedText = bodyText;
+    for (int i = 1; i <= formalParams.size(); i++) {
+      String paramName = formalParams.get(i-1).getName();
+      Pattern pattern = Pattern.compile("(\\b)" + paramName + "(\\b)");
+      Matcher matcher = pattern.matcher(processedText);
+      StringBuffer sb = new StringBuffer(bodyText.length());
+      while (matcher.find()) {
+        // by the following check we exclude ambiguous references to some field with a name equal to current param
+        if (!isNameAlreadyQualified(bodyText, matcher.start())) {
+          matcher.appendReplacement(sb, "$1" + quoteReplacement("$"+i) + "$2");
+        }
+      }
+      matcher.appendTail(sb);
+      processedText = sb.toString();
+    }
+    return processedText;
   }
   //endregion
 
