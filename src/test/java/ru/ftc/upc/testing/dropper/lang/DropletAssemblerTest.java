@@ -304,6 +304,9 @@ public class DropletAssemblerTest {
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.ClassWithSuffix$InnerClassDropletNotLatest -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
+            "}\n" +
+            "ru.ftc.upc.testing.dropper.lang.samples.ClassWithSuffix$InnerClassDroplet -> {\n" +
+            "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
             "}\n";
     assertEquals(expected, actual);
   }

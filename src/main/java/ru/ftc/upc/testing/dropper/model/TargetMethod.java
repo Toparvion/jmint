@@ -55,6 +55,11 @@ public class TargetMethod {
     this.resultType = resultType;
   }
 
+  /**
+   * <em>ATTENTION!</em> This method is actively used in unit tests result checking, therefore its changing may cause
+   * many tests fail.
+   * @return string representation of this target method
+   */
   @Override
   public String toString() {
     return "TargetMethod{" +

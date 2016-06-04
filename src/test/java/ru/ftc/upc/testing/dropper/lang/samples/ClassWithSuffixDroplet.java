@@ -20,4 +20,8 @@ public class ClassWithSuffixDroplet {
     void method1() {}
   }
 
+  class InnerClassDroplet_Droplet {
+    void method1() {}
+  }
+
 }
