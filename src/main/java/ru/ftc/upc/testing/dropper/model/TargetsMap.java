@@ -20,6 +20,26 @@ public class TargetsMap extends LinkedHashMap<String, Deque<TargetMethod>> {
     }
   }
 
+  /**
+   * Method is overridden in order to provide non-destructive and duplicates-free merging of two targets maps.
+   * @param m targets map to merge with this one
+   */
+  @Override
+  public void putAll(Map<? extends String, ? extends Deque<TargetMethod>> m) {
+    for (Map.Entry<? extends String, ? extends Deque<TargetMethod>> entry : m.entrySet()) {
+      String classFqName = entry.getKey();
+      Deque<TargetMethod> oldMethods = this.get(classFqName);
+      if (oldMethods != null) {
+        for (TargetMethod newMethod : entry.getValue()) {
+          checkForDuplicate(oldMethods, newMethod, classFqName); // throws IllegalArgumentException if a duplicate found
+          oldMethods.addLast(newMethod);
+        }
+      } else {
+        this.put(classFqName, entry.getValue());
+      }
+    }
+  }
+
   private void checkForDuplicate(Deque<TargetMethod> methods, TargetMethod newMethod, String classFqName)
           throws IllegalArgumentException {
     for (TargetMethod oldMethod : methods) {

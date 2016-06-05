@@ -15,9 +15,6 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.UUID;
 
-/**
- * @author Toparvion
- */
 @SuppressWarnings("unused")
 public class VariousMethodHeaders {
 
@@ -51,9 +48,4 @@ public class VariousMethodHeaders {
     return Collections.emptySet();
   }
 
-  @SuppressWarnings("unchecked")
-  private <T extends InputStream> T method9(T source, boolean flag)
-          throws FileNotFoundException {
-    return (T) new BufferedInputStream(source);
-  }
 }

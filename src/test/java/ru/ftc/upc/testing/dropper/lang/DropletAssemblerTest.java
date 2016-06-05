@@ -82,9 +82,6 @@ public class DropletAssemblerTest {
             "\tTargetMethod{name='method8', cutpoint=INSTEAD, resultType=java.util.Set, formalParams=(java.util.EventObject eo), text=\n" +
             "\t\treturn java.util.Collections . emptySet ( ) ;\n" +
             "\t}\n" +
-            "\tTargetMethod{name='method9', cutpoint=INSTEAD, resultType=T, formalParams=(T source, boolean flag), text=\n" +
-            "\t\treturn ( T ) new java.io.BufferedInputStream ( $1 ) ;\n" +
-            "\t}\n" +
             "}\n" +
             "ru.ftc.upc.testing.dropper.lang.samples.VariousMethodHeaders$InnerClass -> {\n" +
             "\tTargetMethod{name='InnerClass', cutpoint=INSTEAD, resultType=null, formalParams=(java.util.Deque arg), text=(empty)}\n" +
@@ -318,6 +315,25 @@ public class DropletAssemblerTest {
     String actual = targetsMap.toString();
     System.out.println(actual);
 
+  }
+
+  @Test(expected = DropletFormatException.class)
+  public void parametrizedMethodsAreNotSupported() throws Exception {
+    String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/GenericClass.java";
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
+  }
+
+  /**
+   * This test must fail but due to bug in grammar it doesn't happen. The test left for fixing the bug in future.
+   */
+  @Test(/*expected = DropletFormatException.class*/)
+  public void parametrizedParametersInMethodsAreNotSupported() throws Exception {
+    String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/GenericClass2.java";
+    TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
+    String actual = targetsMap.toString();
+    System.out.println(actual);
   }
 
   private DropletAssembler loadDroplet(String dropletPath) throws IOException {

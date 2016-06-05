@@ -26,7 +26,8 @@ jar {
     manifest {
         attributes("Implementation-Title": "Dropper",
                 "Implementation-Version": version,
-                "Premain-Class": "ru.ftc.upc.testing.dropper.DropperAgent")
+                "Premain-Class": "ru.ftc.upc.testing.dropper.DropperAgent",
+                "Main-Class": "ru.ftc.upc.testing.dropper.DropletChecker")
     }
 
     from {

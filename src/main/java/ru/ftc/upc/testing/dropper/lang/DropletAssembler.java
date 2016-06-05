@@ -21,7 +21,7 @@ import static java.util.regex.Matcher.quoteReplacement;
  * listener.
  * @author Toparvion
  */
-class DropletAssembler extends DroppingJavaBaseListener {
+public class DropletAssembler extends DroppingJavaBaseListener {
 
   /**
    * Mapping between simple type names (e.g. "Droplet") and their FQ prefixes (e.g. "ru.ftc.upc.testing.dropper").
@@ -48,7 +48,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
    */
   private final BufferedTokenStream tokenStream;
 
-  DropletAssembler(BufferedTokenStream tokenStream) {
+  public DropletAssembler(BufferedTokenStream tokenStream) {
     this.tokenStream = tokenStream;
   }
 
@@ -80,8 +80,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
   public void enterTypeImportOnDemandDeclaration(DroppingJavaParser.TypeImportOnDemandDeclarationContext ctx) {
     Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
     String offendingImportString = String.format("import %s.*;", ctx.packageOrTypeName().getText());
-    throw new DropletFormatException(String.format("Line %d:%d. Type imports on demand are not supported: '%s'. " +
-                    "Please replace it with a set of single type imports.",
+    throw new DropletFormatException(String.format("Line %d:%d - Type imports on demand are not supported. " +
+                    "Please replace it with a set of single type imports:\n%s\n",
             offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString));
   }
 
@@ -117,6 +117,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
    */
   @Override
   public void enterConstructorDeclarator(DroppingJavaParser.ConstructorDeclaratorContext ctx) {
+    // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
+    checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
     // as we consider constructor as methods, let's firstly initialize it
     TargetMethod method = new TargetMethod(ctx.simpleTypeName().getText());
 
@@ -130,6 +132,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
 
   @Override
   public void enterMethodHeader(DroppingJavaParser.MethodHeaderContext ctx) {
+    // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
+    checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
     // first of all let's initialize this method itself
     DroppingJavaParser.MethodDeclaratorContext declarator = ctx.methodDeclarator();
     TargetMethod method = new TargetMethod(declarator.Identifier().getText());
@@ -294,7 +298,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
       } else {
         first = false;
       }
-      className = className.replaceFirst("(?i)_?Droplet$", "");     // todo allow customizing through settings
+      className = className.replaceFirst("(?i)_?Droplet$", "");
       sb.append(className);
     }
 
@@ -368,10 +372,27 @@ class DropletAssembler extends DroppingJavaBaseListener {
     }
     return processedText;
   }
+
+  /**
+   * Checks for presence of parametrized types in given rule context and throws DropletFormatException if finds.
+   * Due to error in the original grammar this method doesn't detects generic types of formal parameters though the
+   * visitor has special handling for it.
+   * @param ctx parser rule context
+   */
+  private void checkForParametrizedTypesPresence(ParserRuleContext ctx) {
+    DroppingJavaVisitor<ParserRuleContext> visitor = new GenericTypeSearchVisitor();
+    ParserRuleContext token = visitor.visit(ctx);
+    if (token != null) {
+      String message = String.format("Line %d:%d - %s: %s", token.getStart().getLine(),
+              token.getStart().getCharPositionInLine(),
+              "Methods with parametrized types are not supported", new BodyComposingVisitor().visit(token));
+      throw new DropletFormatException(message);
+    }
+  }
   //endregion
 
   //region Getters
-  TargetsMap getTargetsMap() {
+  public TargetsMap getTargetsMap() {
     return targetsMap;
   }
 
