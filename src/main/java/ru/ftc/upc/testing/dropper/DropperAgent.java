@@ -2,12 +2,14 @@ package ru.ftc.upc.testing.dropper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.ftc.upc.testing.dropper.model.TargetsMap;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.lang.instrument.Instrumentation;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -28,23 +30,22 @@ public class DropperAgent {
     System.out.println(DROPPER_LOGO);
 
     Package pack = DropperAgent.class.getPackage();
-    log.info("{} started (version: {}).", pack.getImplementationTitle(), pack.getImplementationVersion());
+    System.out.printf("%s started (version: %s).\n", pack.getImplementationTitle(), pack.getImplementationVersion());
 
-    Set<Droplet> droplets = getDroplets(agentArgs);
-    for (Droplet droplet : droplets) {
-      log.info("Loaded droplet: {}", droplet);
-    }
+    long startTime = System.currentTimeMillis();
+    TargetsMap targetsMap = DropletLoader.loadDroplets(agentArgs);
+    System.out.printf("Loaded targets map:\n%s\n", targetsMap.toString());
+    System.out.printf("Droplets loading took: %s ms\n", (System.currentTimeMillis()-startTime));
 
-    if (droplets.isEmpty()) {
-      log.warn("No droplets to inject left after arguments processing.");
+    if (targetsMap.isEmpty()) {
+      System.out.printf("No droplets to apply left after arguments processing. No byte code will be modified.\n");
     } else {
-      log.info("Total {} droplets loaded.", droplets.size());
-      inst.addTransformer(new PatchingTransformer(droplets));
+      inst.addTransformer(new PatchingTransformer(targetsMap));
     }
   }
 
   private static Set<Droplet> getDroplets(String args) {
-    if (args == null || "".equals(args)) throw new IllegalArgumentException("No arguments supplied.");
+    if (args == null || "".equals(args)) return Collections.emptySet();
 
     Set<Droplet> droplets = new HashSet<Droplet>();
     String[] argTokens = args.split(";");

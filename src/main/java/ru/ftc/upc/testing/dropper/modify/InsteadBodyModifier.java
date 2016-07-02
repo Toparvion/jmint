@@ -1,8 +1,7 @@
 package ru.ftc.upc.testing.dropper.modify;
 
 import javassist.CannotCompileException;
-import javassist.CtMethod;
-import ru.ftc.upc.testing.dropper.Droplet;
+import javassist.CtBehavior;
 
 /**
  * Created by Toparvion on 29.04.2016 14:45
@@ -10,7 +9,7 @@ import ru.ftc.upc.testing.dropper.Droplet;
 public class InsteadBodyModifier implements MethodModifier {
 
   @Override
-  public void apply(CtMethod method, Droplet droplet) throws CannotCompileException {
-    method.setBody(droplet.getText());
+  public void apply(CtBehavior method, String injection) throws CannotCompileException {
+    method.setBody(injection);
   }
 }

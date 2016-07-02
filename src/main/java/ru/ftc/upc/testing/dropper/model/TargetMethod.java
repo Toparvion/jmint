@@ -4,35 +4,32 @@ import ru.ftc.upc.testing.dropper.Cutpoint;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Toparvion
  */
 public class TargetMethod {
-  private String name;
-  private Cutpoint cutpoint = Cutpoint.INSTEAD;     // by default cutpoint is INSTEAD
+  private final String name;
+  private final Set<String> importsOnDemand;
+  private final Cutpoint cutpoint;
+
   private String text;
   private String resultType;
   private List<Argument> formalParams = new LinkedList<Argument>();
 
-  public TargetMethod(String name) {
+  public TargetMethod(String name, Cutpoint cutpoint, Set<String> importsOnDemand) {
     this.name = name;
+    this.cutpoint = cutpoint;
+    this.importsOnDemand = importsOnDemand;
   }
 
   public String getName() {
     return name;
   }
 
-  public void setName(String name) {
-    this.name = name;
-  }
-
   public Cutpoint getCutpoint() {
     return cutpoint;
-  }
-
-  public void setCutpoint(Cutpoint cutpoint) {
-    this.cutpoint = cutpoint;
   }
 
   public String getText() {
@@ -55,6 +52,10 @@ public class TargetMethod {
     this.resultType = resultType;
   }
 
+  public Set<String> getImportsOnDemand() {
+    return importsOnDemand;
+  }
+
   /**
    * <em>ATTENTION!</em> This method is actively used in unit tests result checking, therefore its changing may cause
    * many tests fail.
@@ -67,11 +68,12 @@ public class TargetMethod {
             ", cutpoint=" + cutpoint +
             ", resultType=" + resultType +
             ", formalParams=" + listParamsToString(formalParams) +
+            (importsOnDemand.size()<2 ? "" : ",\n\t\timportsOnDemand="+listImportsToString(importsOnDemand)) +
             ", text=" + (text == null || text.isEmpty() ? "(empty)" : "\n\t\t"+text+"\n\t") +
             '}';
   }
 
-  private String listParamsToString(List<Argument> formalParams) {
+  private static String listParamsToString(List<Argument> formalParams) {
     StringBuilder sb = new StringBuilder("(");
     boolean isFirst = true;
     for (Argument argument: formalParams) {
@@ -86,6 +88,22 @@ public class TargetMethod {
     }
     sb.append(")");
     return sb.toString();
+  }
+
+  private static String listImportsToString(Set<String> imports) {
+    StringBuilder sb = new StringBuilder("(");
+    boolean isFirst = true;
+    for (String anImport : imports) {
+      if (!isFirst) {
+        sb.append(", ");
+      } else {
+        isFirst = false;
+      }
+      sb.append(anImport);
+    }
+    sb.append(")");
+    return sb.toString();
+
   }
 
 }

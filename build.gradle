@@ -15,7 +15,7 @@ configurations {
 }
 
 dependencies {
-    provided 'org.javassist:javassist:3.20.0-GA'
+    compile 'org.javassist:javassist:3.20.0-GA'
     compile 'org.slf4j:slf4j-api:1.7.7'
     // http://mvnrepository.com/artifact/org.antlr/antlr4-runtime
     compile group: 'org.antlr', name: 'antlr4-runtime', version: '4.5.3'

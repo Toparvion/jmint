@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Matcher.quoteReplacement;
+import static ru.ftc.upc.testing.dropper.Cutpoint.IGNORE;
 
 /**
  * The main class responsible for extracting valuable data from droplet files. Built upon ANTLR parse tree event
@@ -24,21 +25,30 @@ import static java.util.regex.Matcher.quoteReplacement;
 public class DropletAssembler extends DroppingJavaBaseListener {
 
   /**
-   * Mapping between simple type names (e.g. "Droplet") and their FQ prefixes (e.g. "ru.ftc.upc.testing.dropper").
-   * The mapping is built upon the import statements at the header of compilation unit and does not include any type
-   * imports on demand.
-   */
-  private final Map<String, String> importsMap = new LinkedHashMap<String, String>(10);
-  /**
    * Mapping between all target classes and lists of their methods. These methods are targets for byte
    * code instrumenting.
    */
   private final TargetsMap targetsMap = new TargetsMap();
 
   /**
+   * Mapping between simple type names (e.g. {@code Droplet}) and their FQ prefixes (e.g.
+   * {@code ru.ftc.upc.testing.dropper}).
+   * The mapping is built upon the import statements at the header of compilation unit. <br/>
+   * It also includes single static imports (e.g. {@code import static java.lang.Integer.MAX_VALUE}) and does not
+   * include any type imports on demand (neither {@code java.util.*} nor {@code import static java.lang.Double.*}).
+   */
+  /*private - for unit tests*/ final Map<String, String> singleImportsMap = new LinkedHashMap<String, String>(10);
+
+  /**
    * Package prefix for the target type(s), e.g. "tech.toparvion.dropper.lang.droplets."
    */
   private String packageDeclaration = "";
+  /**
+   * A set of non-static imports on demand. Includes package names only (without {@code .* chars}).<br/>
+   * The set is used later at the instrumentation phase for resolving FQ-names of methods' formal parameters as well
+   * as for importing the packages into Javassist compiler.
+   */
+  private final Set<String> importsOnDemand = new LinkedHashSet<String>();
   /**
    * Internal stack aimed to support depth tracking during parse tree traversing.
    */
@@ -60,6 +70,8 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       sb.append(idNode.getText()).append(".");
     }
     this.packageDeclaration = sb.toString();
+    // the very first import on demand is the containing package itself (used later to 'javassistify' formal parameters)
+    this.importsOnDemand.add(sb.substring(0, sb.length()-1));
   }
 
   @Override
@@ -69,20 +81,33 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       // in this case there is no profit in mapping a type to its import prefix so that we just ignore it
       return;
     }
-    importsMap.put(typeName.Identifier().getText(), typeName.packageOrTypeName().getText());
+    singleImportsMap.put(typeName.Identifier().getText(), typeName.packageOrTypeName().getText());
   }
 
-  /**
-   * Type imports on demand are not supported in this version because they introduce quite complicated ambiguity. In
-   * order not to mute their existence we prefer to explicitly inform the user about them with the help of exception.
-   */
+  @Override
+  public void enterSingleStaticImportDeclaration(DroppingJavaParser.SingleStaticImportDeclarationContext ctx) {
+    DroppingJavaParser.TypeNameContext typeName = ctx.typeName();
+    singleImportsMap.put(ctx.Identifier().getText(), typeName.getText());
+  }
+
   @Override
   public void enterTypeImportOnDemandDeclaration(DroppingJavaParser.TypeImportOnDemandDeclarationContext ctx) {
+    importsOnDemand.add(ctx.packageOrTypeName().getText());
+  }
+
+  @Override
+  public void enterStaticImportOnDemandDeclaration(DroppingJavaParser.StaticImportOnDemandDeclarationContext ctx) {
+    /**
+     * Static type imports on demand are not supported in this version because they introduce quite complicated
+     * ambiguity. In order not to mute their existence, we prefer to explicitly inform the user about them with the
+     * help of warning.
+     */
     Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
-    String offendingImportString = String.format("import %s.*;", ctx.packageOrTypeName().getText());
-    throw new DropletFormatException(String.format("Line %d:%d - Type imports on demand are not supported. " +
-                    "Please replace it with a set of single type imports:\n%s\n",
-            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString));
+    String offendingImportString = String.format("import static %s.*;", ctx.typeName().getText());
+    System.out.printf("WARNING: Static imports on demand are not " +
+            "supported. If they are used in not ignored methods please replace " +
+            "them with a set of single static imports.\nLine %d:%d - %s\n",
+            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString);
   }
 
   @Override
@@ -112,31 +137,40 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     classNameStack.pop();
   }
 
-  /**
-   * We treat constructors much like any other methods but still take in account some grammar differences.
-   */
   @Override
   public void enterConstructorDeclarator(DroppingJavaParser.ConstructorDeclaratorContext ctx) {
-    // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
-    checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
-    // as we consider constructor as methods, let's firstly initialize it
-    TargetMethod method = new TargetMethod(ctx.simpleTypeName().getText());
+    // constructors are treated much like any other methods but still some grammar differences are taken in count
+    String constructorName = omitDropletSuffix(ctx.simpleTypeName().getText());
+    // let's start from extracting the cutpoint from preceding javadoc comment, if any
+    Cutpoint cutpoint = Cutpoint.getByNameSafe(extractCutpointString(ctx));
+    if (!IGNORE.equals(cutpoint)) {
+      // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
+      checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
+    }
+    // as we consider constructor much like methods, let's firstly initialize it
+    TargetMethod constructor = new TargetMethod(constructorName, cutpoint, importsOnDemand);
 
     // There is no result type for constructors so we pass setting Method's result field. Proceed to formal parameters.
     DroppingJavaParser.FormalParameterListContext anyParams = ctx.formalParameterList();
-    storeMethodParams(method, anyParams);
+    storeMethodParams(constructor, anyParams);
 
-    // now that we know everything about the method we can store into targets map
-    targetsMap.put(composeCurrentKey(), method);
+    // now that we know everything about the constructor we can store it into targets map
+    targetsMap.put(composeCurrentKey(), constructor);
   }
 
   @Override
   public void enterMethodHeader(DroppingJavaParser.MethodHeaderContext ctx) {
-    // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
-    checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
-    // first of all let's initialize this method itself
     DroppingJavaParser.MethodDeclaratorContext declarator = ctx.methodDeclarator();
-    TargetMethod method = new TargetMethod(declarator.Identifier().getText());
+    String methodName = declarator.Identifier().getText();
+
+    // let's start from extracting the cutpoint from preceding javadoc comment, if any
+    Cutpoint cutpoint = Cutpoint.getByNameSafe(extractCutpointString(ctx));
+    if (!IGNORE.equals(cutpoint)) {
+      // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
+      checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
+    }
+    // first of all let's initialize this method itself
+    TargetMethod method = new TargetMethod(methodName, cutpoint, importsOnDemand);
 
     // store method's result type name
     DroppingJavaParser.ResultContext result = ctx.result();
@@ -149,12 +183,6 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     // it's time to store method parameters, if any
     DroppingJavaParser.FormalParameterListContext anyParams = declarator.formalParameterList();
     storeMethodParams(method, anyParams);
-
-    // and finally let's extract the cutpoint from preceding javadoc comment, if any
-    String cutpointStr = extractCutpointString(ctx);
-    if (cutpointStr != null) {
-      method.setCutpoint(Cutpoint.valueOf(cutpointStr.toUpperCase()));
-    }
 
     // finally we can store the method in targets map
     targetsMap.put(composeCurrentKey(), method);
@@ -210,7 +238,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
 
   /**
    * Applies 2 modifications to given type name: (1) prepends it with package path according to
-   * {@link #importsMap} of this droplet; (2) converts it to {@link ClassLoader binary} name format, i.e. replaces
+   * {@link #singleImportsMap} of this droplet; (2) converts it to {@link ClassLoader binary} name format, i.e. replaces
    * dots in non-package part with dollar signs (e.g. turns {@code Map.Entry} to {@code Map$Entry}).
    * @param argumentType  original parameter or result type name as it was extracted from droplet parse tree
    * @return resolved name (may appear the same)
@@ -226,7 +254,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
             ? argumentType.replaceAll("\\.", quoteReplacement("$"))
             : argumentType;
     // then we can search for corresponding import
-    String fqPrefix = importsMap.get(outerType);
+    String fqPrefix = singleImportsMap.get(outerType);
     return (fqPrefix == null)
             ? binaryName
             : (fqPrefix + "." + binaryName);
@@ -249,11 +277,10 @@ public class DropletAssembler extends DroppingJavaBaseListener {
    */
   private String extractCutpointString(ParserRuleContext ctx) {
     try {
-      /* Javadoc comments are neighbors to classBodyDeclaration, not the methodHeader so we have to find the ancestor.*/
-      ParserRuleContext classBodyDeclaration = ctx
-              .getParent()    // methodDeclaration
-              .getParent()    // classMemberDeclaration
-              .getParent();   // classBodyDeclaration
+      // Javadoc comments are neighbors to classBodyDeclaration, not the methodHeader so we have to find this anchor.
+      ParserRuleContext classBodyDeclaration = findJavadocAnchor(ctx);
+      if (classBodyDeclaration == null)       // this means the anchor was not found
+        return null;
       Token startToken = classBodyDeclaration.getStart();
       int startITokenIndex = startToken.getTokenIndex();
       // try to find out if there are any comments left to classBodyDeclaration
@@ -269,6 +296,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       JavadocLexer lexer = new JavadocLexer(inputStream);
       TokenStream tokenStream = new CommonTokenStream(lexer);
       JavadocParser parser = new JavadocParser(tokenStream);
+      parser.removeErrorListeners(); // javadoc is not strict format so we don't want to bother of its correctness here
       ParseTree tree = parser.documentation();
 
       // then find the actual needed value with dedicated listener
@@ -276,11 +304,11 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       ParseTreeWalker walker = new ParseTreeWalker();
       walker.walk(assembler, tree);
 
-      // and return found value (which eventually may be null)
+      // and return found value (which may eventually be null)
       return assembler.getTagValue();
 
     } catch (Exception e) {   // we can't be sure about anything in comments so that we need a defense line
-      System.out.printf("Couldn't extract cutpoint from javadoc comments: '%s'. Falling back to default.", e.getMessage());
+      System.out.printf("Couldn't extract cutpoint from javadoc comments: '%s'. Falling back to default.\n", e.getMessage());
       return null;
     }
   }
@@ -289,7 +317,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
    * @return an actual key for targets map (composed basing on current state of the {@linkplain #classNameStack})
    */
   private String composeCurrentKey() {
-    StringBuilder sb = new StringBuilder(packageDeclaration);
+    StringBuilder sb = new StringBuilder(packageDeclaration.replaceAll("\\.", "/"));
     boolean first = true;
     for (Iterator<String> iterator = classNameStack.descendingIterator(); iterator.hasNext(); ) {
       String className = iterator.next();
@@ -298,7 +326,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       } else {
         first = false;
       }
-      className = className.replaceFirst("(?i)_?Droplet$", "");
+      className = omitDropletSuffix(className);
       sb.append(className);
     }
 
@@ -306,9 +334,17 @@ public class DropletAssembler extends DroppingJavaBaseListener {
   }
 
   /**
+   * @param className original droplet class name
+   * @return the {@code className} without last <i>Droplet</i> or <i>_Droplet</i> suffix
+   */
+  private String omitDropletSuffix(String className) {
+    return className.replaceFirst("(?i)_?Droplet$", "");
+  }
+
+  /**
    * Replaces all the type names in {@code bodyText} with their fully qualified equivalents according to
-   * {@link #importsMap} of the droplet. Skips names that are already fully qualified.
-   * Does nothing if some type has no import.
+   * {@link #singleImportsMap} of the droplet. Skips names that are already fully qualified.
+   * Does nothing if a type has no import (leaving it for resolving during the instrumentation).
    * @param bodyText text of method's body being processed
    * @return the {@code bodyText} with fully qualified type names
    */
@@ -316,7 +352,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     if (bodyText == null || bodyText.isEmpty())
       return bodyText;
     String processedText = bodyText;
-    for (Map.Entry<String, String> importEntry : importsMap.entrySet()) {
+    for (Map.Entry<String, String> importEntry : singleImportsMap.entrySet()) {
       String simpleName = importEntry.getKey();
       String fqName = importEntry.getValue() + "." + simpleName;
       Pattern pattern = Pattern.compile("(\\b)" + simpleName + "(\\b)");
@@ -349,7 +385,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
    * Replaces formal parameters references with symbolic equivalents according to Javassist notation (i.e. replaces
    * explicit names with ordinal links, for example {@code callMethod(someParam)} with {@code callMethod($1)}).
    * @param bodyText original method's body text
-   * @param formalParams  list of method's formal parameters
+   * @param formalParams ordered list of method's formal parameters
    * @return reformatted body text (may be the same as original)
    */
   private String obfuscateParameterReferences(String bodyText, List<Argument> formalParams) {
@@ -371,6 +407,14 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       processedText = sb.toString();
     }
     return processedText;
+  }
+
+  private DroppingJavaParser.ClassBodyDeclarationContext findJavadocAnchor(ParserRuleContext start) {
+    ParserRuleContext next = start;
+    while (!(next instanceof DroppingJavaParser.ClassBodyDeclarationContext) && next != null) {
+      next = next.getParent();
+    }
+    return (DroppingJavaParser.ClassBodyDeclarationContext) next;
   }
 
   /**
@@ -396,9 +440,6 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     return targetsMap;
   }
 
-  Map<String, String> getImportsMap() {
-    return importsMap;
-  }
   //endregion
 
 }

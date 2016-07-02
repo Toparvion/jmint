@@ -64,6 +64,24 @@ public class CutpointAssemblerTest {
     assertNull(tagValue);
   }
 
+  @Test
+  public void cutpoint6IsRecognizedCorrectly() throws Exception {
+    CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_6.javadoc");
+    String tagValue = cutpointAssembler.getTagValue();
+    Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
+    System.out.printf("Cutpoint 6: '%s'\n", tagValue);
+    assertEquals(Cutpoint.IGNORE, cutpoint);
+  }
+
+  @Test
+  public void cutpoint7IsRecognizedCorrectly() throws Exception {
+    CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_7.javadoc");
+    String tagValue = cutpointAssembler.getTagValue();
+    Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
+    System.out.printf("Cutpoint 7: '%s'\n", tagValue);
+    assertEquals(Cutpoint.IGNORE, cutpoint);
+  }
+
   private CutpointAssembler loadJavadoc(String javadocPath) throws IOException {
     ANTLRFileStream fileStream = new ANTLRFileStream(javadocPath);
     JavadocLexer lexer = new JavadocLexer(fileStream);

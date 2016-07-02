@@ -38,7 +38,7 @@ public class UnderlineErrorListener extends BaseErrorListener {
       return sb.append("\n").toString();
 
     } catch (Exception e) {
-      // Due to method bodies collapsing exact error symbol locating is not always possible, for example when the
+      // Due to method bodies collapsing, exact error symbol locating is not always possible, for example when the
       // offending symbol goes after collapsed body. In such cases we don't provide underlining (leaving it empty).
       return "\n";
     }

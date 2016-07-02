@@ -23,10 +23,10 @@ abstract class DropletLoader {
   static TargetsMap loadDroplets(String args) {
     String[] argTokens = args.split("[;,]");
     // at the moment we support only one argument file format - droplet format, thus file extension doesn't matter
-    TargetsMap targetsMap = new TargetsMap();
+    TargetsMap overallMap = new TargetsMap();
     for (String argToken : argTokens) {
       try {
-        targetsMap.putAll(loadSingleDroplet(argToken));
+        overallMap.putAll(loadSingleDroplet(argToken));
 
       } catch (IOException e) {
         System.err.printf("Failed to load droplet '%s'. Skipped.", argToken);
@@ -35,9 +35,12 @@ abstract class DropletLoader {
       } catch (DropletFormatException e) {
         System.err.printf("Error during parsing droplet '%s'. Droplet is skipped.\n%s\n", argToken, e.getMessage());
 
+      } catch (Exception e) {
+        System.err.printf("Failed to load droplet '%s'. Skipped.", argToken);
+        e.printStackTrace();
       }
     }
-    return targetsMap;
+    return overallMap;
   }
 
   private static TargetsMap loadSingleDroplet(String dropletPath) throws IOException, RecognitionException {
