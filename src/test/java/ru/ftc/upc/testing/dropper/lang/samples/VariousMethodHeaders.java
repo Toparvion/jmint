@@ -1,19 +1,7 @@
 package ru.ftc.upc.testing.dropper.lang.samples;
 
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Collections;
-import java.util.Currency;
-import java.util.Date;
-import java.util.Deque;
-import java.util.EventObject;
-import java.util.List;
-import java.util.Map;
-import java.util.Observer;
-import java.util.Set;
-import java.util.Stack;
-import java.util.UUID;
+import java.security.KeyStore;
+import java.util.*;
 
 @SuppressWarnings("unused")
 public class VariousMethodHeaders {
@@ -46,6 +34,14 @@ public class VariousMethodHeaders {
 
   Set<Currency> method8(EventObject eo) {
     return Collections.emptySet();
+  }
+
+  Double[] method9(Double[] p1, Double[][] p2, Double p3[], Double[] p4[]) {
+    return new Double[0];
+  }
+
+  void method10(KeyStore.SecretKeyEntry entry) {
+
   }
 
 }

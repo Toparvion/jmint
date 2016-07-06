@@ -18,6 +18,12 @@ import static ru.ftc.upc.testing.dropper.Cutpoint.IGNORE;
  * Created by Toparvion on 29.04.2016 12:50
  */
 class PatchingTransformer implements ClassFileTransformer {
+  /**
+   * The package that is implicitly imported into every Javassist ClassPool instance and therefore should be considered
+   * known while resolving formal parameters' FQ names.
+   */
+  private static final String DEFAULT_PACKAGE = "java.lang";
+
   private ClassPool pool;
   private final TargetsMap targetsMap;
   private final Set<ClassLoader> knownLoaders = new HashSet<ClassLoader>();
@@ -40,8 +46,12 @@ class PatchingTransformer implements ClassFileTransformer {
     }
     // this class is of interest, so let's try to modify it
     try {
-      if (knownLoaders.add(loader)) {           // TODO avoid explicit loaders comparison
+      // but before, let's store the class loader if it is a new one for us
+      if ((loader != null)
+              && !loader.getClass().getName().contains("sun.misc.DelegatingClassLoader")
+              && knownLoaders.add(loader)) {
         ClassPool childPool = new ClassPool(pool);
+        childPool.insertClassPath(new LoaderClassPath(loader));
         childPool.childFirstLookup = true;
         pool = childPool;
       }
@@ -52,6 +62,10 @@ class PatchingTransformer implements ClassFileTransformer {
       pool.insertClassPath(new ByteArrayClassPath(dottedClassName, classFileBuffer));
       CtClass ctClass = pool.get(dottedClassName);
 
+      // in order to include the containing package into CtClass search scope we explicitly extract it from class name
+      String localPackage = dottedClassName.contains(".")
+              ? dottedClassName.substring(0, dottedClassName.lastIndexOf('.'))
+              : null;
       // iterate over desired methods trying to modify each one
       for (TargetMethod targetMethod : targetMethods) {
         try {
@@ -59,8 +73,11 @@ class PatchingTransformer implements ClassFileTransformer {
             System.out.printf("Method '%s#%s' is skipped due to IGNORE cutpoint.\n", dottedClassName, targetMethod.getName());
             continue;
           }
-          // in order to precisely select method to modify we need CtClass representation of all its parameters
-          CtClass[] argsArray = javassistifyArguments(targetMethod.getFormalParams(), targetMethod.getImportsOnDemand());
+          // in order to precisely select method to modify we need CtClass representation of all its formal parameters
+          CtClass[] argsArray = javassistifyArguments(
+                  targetMethod.getFormalParams(),
+                  targetMethod.getImportsOnDemand(),
+                  localPackage);
 
           // pick javassist representation of target method
           CtBehavior ctMethod = (targetMethod.getResultType() != null)        // constructors do not have result type
@@ -94,15 +111,33 @@ class PatchingTransformer implements ClassFileTransformer {
     }
   }
 
-  private CtClass[] javassistifyArguments(List<Argument> args, Set<String> importsOnDemand) throws NotFoundException {
+  /**
+   * Initializes Javassist CtClass representations for all given arguments. This is required for precise selecting of
+   * the method to modify - Javassist must know all its formal parameters as CtClass objects.
+   * @param args arguments of target method
+   * @param importsOnDemand a set of imports on demand (needed during searching for CtClass objects)
+   * @param localPackage full name of a package containing target class (used in param names resolving)
+   * @return an array of CtClass objects representing all given arguments
+   * @throws NotFoundException if some of arguments can not be represented as CtClass object
+   */
+  private CtClass[] javassistifyArguments(List<Argument> args, Set<String> importsOnDemand, String localPackage)
+          throws NotFoundException {
+    // the actual import set is an extension to the given one: it also includes default and local packages
+    Set<String> extendedImports = new HashSet<String>(importsOnDemand);
+    extendedImports.add(DEFAULT_PACKAGE);
+    if (localPackage != null)
+      extendedImports.add(localPackage);
+
     List<CtClass> argCtClasses = new ArrayList<CtClass>(args.size());
     for (Argument arg : args) {
+      // the first, 'naive' attempt is taken to resolve a parameter of primitive type
       String argumentTypeName = arg.getType();
       CtClass argumentCtClass = pool.getOrNull(argumentTypeName);
-      // if this arg has not been found in the pool, let's try to prepend its name with various imports on demand
+      // if it fails, let's try to prepend param name with various imports on demand (including implicit ones)
       if (argumentCtClass == null) {
-        for (String importEntry : importsOnDemand) {
-          argumentCtClass = pool.getOrNull(importEntry + "." + arg.getType());
+        for (String importEntry : extendedImports) {
+          String supposedFqName = importEntry + "." + arg.getType();
+          argumentCtClass = pool.getOrNull(supposedFqName);
           if (argumentCtClass != null) {
             break;
           }

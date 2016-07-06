@@ -68,7 +68,7 @@ public class TargetMethod {
             ", cutpoint=" + cutpoint +
             ", resultType=" + resultType +
             ", formalParams=" + listParamsToString(formalParams) +
-            (importsOnDemand.size()<2 ? "" : ",\n\t\timportsOnDemand="+listImportsToString(importsOnDemand)) +
+            (importsOnDemand.size()<1 ? "" : ",\n\t\timportsOnDemand="+listImportsToString(importsOnDemand)) +
             ", text=" + (text == null || text.isEmpty() ? "(empty)" : "\n\t\t"+text+"\n\t") +
             '}';
   }

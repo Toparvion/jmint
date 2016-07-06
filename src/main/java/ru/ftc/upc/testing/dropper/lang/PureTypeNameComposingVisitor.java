@@ -5,7 +5,8 @@ import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaBaseVisitor;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
 
 /**
- * Simple visitor that assembles a string from all the terminal nodes except {@code dims, typeArguments, annotation}.
+ * Simple visitor that assembles a string from all the terminal nodes excluding {@code typeArguments, annotation}
+ * but including dimensions (i.e. {@code []}).
  */
 class PureTypeNameComposingVisitor extends DroppingJavaBaseVisitor<String> {
 
@@ -21,7 +22,7 @@ class PureTypeNameComposingVisitor extends DroppingJavaBaseVisitor<String> {
 
   @Override
   public String visitDims(DroppingJavaParser.DimsContext ctx) {
-    return "";
+    return ctx.getText();
   }
 
   @Override

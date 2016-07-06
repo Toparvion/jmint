@@ -70,8 +70,6 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       sb.append(idNode.getText()).append(".");
     }
     this.packageDeclaration = sb.toString();
-    // the very first import on demand is the containing package itself (used later to 'javassistify' formal parameters)
-    this.importsOnDemand.add(sb.substring(0, sb.length()-1));
   }
 
   @Override
@@ -174,7 +172,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
 
     // store method's result type name
     DroppingJavaParser.ResultContext result = ctx.result();
-    String resultType = getPureTypeName(result);
+    String resultType = extractPureTypeName(result);
     if (!"void".equals(resultType)) {           // avoid excess work
       resultType = resolveMethodArgumentType(resultType);
     }
@@ -193,10 +191,12 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     DroppingJavaVisitor<String> visitor = new BodyComposingVisitor();
 
     String bodyText = visitor.visit(ctx);
+    if (bodyText == null)       // there is no profit in dealing with absent body text anymore
+      return;
     bodyText = makeTypeNamesFullyQualified(bodyText);
     TargetMethod currentMethod = targetsMap.get(composeCurrentKey()).getLast();
     bodyText = obfuscateParameterReferences(bodyText, currentMethod.getFormalParams());
-    currentMethod.setText(bodyText);
+    currentMethod.setText("{ " + bodyText + " }");
   }
   //endregion
 
@@ -204,7 +204,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
   /**
    * Extracts formal parameters types and names and stores them into the given target method.
    * @param method target method to store extracted parameters into
-   * @param anyParams  parse rule context of formal parameters list; may be {@code null}
+   * @param anyParams parse rule context of formal parameters list; may be {@code null}
    */
   private void storeMethodParams(TargetMethod method, DroppingJavaParser.FormalParameterListContext anyParams) {
     if (anyParams == null) return;
@@ -214,9 +214,12 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     DroppingJavaParser.FormalParametersContext formalParams = anyParams.formalParameters();
     if (formalParams != null) {
       for (DroppingJavaParser.FormalParameterContext param : formalParams.formalParameter()) {
-        paramType = getPureTypeName(param.unannType());
+        paramType = extractPureTypeName(param.unannType());
         paramType = resolveMethodArgumentType(paramType);
         paramName = param.variableDeclaratorId().Identifier().getText();
+        if (param.variableDeclaratorId().dims() != null) {          // dimensions might be specified on param name
+          paramType = paramType + param.variableDeclaratorId().dims().getText();
+        }
         method.getFormalParams().add(new Argument(paramType, paramName));
       }
     }
@@ -225,11 +228,17 @@ public class DropletAssembler extends DroppingJavaBaseListener {
     if (lastFormalParam != null) {
       DroppingJavaParser.FormalParameterContext formalParam = lastFormalParam.formalParameter();
       if (formalParam != null) {
-        paramType = getPureTypeName(formalParam.unannType());
+        paramType = extractPureTypeName(formalParam.unannType());
         paramName = formalParam.variableDeclaratorId().Identifier().getText();
+        if (formalParam.variableDeclaratorId().dims() != null) {          // dimensions might be specified on param name
+          paramType = paramType + formalParam.variableDeclaratorId().dims().getText();
+        }
       } else {
-        paramType = getPureTypeName(lastFormalParam.unannType());
+        paramType = extractPureTypeName(lastFormalParam.unannType());
         paramName = lastFormalParam.variableDeclaratorId().Identifier().getText();
+        if (lastFormalParam.variableDeclaratorId().dims() != null) {      // dimensions might be specified on param name
+          paramType = paramType + lastFormalParam.variableDeclaratorId().dims().getText();
+        }
       }
       paramType = resolveMethodArgumentType(paramType);
       method.getFormalParams().add(new Argument(paramType, paramName));
@@ -265,7 +274,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
    * @param typeCtx type rule context to extract the name from
    * @return simple name of the type (with package and type parameters cleaned off)
    */
-  private String getPureTypeName(RuleContext typeCtx) {
+  private String extractPureTypeName(RuleContext typeCtx) {
     DroppingJavaVisitor<String> visitor = new PureTypeNameComposingVisitor();
     return visitor.visit(typeCtx);
   }
