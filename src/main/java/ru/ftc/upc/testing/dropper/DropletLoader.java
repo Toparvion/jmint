@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ftc.upc.testing.dropper.lang.DropletAssembler;
 import ru.ftc.upc.testing.dropper.lang.DropletFormatException;
 import ru.ftc.upc.testing.dropper.lang.UnderlineErrorListener;
@@ -19,6 +21,7 @@ import java.io.IOException;
  * @author Toparvion
  */
 abstract class DropletLoader {
+  private static final Logger log = LoggerFactory.getLogger(DropletLoader.class);
 
   static TargetsMap loadDroplets(String args) {
     String[] argTokens = args.split("[;,]");
@@ -29,15 +32,14 @@ abstract class DropletLoader {
         overallMap.putAll(loadSingleDroplet(argToken));
 
       } catch (IOException e) {
-        System.err.printf("Failed to load droplet '%s'. Skipped.", argToken);
-        e.printStackTrace();
+        log.error(String.format("Failed to load droplet '%s'. Skipped.", argToken), e);
 
       } catch (DropletFormatException e) {
-        System.err.printf("Error during parsing droplet '%s'. Droplet is skipped.\n%s\n", argToken, e.getMessage());
+        log.error(String.format("Error during parsing droplet '%s'. Droplet is skipped.\n%s",
+                argToken, e.getMessage()), e);
 
       } catch (Exception e) {
-        System.err.printf("Failed to load droplet '%s'. Skipped.", argToken);
-        e.printStackTrace();
+        log.error(String.format("Failed to load droplet '%s'. Skipped.", argToken), e);
       }
     }
     return overallMap;

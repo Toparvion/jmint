@@ -4,6 +4,8 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ftc.upc.testing.dropper.Cutpoint;
 import ru.ftc.upc.testing.dropper.lang.gen.*;
 import ru.ftc.upc.testing.dropper.model.Argument;
@@ -23,6 +25,7 @@ import static ru.ftc.upc.testing.dropper.Cutpoint.IGNORE;
  * @author Toparvion
  */
 public class DropletAssembler extends DroppingJavaBaseListener {
+  static final Logger log = LoggerFactory.getLogger(DropletAssembler.class);
 
   /**
    * Mapping between all target classes and lists of their methods. These methods are targets for byte
@@ -102,9 +105,8 @@ public class DropletAssembler extends DroppingJavaBaseListener {
      */
     Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
     String offendingImportString = String.format("import static %s.*;", ctx.typeName().getText());
-    System.out.printf("WARNING: Static imports on demand are not " +
-            "supported. If they are used in not ignored methods please replace " +
-            "them with a set of single static imports.\nLine %d:%d - %s\n",
+    log.warn("Static imports on demand are not supported. If they are used in not ignored methods please replace " +
+            "them with a set of single static imports.\nLine {}:{} - {}\n",
             offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString);
   }
 
@@ -317,7 +319,7 @@ public class DropletAssembler extends DroppingJavaBaseListener {
       return assembler.getTagValue();
 
     } catch (Exception e) {   // we can't be sure about anything in comments so that we need a defense line
-      System.out.printf("Couldn't extract cutpoint from javadoc comments: '%s'. Falling back to default.\n", e.getMessage());
+      log.info("Couldn't extract cutpoint from javadoc comments: '{}'. Falling back to default.", e.getMessage());
       return null;
     }
   }

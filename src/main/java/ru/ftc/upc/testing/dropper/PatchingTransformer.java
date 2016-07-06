@@ -1,6 +1,8 @@
 package ru.ftc.upc.testing.dropper;
 
 import javassist.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ftc.upc.testing.dropper.model.Argument;
 import ru.ftc.upc.testing.dropper.model.TargetMethod;
 import ru.ftc.upc.testing.dropper.model.TargetsMap;
@@ -18,6 +20,8 @@ import static ru.ftc.upc.testing.dropper.Cutpoint.IGNORE;
  * Created by Toparvion on 29.04.2016 12:50
  */
 class PatchingTransformer implements ClassFileTransformer {
+  private static final Logger log = LoggerFactory.getLogger(PatchingTransformer.class);
+
   /**
    * The package that is implicitly imported into every Javassist ClassPool instance and therefore should be considered
    * known while resolving formal parameters' FQ names.
@@ -70,7 +74,7 @@ class PatchingTransformer implements ClassFileTransformer {
       for (TargetMethod targetMethod : targetMethods) {
         try {
           if (IGNORE.equals(targetMethod.getCutpoint())) {
-            System.out.printf("Method '%s#%s' is skipped due to IGNORE cutpoint.\n", dottedClassName, targetMethod.getName());
+            log.info("Method '{}#{}' is skipped due to IGNORE cutpoint.", dottedClassName, targetMethod.getName());
             continue;
           }
           // in order to precisely select method to modify we need CtClass representation of all its formal parameters
@@ -95,18 +99,17 @@ class PatchingTransformer implements ClassFileTransformer {
           Cutpoint cutpoint = targetMethod.getCutpoint();
           MethodModifier modifier = cutpoint.modifierClass.newInstance();
           modifier.apply(ctMethod, targetMethod.getText());
-          System.out.printf("Method '%s' has been modified at %s cutpoint.\n", ctMethod.getLongName(), cutpoint);
+          log.info("Method '{}' has been modified at {} cutpoint.", ctMethod.getLongName(), cutpoint);
 
         } catch (Exception e) {
-          System.out.printf("Failed to modify target method '%s#%s'. Skipped.\n", dottedClassName, targetMethod.getName());
-          e.printStackTrace();
+          log.error(format("Failed to modify target method '%s#%s'. Skipped.",
+                  dottedClassName, targetMethod.getName()), e);
         }
       }
       return ctClass.toBytecode();
 
     } catch (Exception e) {
-      System.out.println(format("Failed to modify class '%s'. Skipped.", className));
-      e.printStackTrace();
+      log.error(format("Failed to modify class '%s'. Skipped.", className), e);
       return null;
     }
   }

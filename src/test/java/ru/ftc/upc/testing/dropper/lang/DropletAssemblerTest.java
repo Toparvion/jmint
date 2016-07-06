@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ftc.upc.testing.dropper.Cutpoint;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaLexer;
 import ru.ftc.upc.testing.dropper.lang.gen.DroppingJavaParser;
@@ -21,13 +23,14 @@ import static org.junit.Assert.assertEquals;
  * @author Toparvion
  */
 public class DropletAssemblerTest {
+  private static final Logger log = LoggerFactory.getLogger(DropletAssemblerTest.class);
 
   @Test
   public void nestedClassesAreRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/MultiNestedClasses.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/MultiNestedClasses -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=int, formalParams=(), text=\n" +
             "\t\t{ return 1 ; }\n" +
@@ -65,7 +68,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/VariousMethodHeaders.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/VariousMethodHeaders -> {\n" +
             "\tTargetMethod{name='VariousMethodHeaders', cutpoint=INSTEAD, resultType=null, formalParams=(),\n" +
             "\t\timportsOnDemand=(java.util), text=(empty)}\n" +
@@ -112,7 +115,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/MethodBodies.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/MethodBodies -> {\n" +
             "\tTargetMethod{name='MethodBodies', cutpoint=INSTEAD, resultType=null, formalParams=(String name), text=\n" +
             "\t\t{ System . out . println ( \"Hello from constructor :) \" ) ; }\n" +
@@ -130,7 +133,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/RootEnumeration.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/RootEnumeration -> {\n" +
             "\tTargetMethod{name='RootEnumeration', cutpoint=INSTEAD, resultType=null, formalParams=(), text=\n" +
             "\t\t{ String nothing = \"I'm the most enumerated constructor ever!\" ; }\n" +
@@ -152,7 +155,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/resources/RootInterface.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "ru/ftc/upc/testing/dropper/lang/RootInterface -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
             "\tTargetMethod{name='method2', cutpoint=INSTEAD, resultType=boolean, formalParams=(int two), text=(empty)}\n" +
@@ -182,7 +185,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/TypesCombination.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/TypesCombination -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=\n" +
             "\t\t{ System . console ( ) ; }\n" +
@@ -230,12 +233,12 @@ public class DropletAssemblerTest {
             "\tMAX_VALUE -> java.lang.Integer\n" +
             "\trandom -> java.lang.Math\n";
     String actualImportsMap = map2Str(importsMap);
-    System.out.println(actualImportsMap);
+    log.debug(actualImportsMap);
     assertEquals(expectedImportsMap, actualImportsMap);
 
     TargetsMap targetsMap = dropletAssembler.getTargetsMap();
     String actualTargetsMap = targetsMap.toString();
-    System.out.println(actualTargetsMap);
+    log.debug(actualTargetsMap);
     String expectedTargetsMap = "ru/ftc/upc/testing/dropper/lang/samples/Imports -> {\n" +
             "\tTargetMethod{name='Imports', cutpoint=INSTEAD, resultType=null, formalParams=(),\n" +
             "\t\timportsOnDemand=(java.math), text=\n" +
@@ -250,7 +253,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/AfterCutpoint.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     Cutpoint actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint();
-    System.out.printf("Actual cutpoint: %s\n", actual);
+    log.debug("Actual cutpoint: {}", actual);
     assertEquals(Cutpoint.AFTER, actual);
   }
 
@@ -259,7 +262,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/DefaultCutpoint.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     Cutpoint actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint();
-    System.out.printf("Actual cutpoint (default): %s\n", actual);
+    log.debug("Actual cutpoint (default): {}", actual);
     assertEquals(Cutpoint.INSTEAD, actual);
   }
 
@@ -268,7 +271,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/resources/DPClientImpl.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "dp/DPClientImpl -> {\n" +
             "\tTargetMethod{name='currencyRate', cutpoint=INSTEAD, resultType=dp.models.QuickPay$AnsCurrencyRate, formalParams=(dp.models.QuickPay$ReqCurrencyRate reqCurrencyRate), text=\n" +
             "\t\t{ try { java.io.FileReader stubReader = new java.io.FileReader ( System . getProperty ( \"user.dir\" ) + java.io.File . separator + \"AnsCurrencyRate.xml\" ) ; javax.xml.bind.Unmarshaller unmarshaller = quickPayJbcDoc . createUnmarshaller ( ) ; dp.models.QuickPay quickPay = ( dp.models.QuickPay ) unmarshaller . unmarshal ( stubReader ) ; log . info ( \"Rates were loaded from file AnsCurrencyRate.xml.\" ) ; stubReader . close ( ) ; return quickPay . getInfoService ( ) . getAnsCurrencyRate ( ) ; } catch ( Exception e ) { log . error ( \"Unable to load rates from file. Falling back to real service.\" , e ) ; dp . models . QuickPay quickPay = dp.models.QuickPay . infoService ( ) ; quickPay . getInfoService ( ) . setReqCurrencyRate ( $1 ) ; quickPay = sendQuickPay ( quickPay , false , false ) ; dp.models.QuickPay . AnsCurrencyRate ans = quickPay . getInfoService ( ) . getAnsCurrencyRate ( ) ; return ans ; } }\n" +
@@ -282,7 +285,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/NestedTypesAmongMethodArguments.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
 
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/NestedTypesAmongMethodArguments -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=java.util.Map$Entry, formalParams=(java.security.KeyStore$SecretKeyEntry arg), text=\n" +
@@ -297,7 +300,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/resources/DPClientImpl2.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
     String expected = "dp/DPClientImpl -> {\n" +
             "\tTargetMethod{name='fetchTransferStatus', cutpoint=INSTEAD, resultType=String, formalParams=(String oID, boolean needFlag), text=\n" +
             "\t\t{ String statusStr = null ; try { java.util.Properties stub = new java.util.Properties ( ) ; stub . load ( new java.io.FileReader ( System . getProperty ( \"user.dir\" ) + java.io.File . separator + \"dp-edit-mock.properties\" ) ) ; statusStr = stub . getProperty ( $1 ) ; if ( statusStr != null ) { statusStr = statusStr . trim ( ) ; log . warn ( \"For STRoID={} transfer status '{}' was taken from mock.\" , $1 , statusStr ) ; } } catch ( java.io.IOException e ) { log . error ( \"Failed to load mocked transfer edit statuses.\" , e ) ; } if ( statusStr == null ) { dp.models.QuickPay quickPay = dp.models.QuickPay . infoService ( ) ; dp.models.ReqTransferSearch req = new dp.models.ReqTransferSearch ( ) ; req . setOID ( getReserve ( ) . oID ) ; quickPay . getInfoService ( ) . setReqTransferSearch ( req ) ; quickPay = sendQuickPay ( quickPay , false , $2 ) ; statusStr = quickPay . getInfoService ( ) . getAnsTransferSearch ( ) . getTransferStatus ( ) ; } return statusStr ; }\n" +
@@ -311,7 +314,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/ClassWithSuffixDroplet.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
 
     String expected = "ru/ftc/upc/testing/dropper/lang/samples/ClassWithSuffix -> {\n" +
             "\tTargetMethod{name='method1', cutpoint=INSTEAD, resultType=void, formalParams=(), text=(empty)}\n" +
@@ -336,8 +339,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/DuplicatedMethodsDetection.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
-
+    log.debug(actual);
   }
 
   @Test(expected = DropletFormatException.class)
@@ -345,7 +347,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/GenericClass.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
   }
 
   /**
@@ -356,7 +358,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/ru/ftc/upc/testing/dropper/lang/samples/GenericClass2.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     String actual = targetsMap.toString();
-    System.out.println(actual);
+    log.debug(actual);
   }
 
   private DropletAssembler loadDroplet(String dropletPath) throws IOException {

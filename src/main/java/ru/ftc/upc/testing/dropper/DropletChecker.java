@@ -16,7 +16,7 @@ public class DropletChecker {
     TargetsMap targetsMap = DropletLoader.loadDroplets(args[0]);
     System.out.printf("Loaded targets map:\n%s", targetsMap.toString());
 
-    System.out.println("\nDroplet(s) format is OK.");
+    System.out.println("\nListed droplet(s) format is OK.");
   }
 
   private static final String USAGE_HELP = "Usage: java -jar dropper.jar <droplet-list>\n" +

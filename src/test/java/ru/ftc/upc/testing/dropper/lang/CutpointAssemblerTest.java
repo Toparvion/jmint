@@ -6,6 +6,8 @@ import org.antlr.v4.runtime.TokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.ftc.upc.testing.dropper.Cutpoint;
 import ru.ftc.upc.testing.dropper.lang.gen.JavadocLexer;
 import ru.ftc.upc.testing.dropper.lang.gen.JavadocParser;
@@ -19,13 +21,14 @@ import static org.junit.Assert.assertNull;
  * @author Toparvion
  */
 public class CutpointAssemblerTest {
+  static final Logger log = LoggerFactory.getLogger(CutpointAssemblerTest.class); 
 
   @Test
   public void cutpoint1IsRecognizedCorrectly() throws Exception {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_1.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
     Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
-    System.out.printf("Cutpoint 1: '%s'\n", tagValue);
+    log.info("Cutpoint 1: '{}'", tagValue);
     assertEquals(Cutpoint.BEFORE, cutpoint);
   }
 
@@ -34,7 +37,7 @@ public class CutpointAssemblerTest {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_2.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
     Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
-    System.out.printf("Cutpoint 2: '%s'\n", tagValue);
+    log.info("Cutpoint 2: '{}'", tagValue);
     assertEquals(Cutpoint.CATCH, cutpoint);
   }
 
@@ -43,7 +46,7 @@ public class CutpointAssemblerTest {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_3.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
     Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
-    System.out.printf("Cutpoint 3: '%s'\n", tagValue);
+    log.info("Cutpoint 3: '{}'", tagValue);
     assertEquals(Cutpoint.INSTEAD, cutpoint);
   }
 
@@ -52,7 +55,7 @@ public class CutpointAssemblerTest {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_4.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
     Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
-    System.out.printf("Cutpoint 4: '%s'\n", tagValue);
+    log.info("Cutpoint 4: '{}'", tagValue);
     assertEquals(Cutpoint.AFTER, cutpoint);
   }
 
@@ -60,7 +63,7 @@ public class CutpointAssemblerTest {
   public void cutpoint5IsRecognizedCorrectly() throws Exception {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_5.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
-    System.out.printf("Cutpoint 5: '%s'\n", tagValue);
+    log.info("Cutpoint 5: '{}'", tagValue);
     assertNull(tagValue);
   }
 
@@ -69,7 +72,7 @@ public class CutpointAssemblerTest {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_6.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
     Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
-    System.out.printf("Cutpoint 6: '%s'\n", tagValue);
+    log.info("Cutpoint 6: '{}'", tagValue);
     assertEquals(Cutpoint.IGNORE, cutpoint);
   }
 
@@ -78,7 +81,7 @@ public class CutpointAssemblerTest {
     CutpointAssembler cutpointAssembler = loadJavadoc("src/test/resources/Cutpoint_7.javadoc");
     String tagValue = cutpointAssembler.getTagValue();
     Cutpoint cutpoint = Cutpoint.valueOf(tagValue.toUpperCase());
-    System.out.printf("Cutpoint 7: '%s'\n", tagValue);
+    log.info("Cutpoint 7: '{}'", tagValue);
     assertEquals(Cutpoint.IGNORE, cutpoint);
   }
 
