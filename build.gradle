@@ -1,5 +1,5 @@
-group 'FTC-Prepaid'
-version '1.0'
+group 'toparvion'
+version '1.1'
 
 apply plugin: 'java'
 
@@ -26,10 +26,11 @@ dependencies {
 
 jar {
     manifest {
-        attributes("Implementation-Title": "Dropper",
+        attributes("Implementation-Title": "JMint",
                 "Implementation-Version": version,
-                "Premain-Class": "ru.ftc.upc.testing.dropper.DropperAgent",
-                "Main-Class": "ru.ftc.upc.testing.dropper.DropletChecker")
+                "Implementation-Vendor": "Toparvion",
+                "Premain-Class": "tech.toparvion.jmint.JMintAgent",
+                "Main-Class": "tech.toparvion.jmint.DropletChecker")
     }
     from {
         (configurations.runtime - configurations.provided)
@@ -43,7 +44,7 @@ task runPainterWithDebug(type: JavaExec, dependsOn: jar) {
             project.files('src/test/java/sampleapp/standalone/painter/slf4j-simple-1.7.7.jar')*/
     main 'sampleapp.standalone.painter.Painter'
     jvmArgs = ['-Dfile.encoding=UTF8',
-               '-javaagent:build/libs/dropper-1.0.jar=' +
+               '-javaagent:build/libs/jmint-'+version+'.jar=' +
                        'src/test/java/sampleapp/standalone/painter/DrawPaneDroplet.java;' +
                        'src/test/java/sampleapp/standalone/painter/PainterDroplet.java;' +
                        'src/test/resources/JFrameDroplet.java'

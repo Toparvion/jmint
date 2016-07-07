@@ -1,5 +1,7 @@
 package ru.ftc.upc.testing.dropper.lang.samples;
 
+import tech.toparvion.jmint.lang.samples.TypesCombination;
+
 import java.util.Vector;
 
 /**

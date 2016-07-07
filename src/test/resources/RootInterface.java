@@ -1,4 +1,4 @@
-package ru.ftc.upc.testing.dropper.lang;
+package tech.toparvion.jmint.lang;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
