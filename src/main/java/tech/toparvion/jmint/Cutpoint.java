@@ -1,9 +1,6 @@
 package tech.toparvion.jmint;
 
-import tech.toparvion.jmint.modify.AfterBodyModifier;
-import tech.toparvion.jmint.modify.BeforeBodyModifier;
-import tech.toparvion.jmint.modify.InsteadBodyModifier;
-import tech.toparvion.jmint.modify.MethodModifier;
+import tech.toparvion.jmint.modify.*;
 
 /**
  * Created by Toparvion on 29.04.2016 11:59
@@ -12,7 +9,7 @@ public enum Cutpoint {
   BEFORE(BeforeBodyModifier.class),
   INSTEAD(InsteadBodyModifier.class),
   AFTER(AfterBodyModifier.class),
-  CATCH(MethodModifier.class),                // TODO implement dedicated modifier
+  CATCH(CatchBodyModifier.class),
   /**
    * This synthetic cutpoint is introduced to denote a method that must not be instrumented. This however doesn't
    * mean that the method must not be included into targets map. It is still included there to avoid breaking the
