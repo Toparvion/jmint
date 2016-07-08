@@ -1,0 +1,8 @@
+/**
+ * Returns boolean.
+ *
+ * @param b	the boolean
+ * @cutpoint CATCH java.lang.Exception some text contained in exception message
+ * @return the string
+ * @since 1.4
+ */

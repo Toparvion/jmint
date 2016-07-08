@@ -10,6 +10,41 @@ gradle-app.setting
 !gradle-wrapper.jar
 
 # Cache of project
+### JetBrains template
+# Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and Webstorm
+# Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
+
+## File-based project format:
+
+## Plugin-specific files:
+
+# IntelliJ
+
+# mpeltonen/sbt-idea plugin
+
+# JIRA plugin
+
+# Crashlytics plugin (for Android Studio and IntelliJ)
+### Java template
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.war
+*.ear
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+### Gradle template
+
+# Ignore Gradle GUI config
+
+# Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
+
+# Cache of project
+
+# # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
+# gradle/wrapper/gradle-wrapper.properties
 .gradletasknamecache
 
 # # Work around https://youtrack.jetbrains.com/issue/IDEA-116898
@@ -23,7 +58,7 @@ gradle-app.setting
 
 ## Project format:
 *.iws
-*.iml
+*.ipr
 
 ## Plugin-specific files:
 
@@ -50,5 +85,4 @@ fabric.properties
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 
-# droplets themselves are not the part of Dropper
-droplets/
+memo.txt
