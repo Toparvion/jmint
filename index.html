@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>jMint by Toparvion</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>jMint</h1>
+        <h2>Turning dirty hacks into charity</h2>
+        <a href="https://github.com/Toparvion/jmint" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h1>
+
+<h2>
+<a id="what-is-jmint" class="anchor" href="#what-is-jmint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is jMint?</h2>
+
+<p><em>jMint</em> is a tool for injecting a new behavior into running Java application without changing its source code.<br>
+The behavior can be either appending or altering and can be applied to either application or library code <em>(if it isn't protected)</em>.</p>
+
+<h2>
+<a id="what-is-it-for" class="anchor" href="#what-is-it-for" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is it for?</h2>
+
+<p>Typical use cases of <em>jMint</em> include (but not restricted to) testing stage when some custom behavior should not (or even can not) be included into the source code. For example:</p>
+
+<ul>
+<li>to reproduce complicated cases;</li>
+<li>to include simple stubs/mocks into the app;</li>
+<li>to prevent undesired scenario;</li>
+<li>to add some logging to where it wasn't provided initially, etc;</li>
+<li><em>(welcome to add yours<g-emoji alias="wink" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f609.png">😉</g-emoji>)</em></li>
+</ul>
+
+<h2>
+<a id="how-does-it-work" class="anchor" href="#how-does-it-work" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>How does it work?</h2>
+
+<p>jMint operates as Java agent - special kind of application that is launched by JVM and is able to modify byte code of classes being loaded by JVM.  </p>
+
+<ul>
+<li>First, <strong>jMint</strong> loads and parses the modifying behavior in the form of <strong><em>droplet</em></strong> - Java source file describing the target of modification (class, method, etc) and the modifying code itself <em>(see next section)</em>.<br>
+</li>
+<li>Then, at the time of target class loading the modifying code gets compiled against the class and <strong>jMint</strong> passes it to JVM alongside with the original byte code just like if it was loaded in usual way.</li>
+</ul>
+
+<h2>
+<a id="what-is-droplet" class="anchor" href="#what-is-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is droplet?</h2>
+
+<p><strong>Droplet</strong> <em>(in the sense of injection)</em> is an ordinary Java source code file that is used by <strong>jMint</strong> to find out 2 things:</p>
+
+<ol>
+<li>The target of modification - a place in the application where the modification must be applied;</li>
+<li>The modifying code itself.</li>
+</ol>
+
+<p>Droplets look like all other Java type definitions (classes, interfaces, enums) but in fact they are not. Their classes' and methods' signatures do not define anything new, instead they just specify the target of modification.<br>
+<g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <em><strong>Example.</strong></em> If you have class <code>com.example.coolapp.Saver</code> with method <code>private void save(BusinessEntity entity)</code> and you want to prepend it with dumping of argument to standard output then your droplet may look like (<em>Saver.java</em>):</p>
+
+<div class="highlight highlight-source-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.example.coolapp</span>;
+<span class="pl-k">import</span> <span class="pl-smi">com.example.coolapp.model.BusinessEntity</span>;
+<span class="pl-k">class</span> <span class="pl-en">Saver</span> {
+  <span class="pl-c">/** @cutpoint BEFORE */</span>
+  <span class="pl-k">void</span> <span class="pl-en">save</span>(<span class="pl-smi">BusinessEntity</span> <span class="pl-v">entity</span>) {
+    <span class="pl-smi">System</span><span class="pl-k">.</span>out<span class="pl-k">.</span>println(<span class="pl-s"><span class="pl-pds">"</span>Entity to save: <span class="pl-pds">"</span></span> <span class="pl-k">+</span> entity<span class="pl-k">.</span>toString());
+  }
+}</pre></div>
+
+<p>This droplet doesn't define a new method <code>save</code>. Instead it instructs jMint to find method <code>com.example.coolapp.Saver#save(com.example.coolapp.model.BusinessEntity)</code> during class loading and to inject the specified code right before the body of the method.  </p>
+
+<hr>
+
+<p>The place of insertion relative to target method body is called <strong>cutpoint</strong> and is specified via custom javadoc tag <code>@cutpoint</code> which can take one of 3 values: </p>
+
+<ul>
+<li>
+<code>BEFORE</code> to inject the code right before the target method body.<br>
+<em>Generally used for manipulating method arguments (including their change) and for preventing execution of the body (possibly depending on arguments values);</em>
+</li>
+<li>
+<code>INSTEAD</code> to completely replace the target method body with a new one.<br>
+<em>Generally used to stub the whole method or to modify just a piece of code buried inside the body.</em>
+</li>
+<li>
+<code>AFTER</code> to append some code to the end of the target method body.<br>
+<em>Generally used to manipulate the result value (including its change). When writing modifying code against <code>AFTER</code> cutpoint there is a synthetic variable <code>$_</code> available which holds current result value.</em><br>
+<g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> Note that if method throws an exception the <code>AFTER</code> cutpoint's code won't be executed. For this purpose there will be a special cutpoint <code>CATCH</code> which is still in development stage.<br>
+<g-emoji alias="construction" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f6a7.png">🚧</g-emoji> <em>Please send a feedback (via comments or issues) if you really miss this feature.</em>
+</li>
+</ul>
+
+<p>For more info on droplets see <strong><em>Usage</em></strong> section.</p>
+
+<h1>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h1>
+
+<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.1/jmint-1.1.jar">jmint-1.1.jar</a>.<br>
+<g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Description of current version is available on the <a href="https://github.com/Toparvion/jmint/releases/latest">Latest Release page</a>.</p>
+
+<h1>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h1>
+
+<p>Usage of <strong>jMint</strong> includes two steps: </p>
+
+<ol>
+<li>Create droplet(s); </li>
+<li>Attach <strong>jMint</strong> to target application for applying created droplet(s).</li>
+</ol>
+
+<h2>
+<a id="usage-step-1-create-droplet" class="anchor" href="#usage-step-1-create-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage step 1: create droplet</h2>
+
+<p>There are 2 general approaches to create a droplet: from source code of target class and from scratch.  </p>
+
+<ul>
+<li>The first one is handy when you have source code of a class being modified and you want to use its slightly changed version at runtime. The <strong>advantage</strong> of this approach is that you don't have to manually write droplet class, you may just copy the existing one and modify the target method(s) only. The <strong>flaw</strong> is that your droplet gets some excess source code (which may be confusing in case of large class <em>(and may provoke bugs in jMint<g-emoji alias="wink" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f609.png">😉</g-emoji>)</em>).</li>
+<li>The second approach is preferable when you don't want to copy the whole original source code and/or want to keep the droplet as simple as possible. The <strong>pros and cons</strong> of this approach are opposite to the first one: it makes you write some code manually but on the other hand it allows you to fill the droplet with the code you really need, without surpluses.</li>
+</ul>
+
+<h4>
+<a id="approach-1-creating-droplet-from-target-class" class="anchor" href="#approach-1-creating-droplet-from-target-class" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Approach 1. Creating droplet from target class</h4>
+
+<ol>
+<li>Make a copy of the target class's source code file with <code>Droplet</code> or <code>_Droplet</code> suffix (in any case) in the same package, for example <code>com.example.coolapp.TheAppDroplet</code> or <code>com.example.coolapp.TheApp_droplet</code>.<br>
+<g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> <em>If your target class name already ends with <code>Droplet</code> just add it again. Only the last one will be omitted.</em><br>
+The suffix is needed to distinguish the original class from droplet. It will be omitted by jMint during parsing the droplet. The target type must not necessarily be a class, it can be an enum or an interface (but not annotation) as well as can be inner type on any level.<br>
+<g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <em>In order to prevent accidental committing of droplet to your Version Control System (VCS) add droplets suffix into the list of exclusions. For instance in Git it can be achieved by adding the following line into <code>.gitignore</code> file:</em><br>
+<code>*Droplet.java</code>
+</li>
+<li>Find the target method(s) in the copied class and make sure it have javadoc description <em>(a block comment starting with forward slash and double asterisk (<code>/**</code>) located just before the method definition)</em>. If not, add one.</li>
+<li>Add custom javadoc tag <code>@cutpoint</code> with one of values: <code>BEFORE</code>, <code>INSTEAD</code>, <code>AFTER</code>.<br>
+In the simplest case the whole javadoc definition may look like:<br>
+<code>/** @cutpoint INSTEAD */</code>
+</li>
+<li>In the body of target method write (or change) the code you want to be injected according to selected cutpoint.<br>
+<g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Please remember about some <a href="https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html#limit">limitations</a> on modifying code.</em><br>
+All other class members will be ignored by jMint. </li>
+<li>Repeat steps 2-4 for all the target methods of this class and then save the droplet anywhere you want.</li>
+</ol>
+
+<hr>
+
+<h4>
+<a id="approach-2-creating-a-droplet-from-scratch" class="anchor" href="#approach-2-creating-a-droplet-from-scratch" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Approach 2. Creating a droplet from scratch</h4>
+
+<ol>
+<li>Create a text file with name <code>&lt;TargetClassSimpleName&gt;Droplet.java</code> in any directory.<br>
+<g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> This name format is just a recommendation, not requirement. You may give the file any name.</li>
+<li>Inside the file specify the package of target class just like if you'd create it.</li>
+<li>Specify the target class (or enum, or interface) just like if you'd create it.<br>
+<em>Access modifiers as well as <code>extends</code>/<code>implements</code> clauses and annotations make no sense to droplets and thus may be omitted. Arbitrary combinations of inner types are supported by jMint.</em>
+</li>
+<li>Define the target method just like if you'd create it.<br>
+<em>Access modifiers as well as <code>throws</code> clause and annotations make no sense to droplets and thus may be omitted.</em>
+</li>
+<li>Prepend the target method with javadoc description.<br>
+<em>It's a good practice to write here detailed description of modifying method but the droplet itself requires only one custom javadoc tag - <code>@cutpoint</code> followed by one of values: <code>BEFORE</code>, <code>INSTEAD</code>, <code>AFTER</code>.</em>
+</li>
+<li>Write the body of the method according to selected cutpoint.<br>
+<g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Please remember about some <a href="https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html#limit">limitations</a> on modifying code.</em><br>
+</li>
+<li>Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.</li>
+</ol>
+
+<hr>
+
+<h2>
+<a id="usage-step-2-attach-jmint-to-target-application" class="anchor" href="#usage-step-2-attach-jmint-to-target-application" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage step 2: attach jMint to target application</h2>
+
+<p>Because jMint ships as Java agent, it is attached to JVM through its startup argument <code>-javaagent</code>. The absolute or relative path to jMint jar is specified after colon (<code>:</code>) following the argument name. Then, followed by equal sign goes a list of droplets paths separated by semicolon (<code>;</code>). As a whole the command line may look like:</p>
+
+<div class="highlight highlight-source-shell"><pre>java -javaagent:path/to/jmint.jar=a/long/way/to/droplets/FirstDroplet.java<span class="pl-k">;</span>a/long/way/to/droplets/SecondDroplet.java com.example.coolapp.Main</pre></div>
+
+<p><g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <em>To shorten the record you may introduce a couple of variables in the launch script to hold the prefix paths:</em></p>
+
+<div class="highlight highlight-source-shell"><pre>JMINT_PATH=path/to/jmint.jar
+DROPLETS_HOME=a/long/way/to/droplets
+java -javaagent:<span class="pl-smi">$JMINT_PATH</span>=<span class="pl-smi">$DROPLETS_HOME</span>/FirstDroplet.java<span class="pl-k">;</span><span class="pl-smi">$DROPLETS_HOME</span>/SecondDroplet.java com.example.coolapp.Main</pre></div>
+
+<p>Started with such arguments JVM will launch jMint and let it modify byte code of classes being loaded.<br>
+<g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Note that being unable to load an agent JVM will not start at all.</em><br>
+<g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> <em><code>javaagent</code> is not singleton option for JVM. You may add as many agents as you want declaring them as separate  <code>javaagent</code> arguments on the JVM start command line.</em><br>
+To ensure that your target methods have been modified correctly look for messages from class <code>tech.toparvion.jmint.TargetsTransformer</code> in the log (see next section).</p>
+
+<h1>
+<a id="logging" class="anchor" href="#logging" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Logging</h1>
+
+<p>jMint emits some messages about its work to the log using <a href="http://slf4j.org/">SLF4J</a> logging facade. Therefore the actual logging implementation depends on SLF4J binding present on the application classpath. If there is no binding, jMint emits the only message to standard error output and stays silent till the end:</p>
+
+<pre><code>SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
+SLF4J: Defaulting to no-operation (NOP) logger implementation
+SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
+</code></pre>
+
+<p>Here's some sample messages emitted by jMint when <code>slf4j-simple</code> binding is present on the classpath:</p>
+
+<pre><code>... (at the start of JVM) ...
+[main] INFO tech.toparvion.jmint.JMintAgent - jMint started (version: 1.1).
+...
+[main] INFO tech.toparvion.jmint.JMintAgent - Droplets loading took: 1167 ms
+... (later, at runtime) ...
+[main] INFO tech.toparvion.jmint.TargetsTransformer - Method 'sampleapp.standalone.painter.Painter.buildContent()' has been modified at AFTER cutpoint.
+...
+[main] INFO tech.toparvion.jmint.TargetsTransformer - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE cutpoint.
+</code></pre>
+
+<h1>
+<a id="under-the-hood" class="anchor" href="#under-the-hood" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Under the hood</h1>
+
+<p>jMint is built upon three other tools: Java Byte Code Instrumentation API, Javassist byte code manipulating library and ANTLR4 language recognition tool. The latter (created by professor of genius Terence Parr (<a href="https://github.com/parrt" class="user-mention">@parrt</a>)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented Shigeru Chiba (<a href="https://github.com/chibash" class="user-mention">@chibash</a>)) and returns it back to JVM.</p>
+
+<h1>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
+
+<p>jMint is distributed under MIT License. You can find its text in the repository (see <a href="https://github.com/Toparvion/jmint/blob/master/LICENSE.txt">LICENSE.txt</a> file).</p>
+
+<h1>
+<a id="development-support--feedback" class="anchor" href="#development-support--feedback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development, support &amp; feedback</h1>
+
+<p>jMint is created by single person (<a href="https://github.com/Toparvion" class="user-mention">@Toparvion</a>) in free time as a helpful tool for day-to-day tasks. It is still in development stage so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post <a href="https://github.com/Toparvion/jmint/issues">issues</a> or contact the author directly: <code>toparvion[at]gmx[dot]com</code>.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/Toparvion/jmint/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/Toparvion/jmint/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/Toparvion/jmint"></a> is maintained by <a href="https://github.com/Toparvion">Toparvion</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
