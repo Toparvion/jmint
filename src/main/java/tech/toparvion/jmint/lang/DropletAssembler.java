@@ -61,7 +61,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
    */
   private final BufferedTokenStream tokenStream;
 
-  public DropletAssembler(BufferedTokenStream tokenStream) {
+  DropletAssembler(BufferedTokenStream tokenStream) {
     this.tokenStream = tokenStream;
   }
 
@@ -447,7 +447,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
   //endregion
 
   //region Getters
-  public TargetsMap getTargetsMap() {
+  TargetsMap getTargetsMap() {
     return targetsMap;
   }
 

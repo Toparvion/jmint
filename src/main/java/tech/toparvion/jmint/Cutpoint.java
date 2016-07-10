@@ -17,6 +17,11 @@ public enum Cutpoint {
    */
   IGNORE(MethodModifier.class /* <- the modifier is just a stub as this cutpoint is never actually applied */);
 
+  /**
+   * The cutpoint which gets selected if none of cutpoints matches the given name.
+   */
+  private static final Cutpoint DEFAULT_CUTPOINT = IGNORE;
+
   final Class<? extends MethodModifier> modifierClass;
 
   Cutpoint(Class<? extends MethodModifier> modifierClass) {
@@ -26,16 +31,16 @@ public enum Cutpoint {
   /**
    * Finds the enum element matching given name or fails back to {@code INSTEAD} if none can be found.
    * @param name the name to find matching cutpoint for
-   * @return cutpoint with the same name or {@code INSTEAD} if not found
+   * @return cutpoint with the same name or {@linkplain Cutpoint#DEFAULT_CUTPOINT} if not found
    */
   public static Cutpoint getByNameSafe(String name) {
-    if (name == null) return INSTEAD;
+    if (name == null) return DEFAULT_CUTPOINT;
     for (Cutpoint cutpoint : values()) {
       if (cutpoint.toString().equalsIgnoreCase(name)) {
         return cutpoint;
       }
     }
-    return INSTEAD;
+    return DEFAULT_CUTPOINT;
   }
 
 }

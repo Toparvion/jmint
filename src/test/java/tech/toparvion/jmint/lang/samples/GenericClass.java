@@ -20,6 +20,9 @@ public class GenericClass<T> extends AbstractSet<T> {
     return 0;
   }
 
+  /**
+   * @cutpoint INSTEAD
+   */
   public <R extends InputStream> void method2(R arg) {
     System.out.println(arg.toString());
   }
