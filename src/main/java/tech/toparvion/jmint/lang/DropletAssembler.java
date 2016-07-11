@@ -420,6 +420,12 @@ class DropletAssembler extends DroppingJavaBaseListener {
     return processedText;
   }
 
+  /**
+   * Finds the nearest parent of type {@code ClassBodyDeclarationContext} starting the search from
+   * the {@code start} context.
+   * @param start the rule context to start searching from
+   * @return the nearest parent {@code ClassBodyDeclarationContext} or {@code null} if there is no such context
+   */
   private DroppingJavaParser.ClassBodyDeclarationContext findJavadocAnchor(ParserRuleContext start) {
     ParserRuleContext next = start;
     while (!(next instanceof DroppingJavaParser.ClassBodyDeclarationContext) && next != null) {
