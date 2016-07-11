@@ -39,18 +39,15 @@
         <ul></ul>
       </nav>
       <section>
-        <h2>
+        <h1>
+<a id="overview" class="anchor" href="#overview" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Overview</h1>
+
+<h2>
 <a id="what-is-jmint" class="anchor" href="#what-is-jmint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is jMint?</h2>
 
 <p><em>jMint</em> is a tool for injecting a new behavior into running Java application without changing its source code. The behavior is expressed in ordinary Java code; it can be either appending or altering and can be applied to either application or library code.</p>
 
 <p>jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying an application or a library please make sure you do not violate its license.</p>
-
-<h2>
-<a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h2>
-
-<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.1/jmint-1.1.jar">jmint-1.1.jar</a>.<br>
-<g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Description of current version is available on the <a href="https://github.com/Toparvion/jmint/releases/latest">Latest Release page</a>.</p>
 
 <h2>
 <a id="what-is-it-for" class="anchor" href="#what-is-it-for" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is it for?</h2>
@@ -124,6 +121,12 @@
 <p>For more info on droplets see next section.</p>
 
 <h1>
+<a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h1>
+
+<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.1/jmint-1.1.jar">jmint-1.1.jar</a>.<br>
+<g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Description of current version is available on the <a href="https://github.com/Toparvion/jmint/releases/latest">Latest Release page</a>.</p>
+
+<h1>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h1>
 
 <p>Usage of <strong>jMint</strong> includes two steps: </p>
@@ -134,7 +137,7 @@
 </ol>
 
 <h2>
-<a id="usage-step-1-create-droplet" class="anchor" href="#usage-step-1-create-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage step 1: Create droplet</h2>
+<a id="step-1-create-droplet" class="anchor" href="#step-1-create-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1: Create droplet</h2>
 
 <p>There are 2 general approaches to create a droplet: <em>from source code of target class</em> and <em>from scratch</em>.  </p>
 
@@ -235,7 +238,7 @@ All other class members will be ignored by jMint. </li>
 <hr>
 
 <h2>
-<a id="usage-step-2-attach-jmint-to-target-application" class="anchor" href="#usage-step-2-attach-jmint-to-target-application" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage step 2: Attach jMint to target application</h2>
+<a id="step-2-attach-jmint-to-the-app" class="anchor" href="#step-2-attach-jmint-to-the-app" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 2: Attach jMint to the app</h2>
 
 <p>Because jMint ships as Java agent, it is attached to JVM through its startup argument <code>-javaagent</code>. The absolute or relative path to jMint jar is specified after colon (<code>:</code>) following the argument name. Then, followed by equal sign goes a list of droplets paths separated by semicolon (<code>;</code>). As a whole the command line may look like:</p>
 
@@ -253,7 +256,7 @@ java -javaagent:<span class="pl-smi">$JMINT_PATH</span>=<span class="pl-smi">$DR
 To ensure that your target methods have been modified correctly look for messages from class <code>tech.toparvion.jmint.TargetsTransformer</code> in the log (see <em>Logging</em> section).</p>
 
 <h1>
-<a id="limitations-of-modifying-code" class="anchor" href="#limitations-of-modifying-code" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Limitations of modifying code</h1>
+<a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Limitations</h1>
 
 <p>Unfortunately, source code of droplets' methods (the modifying code) can not be as rich and diverse as usual one.<br>
 The modifying code must not contain:</p>
@@ -301,9 +304,9 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 <p>jMint is distributed under MIT License. You can find its text in the repository (see <a href="https://github.com/Toparvion/jmint/blob/master/LICENSE.txt">LICENSE.txt</a> file).</p>
 
 <h1>
-<a id="development-support--feedback" class="anchor" href="#development-support--feedback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Development, support &amp; feedback</h1>
+<a id="support--feedback" class="anchor" href="#support--feedback" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Support &amp; feedback</h1>
 
-<p>jMint is created by single person (<a href="https://github.com/Toparvion" class="user-mention">@Toparvion</a>) in free time as a helpful tool for day-to-day tasks. It is still in development stage so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post <a href="https://github.com/Toparvion/jmint/issues">issues</a> or contact the author directly: <code>toparvion[at]gmx[dot]com</code>.</p>
+<p>jMint is being developed by single person (<a href="https://github.com/Toparvion" class="user-mention">@Toparvion</a>) in free time as a helpful tool for day-to-day tasks. It is not finished yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post <a href="https://github.com/Toparvion/jmint/issues">issues</a> or contact the author directly: <code>toparvion[at]gmx[dot]com</code>. Testing assistance is extremely appreciated<g-emoji alias="wink" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f609.png">😉</g-emoji></p>
       </section>
       <footer>
         <p>Project maintained by <a href="https://github.com/Toparvion">Toparvion</a></p>
