@@ -36,6 +36,10 @@ class TargetsTransformer implements ClassFileTransformer {
   TargetsTransformer(TargetsMap targetsMap) {
     this.targetsMap = targetsMap;
     this.pool = ClassPool.getDefault();
+    // debug system property
+    String dumpDir = System.getProperty("tech.toparvion.jmint.javassist.dumpdir");
+    if (dumpDir == null) return;
+    CtClass.debugDump = dumpDir.replaceAll("[\\\\/]$", "");
   }
 
   @Override
@@ -88,12 +92,14 @@ class TargetsTransformer implements ClassFileTransformer {
                   ? ctClass.getDeclaredMethod(targetMethod.getName(), argsArray)
                   : ctClass.getDeclaredConstructor(argsArray);
 
-          // prepare javassist compiler to resolve not fully qualified types
+          // prepare javassist compiler to resolve unqualified types
           for (String importEntry : targetMethod.getImportsOnDemand()) {
             if (knownPackages.add(importEntry)) {
               pool.importPackage(importEntry);
             }
           }
+          // local package must also be included as the compiler won't be able to resolve neighbour types otherwise
+          pool.importPackage(localPackage);
 
           // apply modification via corresponding cutpoint
           Cutpoint cutpoint = targetMethod.getCutpoint();
