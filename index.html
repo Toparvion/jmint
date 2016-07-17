@@ -45,9 +45,15 @@
 <h2>
 <a id="what-is-jmint" class="anchor" href="#what-is-jmint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is jMint?</h2>
 
-<p><em>jMint</em> is a tool for injecting a new behavior into running Java application without changing its source code. The behavior is expressed in ordinary Java code; it can be either appending or altering and can be applied to either application or library code.</p>
+<p><em>jMint</em> is a tool for modifying methods of a running Java application (without changing its source code). Here's some key features of jMint:</p>
 
-<p>jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying an application or a library please make sure you do not violate its license.</p>
+<ul>
+<li>modification is expressed in an ordinary Java source code - <em>no byte code knowledge required</em>;</li>
+<li>modification can be both extending and altering in relation to target method body;</li>
+<li>modification can be applied both to application and third-party (library) code.</li>
+</ul>
+
+<p><g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying a running application or a library please make sure you do not violate its license.</p>
 
 <h2>
 <a id="what-is-it-for" class="anchor" href="#what-is-it-for" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is it for?</h2>
@@ -56,10 +62,12 @@
 
 <ul>
 <li>to reproduce complicated cases;</li>
-<li>to include simple stubs/mocks into the app;</li>
+<li>to include simple stubs/mocks into the app at runtime;</li>
 <li>to prevent undesired scenario;</li>
-<li>to add some logging to where it wasn't provided initially, etc;</li>
-<li><em>(welcome to add yours one<g-emoji alias="wink" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f609.png">😉</g-emoji>)</em></li>
+<li>to add some logging to where it wasn't provided initially;</li>
+<li>to fix a bug in a library without having its source code, etc</li>
+<li>
+<em>(welcome to add yours one<g-emoji alias="wink" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f609.png">😉</g-emoji>)</em> </li>
 </ul>
 
 <h2>
@@ -136,7 +144,7 @@
 </ol>
 
 <h2>
-<a id="step-1-create-droplet" class="anchor" href="#step-1-create-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1: Create droplet</h2>
+<a id="step-1-create-a-droplet" class="anchor" href="#step-1-create-a-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1: Create a droplet</h2>
 
 <p>There are 2 general approaches to create a droplet: <em>from source code of target class</em> and <em>from scratch</em>.  </p>
 
