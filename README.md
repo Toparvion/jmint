@@ -1,16 +1,20 @@
 #Overview
 ## What is jMint?
-*jMint* is a tool for injecting a new behavior into running Java application without changing its source code. The behavior is expressed in ordinary Java code; it can be either appending or altering and can be applied to either application or library code.
+*jMint* is a tool for modifying methods of a running Java application (without changing its source code). Here's some key features of jMint:
++ modification is expressed in an ordinary Java source code - *no byte code knowledge required*;
++ modification can be both extending and altering in relation to target method body;
++ modification can be applied both to application and third-party (library) code.
 
-jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying an application or a library please make sure you do not violate its license.
+:information_source: jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying a running application or a library please make sure you do not violate its license.
 
 ## What is it for?
 Typical use cases of *jMint* include (but not restricted to) testing stage when some custom behavior should not (or even can not) be included into the source code. For example:
 - to reproduce complicated cases;
-- to include simple stubs/mocks into the app;
+- to include simple stubs/mocks into the app at runtime;
 - to prevent undesired scenario;
-- to add some logging to where it wasn't provided initially, etc;
-- _(welcome to add yours one:wink:)_
+- to add some logging to where it wasn't provided initially;
+- to fix a bug in a library without having its source code, etc
+- _(welcome to add yours one:wink:)_ 
 
 ## How does it work?
 jMint operates as Java agent - special kind of application that is launched by JVM and is able to modify byte code of classes being loaded by JVM.
