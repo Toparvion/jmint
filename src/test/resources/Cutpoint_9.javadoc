@@ -1,0 +1,8 @@
+/**
+ * Returns boolean.
+ *
+ * @param b	the boolean
+ * @cutpoint AFTER as finally
+ * @return the string
+ * @since 1.4
+ */

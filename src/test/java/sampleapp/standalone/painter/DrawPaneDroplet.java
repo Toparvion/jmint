@@ -42,7 +42,7 @@ public class DrawPaneDroplet extends JComponent /*implements Runnable*/ {
   public void paintComponent(Graphics g) {
     Graphics2D g2d = (Graphics2D) g;
 //        calculate();
-    g2d.setBackground(Color.ORANGE);
+    g2d.setBackground(Color.BLACK);
     g2d.clearRect(0, 0, this.getWidth(), this.getHeight());              // удаление предыдущей фигуры
     red = ((float) Math.sin(t * dkmx) + 1) / 2;
     green = (float) (Math.sin(t + n) + 1) / 2;
@@ -50,5 +50,4 @@ public class DrawPaneDroplet extends JComponent /*implements Runnable*/ {
     g2d.setColor(new Color(red, green, blue));              // назначение цвета
     g2d.drawPolygon(xs, ys, n);                                  // построение фигуры
   }
-
 }

@@ -1,7 +1,5 @@
 package tech.toparvion.jmint.model;
 
-import tech.toparvion.jmint.Cutpoint;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
