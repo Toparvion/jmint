@@ -65,7 +65,7 @@ Note that the parameter may be specified in various forms: `asFinally`, `AS_FINA
 For more info on droplets see Usage section.
 
 ## Download
-Current version: [jmint-1.1.jar](https://github.com/Toparvion/jmint/releases/download/v1.1/jmint-1.1.jar).  
+Current version: [jmint-1.2.jar](https://github.com/Toparvion/jmint/releases/download/v1.2/jmint-1.2.jar).  
 :information_source: Description of current version is available on the [Latest Release page](https://github.com/Toparvion/jmint/releases/latest).
 
 # Usage
@@ -212,7 +212,7 @@ Here's some sample messages emitted by jMint when `slf4j-simple` binding is pres
 ```
 
 # Under the hood
-jMint is built upon three other tools: Java Byte Code Instrumentation API, Javassist byte code manipulating library and ANTLR4 language recognition tool. The latter (created by professor of genius Terence Parr (@parrt)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented Shigeru Chiba (@chibash)) and returns it back to JVM.
+jMint is built upon three great tools: Java Byte Code Instrumentation API, Javassist byte code manipulating library and ANTLR4 language recognition tool. The latter (created by professor of genius Terence Parr (@parrt)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented Shigeru Chiba (@chibash)) and returns it back to JVM.
 
 # License
 jMint is distributed under MIT License (see [LICENSE.txt](https://github.com/Toparvion/jmint/blob/master/LICENSE.txt)).
