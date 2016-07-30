@@ -45,15 +45,16 @@
 <h2>
 <a id="what-is-jmint" class="anchor" href="#what-is-jmint" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is jMint?</h2>
 
-<p><em>jMint</em> is a tool for modifying methods of a running Java application (without changing its source code). Here's some key features of jMint:</p>
+<p><em>jMint</em> is a tool for modifying methods of a running Java application without changing its source code. jMint key features are:</p>
 
 <ul>
-<li>modification is expressed in an ordinary Java source code - <em>no byte code knowledge required</em>;</li>
+<li>modification is expressed in ordinary Java source code - <em>no byte code knowledge is required</em>;</li>
 <li>modification can be both extending and altering in relation to target method body;</li>
-<li>modification can be applied both to application and third-party (library) code.</li>
+<li>both application and third-party (library) code can be modified.</li>
 </ul>
 
-<p><g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying a running application or a library please make sure you do not violate its license.</p>
+<p><g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Internally jMint is a wrapper around <a href="http://jboss-javassist.github.io/javassist/">Javassist</a> byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.<br>
+<g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection of classes (if any). It also knows nothing about legal aspects so that before deploying a modified application or library please make sure you do not violate its license.</p>
 
 <h2>
 <a id="what-is-it-for" class="anchor" href="#what-is-it-for" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>What is it for?</h2>
@@ -61,7 +62,7 @@
 <p>Typical use cases of <em>jMint</em> include (but not restricted to) testing stage when some custom behavior should not (or even can not) be included into the source code. For example:</p>
 
 <ul>
-<li>to reproduce complicated cases;</li>
+<li>to reproduce complicated test cases by injecting side effects right into the running app;</li>
 <li>to include simple stubs/mocks into the app at runtime;</li>
 <li>to prevent undesired scenario;</li>
 <li>to add some logging to where it wasn't provided initially;</li>
@@ -119,18 +120,25 @@
 </li>
 <li>
 <code>AFTER</code> to append some code to the end of the target method body.<br>
-<em>Generally used to manipulate the result value (including its change). When writing modifying code against <code>AFTER</code> cutpoint there is a synthetic variable <code>$_</code> available which holds current result value.</em><br>
-<g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> Note that if method throws an exception the <code>AFTER</code> cutpoint's code won't be executed. For this purpose there will be a special cutpoint <code>CATCH</code> which is still in development stage.<br>
-<g-emoji alias="construction" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f6a7.png">🚧</g-emoji> <em>Please send a feedback (via email or issues) if you really miss this feature.</em>
-</li>
+<em>Generally used to manipulate the result value (including its change). When writing modifying code against <code>AFTER</code> cutpoint there is synthetic variable <code>$_</code> available which holds current result value. If the result type is <code>void</code>, then the type of <code>$_</code> is <code>Object</code> and the value of <code>$_</code> is <code>null</code>. There is also <code>$r</code> variable which represents the result type (return type) of the method. It is intended to be used as the cast type in a cast expression.</em><br>
+When used without parameters, <code>AFTER</code> cutpoint behaves like ordinary code appended to the end of target method body. This means that in case of exception such code won't be executed. If you want it to be executed anyway (like <code>finally</code> block) just add <code>asFinally</code> parameter right after the cutpoint declaration:</li>
 </ul>
 
-<p>For more info on droplets see next section.</p>
+<div class="highlight highlight-source-java"><pre>    <span class="pl-c">/**</span>
+<span class="pl-c">     * @cutpoint AFTER AS_FINALLY</span>
+<span class="pl-c">     */</span>
+    <span class="pl-k">public</span> <span class="pl-k">void</span> actionPerformed(<span class="pl-smi">ActionEvent</span> event) {</pre></div>
+
+<p>Note that the parameter may be specified in various forms: <code>asFinally</code>, <code>AS_FINALLY</code>, <code>as-finally</code> or even <code>as finally</code>.<br>
+<g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> There is also auxiliary <code>IGNORE</code> cutpoint which is applied by default to all methods with no explicit cutpoint tag. This cutpoint may be applied explicitly to the methods left in the droplet in order to maintain its semantic correctness.<br>
+<g-emoji alias="construction" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f6a7.png">🚧</g-emoji> <em>Dedicated <code>CATCH</code> cutpoint  for certain exceptions is planned to be implemented in one of upcoming releases. Please feel free to send feedback (via email or issues) if you'd like it to be released sooner.</em></p>
+
+<p>For more info on droplets see Usage section.</p>
 
 <h2>
 <a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h2>
 
-<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.1/jmint-1.1.jar">jmint-1.1.jar</a>.<br>
+<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.2/jmint-1.2.jar">jmint-1.2.jar</a>.<br>
 <g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Description of current version is available on the <a href="https://github.com/Toparvion/jmint/releases/latest">Latest Release page</a>.</p>
 
 <h1>
@@ -144,7 +152,7 @@
 </ol>
 
 <h2>
-<a id="step-1-create-a-droplet" class="anchor" href="#step-1-create-a-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1: Create a droplet</h2>
+<a id="step-1-create-droplet" class="anchor" href="#step-1-create-droplet" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Step 1: Create droplet</h2>
 
 <p>There are 2 general approaches to create a droplet: <em>from source code of target class</em> and <em>from scratch</em>.  </p>
 
@@ -259,6 +267,14 @@ All other class members will be ignored by jMint.<br>
 DROPLETS_HOME=a/long/way/to/droplets
 java -javaagent:<span class="pl-smi">$JMINT_PATH</span>=<span class="pl-smi">$DROPLETS_HOME</span>/FirstDroplet.java<span class="pl-k">;</span><span class="pl-smi">$DROPLETS_HOME</span>/SecondDroplet.java com.example.coolapp.Main</pre></div>
 
+<p>or </p>
+
+<div class="highlight highlight-source-shell"><pre>JMINT=path/to/jmint.jar
+DROPLETS=a/long/way/to/droplets/FirstDroplet.java
+DROPLETS=<span class="pl-smi">$DROPLETS</span><span class="pl-k">;</span>a/long/way/to/droplets/SecondDroplet.java
+java -javaagent:<span class="pl-smi">$JMINT</span>=<span class="pl-smi">$DROPLETS</span> com.example.coolapp.Main
+</pre></div>
+
 <p>Started with such arguments JVM will launch jMint and let it modify byte code of classes being loaded.<br>
 <g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Note that being unable to load an agent JVM will not start at all.</em><br>
 <g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> <em><code>javaagent</code> is not singleton option for JVM. You may add as many agents as you want declaring them as separate  <code>javaagent</code> arguments on the JVM launch command.</em><br>
@@ -276,6 +292,8 @@ The modifying code must not contain:</p>
 <li>labeled continue and break statements;</li>
 <li>references to generic type parameters (like T in method <code>T &lt;T&gt; nvl(T t)</code>);</li>
 <li>references to static methods or variables imported on demand (i.e. like <code>java.lang.Double.*</code>; it should be replaced with separate single imports);</li>
+<li>implicit boxing/unboxing of primitive types (it must be replaced with explicit ones);</li>
+<li>invoking methods with listing-like varargs passing (it must be replaced with explicit array);</li>
 <li><em>there are likely some other limitations; if you find one please share it with fellow users via Github issues.</em></li>
 </ul>
 
@@ -306,7 +324,7 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 <h1>
 <a id="under-the-hood" class="anchor" href="#under-the-hood" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Under the hood</h1>
 
-<p>jMint is built upon three other tools: Java Byte Code Instrumentation API, Javassist byte code manipulating library and ANTLR4 language recognition tool. The latter (created by professor of genius Terence Parr (<a href="https://github.com/parrt" class="user-mention">@parrt</a>)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented Shigeru Chiba (<a href="https://github.com/chibash" class="user-mention">@chibash</a>)) and returns it back to JVM.</p>
+<p>jMint is built upon three great tools: Java Byte Code Instrumentation API, Javassist byte code manipulating library and ANTLR4 language recognition tool. The latter (created by professor of genius Terence Parr (<a href="https://github.com/parrt" class="user-mention">@parrt</a>)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented Shigeru Chiba (<a href="https://github.com/chibash" class="user-mention">@chibash</a>)) and returns it back to JVM.</p>
 
 <h1>
 <a id="license" class="anchor" href="#license" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>License</h1>
