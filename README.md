@@ -1,16 +1,21 @@
 #Overview
 ## What is jMint?
-*jMint* is a tool for injecting a new behavior into running Java application without changing its source code. The behavior is expressed in ordinary Java code; it can be either appending or altering and can be applied to either application or library code.
+*jMint* is a tool for modifying methods of a running Java application without changing its source code. jMint key features are:
++ modification is expressed in ordinary Java source code - *no byte code knowledge is required*;
++ modification can be both extending and altering in relation to target method body;
++ both application and third-party (library) code can be modified.
 
-jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection (if any). It also knows nothing about legal aspects so that before modifying an application or a library please make sure you do not violate its license.
+:information_source: Internally jMint is a wrapper around [Javassist](http://jboss-javassist.github.io/javassist/) byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.  
+:warning: jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection of classes (if any). It also knows nothing about legal aspects so that before deploying a modified application or library please make sure you do not violate its license.
 
 ## What is it for?
 Typical use cases of *jMint* include (but not restricted to) testing stage when some custom behavior should not (or even can not) be included into the source code. For example:
-- to reproduce complicated cases;
-- to include simple stubs/mocks into the app;
+- to reproduce complicated test cases by injecting side effects right into the running app;
+- to include simple stubs/mocks into the app at runtime;
 - to prevent undesired scenario;
-- to add some logging to where it wasn't provided initially, etc;
-- _(welcome to add yours one:wink:)_
+- to add some logging to where it wasn't provided initially;
+- to fix a bug in a library without having its source code, etc
+- _(welcome to add yours one:wink:)_ 
 
 ## How does it work?
 jMint operates as Java agent - special kind of application that is launched by JVM and is able to modify byte code of classes being loaded by JVM.
@@ -44,11 +49,20 @@ _Generally used for manipulating method arguments (including their change) and f
 - `INSTEAD` to completely replace the target method body with a new one.  
 _Generally used to stub the whole method or to modify just a piece of code buried inside the body._
 - `AFTER` to append some code to the end of the target method body.  
-*Generally used to manipulate the result value (including its change). When writing modifying code against `AFTER` cutpoint there is a synthetic variable `$_` available which holds current result value.*  
-:warning: Note that if method throws an exception the `AFTER` cutpoint's code won't be executed. For this purpose there will be a special cutpoint `CATCH` which is still in development stage.  
-:construction: *Please send a feedback (via email or issues) if you really miss this feature.*
+*Generally used to manipulate the result value (including its change). When writing modifying code against `AFTER` cutpoint there is synthetic variable `$_` available which holds current result value. If the result type is `void`, then the type of `$_` is `Object` and the value of `$_` is `null`. There is also `$r` variable which represents the result type (return type) of the method. It is intended to be used as the cast type in a cast expression.*  
+When used without parameters, `AFTER` cutpoint behaves like ordinary code appended to the end of target method body. This means that in case of exception such code won't be executed. If you want it to be executed anyway (like `finally` block) just add `asFinally` parameter right after the cutpoint declaration:
 
-For more info on droplets see next section.
+```java
+    /**
+     * @cutpoint AFTER AS_FINALLY
+     */
+    public void actionPerformed(ActionEvent event) {
+```
+Note that the parameter may be specified in various forms: `asFinally`, `AS_FINALLY`, `as-finally` or even `as finally`.  
+:bulb: There is also auxiliary `IGNORE` cutpoint which is applied by default to all methods with no explicit cutpoint tag. This cutpoint may be applied explicitly to the methods left in the droplet in order to maintain its semantic correctness.  
+:construction: *Dedicated `CATCH` cutpoint  for certain exceptions is planned to be implemented in one of upcoming releases. Please feel free to send feedback (via email or issues) if you'd like it to be released sooner.*
+
+For more info on droplets see Usage section.
 
 ## Download
 Current version: [jmint-1.1.jar](https://github.com/Toparvion/jmint/releases/download/v1.1/jmint-1.1.jar).  
@@ -151,6 +165,14 @@ JMINT_PATH=path/to/jmint.jar
 DROPLETS_HOME=a/long/way/to/droplets
 java -javaagent:$JMINT_PATH=$DROPLETS_HOME/FirstDroplet.java;$DROPLETS_HOME/SecondDroplet.java com.example.coolapp.Main
 ```
+or 
+```bash
+JMINT=path/to/jmint.jar
+DROPLETS=a/long/way/to/droplets/FirstDroplet.java
+DROPLETS=$DROPLETS;a/long/way/to/droplets/SecondDroplet.java
+java -javaagent:$JMINT=$DROPLETS com.example.coolapp.Main
+
+```
 Started with such arguments JVM will launch jMint and let it modify byte code of classes being loaded.  
 :warning: *Note that being unable to load an agent JVM will not start at all.*  
 :information_source: *`javaagent` is not singleton option for JVM. You may add as many agents as you want declaring them as separate  `javaagent` arguments on the JVM launch command.*  
@@ -164,6 +186,8 @@ The modifying code must not contain:
 - labeled continue and break statements;
 - references to generic type parameters (like T in method `T <T> nvl(T t)`);
 - references to static methods or variables imported on demand (i.e. like `java.lang.Double.*`; it should be replaced with separate single imports);
+- implicit boxing/unboxing of primitive types (it must be replaced with explicit ones);
+- invoking methods with listing-like varargs passing (it must be replaced with explicit array);
 - _there are likely some other limitations; if you find one please share it with fellow users via Github issues._
 
 The reasons explanation is beyond this document; you may see [Limitations](https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html#limit) chapter of Javassist Tutorial for more info.
