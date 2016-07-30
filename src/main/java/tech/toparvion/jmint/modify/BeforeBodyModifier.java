@@ -9,7 +9,7 @@ import javassist.CtBehavior;
 public class BeforeBodyModifier implements MethodModifier {
 
   @Override
-  public void apply(CtBehavior method, String injection) throws CannotCompileException {
+  public void apply(String injection, CtBehavior method, String... auxParams) throws CannotCompileException {
     method.insertBefore(injection);
   }
 }

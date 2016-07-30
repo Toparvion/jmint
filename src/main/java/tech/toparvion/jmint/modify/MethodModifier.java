@@ -8,5 +8,5 @@ import javassist.CtBehavior;
  */
 public interface MethodModifier {
 
-  void apply(CtBehavior method, String injection) throws CannotCompileException;
+  void apply(String injection, CtBehavior method, String... auxParams) throws CannotCompileException;
 }

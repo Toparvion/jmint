@@ -8,9 +8,9 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.toparvion.jmint.Cutpoint;
 import tech.toparvion.jmint.lang.gen.DroppingJavaLexer;
 import tech.toparvion.jmint.lang.gen.DroppingJavaParser;
+import tech.toparvion.jmint.model.CutpointType;
 import tech.toparvion.jmint.model.TargetsMap;
 
 import java.io.IOException;
@@ -252,18 +252,18 @@ public class DropletAssemblerTest {
   public void afterCutpointIsRecognizedFully() throws Exception {
     String dropletPath = "src/test/java/tech/toparvion/jmint/lang/samples/AfterCutpoint.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
-    Cutpoint actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint();
-    log.info("Actual cutpoint: {}", actual);
-    assertEquals(Cutpoint.AFTER, actual);
+    CutpointType actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint().getType();
+    log.info("Actual cutpoint type: {}", actual);
+    assertEquals(CutpointType.AFTER, actual);
   }
 
   @Test
   public void defaultCutpointIsAppliedCorrectly() throws Exception {
     String dropletPath = "src/test/java/tech/toparvion/jmint/lang/samples/DefaultCutpoint.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
-    Cutpoint actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint();
-    log.info("Actual cutpoint (default): {}", actual);
-    assertEquals(Cutpoint.IGNORE, actual);
+    CutpointType actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint().getType();
+    log.info("Actual cutpoint type (default): {}", actual);
+    assertEquals(CutpointType.DEFAULT_CUTPOINT_TYPE, actual);
   }
 
   @Test

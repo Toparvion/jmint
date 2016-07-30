@@ -4,6 +4,7 @@ import javassist.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.toparvion.jmint.model.Argument;
+import tech.toparvion.jmint.model.Cutpoint;
 import tech.toparvion.jmint.model.TargetMethod;
 import tech.toparvion.jmint.model.TargetsMap;
 import tech.toparvion.jmint.modify.MethodModifier;
@@ -14,7 +15,7 @@ import java.security.ProtectionDomain;
 import java.util.*;
 
 import static java.lang.String.format;
-import static tech.toparvion.jmint.Cutpoint.IGNORE;
+import static tech.toparvion.jmint.model.CutpointType.IGNORE;
 
 /**
  * Created by Toparvion on 29.04.2016 12:50
@@ -36,8 +37,8 @@ class TargetsTransformer implements ClassFileTransformer {
   TargetsTransformer(TargetsMap targetsMap) {
     this.targetsMap = targetsMap;
     this.pool = ClassPool.getDefault();
-    // debug system property
-    String dumpDir = System.getProperty("tech.toparvion.jmint.javassist.dumpdir");
+    // setup Javassist to dump all modified classes into directory specified via JVM option (if any)
+    String dumpDir = System.getProperty("tech.toparvion.jmint.dumpdir");
     if (dumpDir == null) return;
     CtClass.debugDump = dumpDir.replaceAll("[\\\\/]$", "");
   }
@@ -77,7 +78,7 @@ class TargetsTransformer implements ClassFileTransformer {
       // iterate over desired methods trying to modify each one
       for (TargetMethod targetMethod : targetMethods) {
         try {
-          if (IGNORE.equals(targetMethod.getCutpoint())) {
+          if (IGNORE.equals(targetMethod.getCutpoint().getType())) {
             log.info("Method '{}#{}' is skipped due to IGNORE cutpoint.", dottedClassName, targetMethod.getName());
             continue;
           }
@@ -103,8 +104,8 @@ class TargetsTransformer implements ClassFileTransformer {
 
           // apply modification via corresponding cutpoint
           Cutpoint cutpoint = targetMethod.getCutpoint();
-          MethodModifier modifier = cutpoint.modifierClass.newInstance();
-          modifier.apply(ctMethod, targetMethod.getText());
+          MethodModifier modifier = cutpoint.getType().getModifier();
+          modifier.apply(targetMethod.getText(), ctMethod, cutpoint.getAuxParams());
           log.info("Method '{}' has been modified at {} cutpoint.", ctMethod.getLongName(), cutpoint);
 
         } catch (Exception e) {

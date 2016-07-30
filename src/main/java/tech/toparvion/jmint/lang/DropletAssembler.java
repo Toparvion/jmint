@@ -6,9 +6,9 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.toparvion.jmint.Cutpoint;
 import tech.toparvion.jmint.lang.gen.*;
 import tech.toparvion.jmint.model.Argument;
+import tech.toparvion.jmint.model.Cutpoint;
 import tech.toparvion.jmint.model.TargetMethod;
 import tech.toparvion.jmint.model.TargetsMap;
 
@@ -17,7 +17,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.util.regex.Matcher.quoteReplacement;
-import static tech.toparvion.jmint.Cutpoint.IGNORE;
+import static tech.toparvion.jmint.model.Cutpoint.DEFAULT_CUTPOINT;
+import static tech.toparvion.jmint.model.CutpointType.IGNORE;
 
 /**
  * The main class responsible for extracting valuable data from droplet files. Built upon ANTLR parse tree event
@@ -35,7 +36,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
 
   /**
    * Mapping between simple type names (e.g. {@code Droplet}) and their FQ prefixes (e.g.
-   * {@code ru.ftc.upc.testing.dropper}).
+   * {@code tech.toparvion.jmint.lang.DropletAssembler}).
    * The mapping is built upon the import statements at the header of compilation unit. <br/>
    * It also includes single static imports (e.g. {@code import static java.lang.Integer.MAX_VALUE}) and does not
    * include any type imports on demand (neither {@code java.util.*} nor {@code import static java.lang.Double.*}).
@@ -98,10 +99,10 @@ class DropletAssembler extends DroppingJavaBaseListener {
 
   @Override
   public void enterStaticImportOnDemandDeclaration(DroppingJavaParser.StaticImportOnDemandDeclarationContext ctx) {
-    /**
-     * Static type imports on demand are not supported in this version because they introduce quite complicated
-     * ambiguity. In order not to mute their existence, we prefer to explicitly inform the user about them with the
-     * help of warning.
+    /*
+      Static type imports on demand are not supported in this version because they introduce quite complicated
+      ambiguity. In order not to mute their existence, we prefer to explicitly inform the user about them with the
+      help of warning.
      */
     Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
     String offendingImportString = String.format("import static %s.*;", ctx.typeName().getText());
@@ -142,8 +143,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
     // constructors are treated much like any other methods but still some grammar differences are taken in count
     String constructorName = omitDropletSuffix(ctx.simpleTypeName().getText());
     // let's start from extracting the cutpoint from preceding javadoc comment, if any
-    Cutpoint cutpoint = Cutpoint.getByNameSafe(extractCutpointString(ctx));
-    if (!IGNORE.equals(cutpoint)) {
+    Cutpoint cutpoint = extractCutpointString(ctx);
+    if (!IGNORE.equals(cutpoint.getType())) {
       // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
       checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
     }
@@ -164,8 +165,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
     String methodName = declarator.Identifier().getText();
 
     // let's start from extracting the cutpoint from preceding javadoc comment, if any
-    Cutpoint cutpoint = Cutpoint.getByNameSafe(extractCutpointString(ctx));
-    if (!IGNORE.equals(cutpoint)) {
+    Cutpoint cutpoint = extractCutpointString(ctx);
+    if (!IGNORE.equals(cutpoint.getType())) {
       // at this moment the underlying system doesn't support parametrized types in methods so we have to inform the user
       checkForParametrizedTypesPresence(ctx);             // throws DropletFormatException if type params found
     }
@@ -286,21 +287,21 @@ class DropletAssembler extends DroppingJavaBaseListener {
    * @param ctx rule context of the node which the javadoc is relative to
    * @return string form of cutpoint or {@code null} if it cannot be extracted for any reason
    */
-  private String extractCutpointString(ParserRuleContext ctx) {
+  private Cutpoint extractCutpointString(ParserRuleContext ctx) {
     try {
       // Javadoc comments are neighbors to classBodyDeclaration, not the methodHeader so we have to find this anchor.
       ParserRuleContext classBodyDeclaration = findJavadocAnchor(ctx);
       if (classBodyDeclaration == null)       // this means the anchor was not found
-        return null;
+        return DEFAULT_CUTPOINT;
       Token startToken = classBodyDeclaration.getStart();
       int startITokenIndex = startToken.getTokenIndex();
       // try to find out if there are any comments left to classBodyDeclaration
       List<Token> hiddenTokens = tokenStream.getHiddenTokensToLeft(startITokenIndex, DroppingJavaLexer.BLOCK_COMMENTS);
       if (hiddenTokens == null || hiddenTokens.isEmpty())
-        return null;
+        return DEFAULT_CUTPOINT;
       Token hiddenToken = hiddenTokens.get(0);
       if (hiddenToken == null)
-        return null;
+        return DEFAULT_CUTPOINT;
 
       // now that we've found one, let's recognize it with separate lexer/parser
       ANTLRInputStream inputStream = new ANTLRInputStream(hiddenToken.getText());
@@ -315,12 +316,12 @@ class DropletAssembler extends DroppingJavaBaseListener {
       ParseTreeWalker walker = new ParseTreeWalker();
       walker.walk(assembler, tree);
 
-      // and return found value (which may eventually be null)
-      return assembler.getTagValue();
+      // and return found value
+      return assembler.getCutpoint();
 
     } catch (Exception e) {   // we can't be sure about anything in comments so that we need a defense line
       log.info("Couldn't extract cutpoint from javadoc comments: '{}'. Falling back to default.", e.getMessage());
-      return null;
+      return DEFAULT_CUTPOINT;
     }
   }
 
@@ -346,7 +347,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
 
   /**
    * @param className original droplet class name
-   * @return the {@code className} without last <i>Droplet</i> or <i>_Droplet</i> suffix
+   * @return the {@code className} without first <i>Droplet</i> or <i>_Droplet</i> suffix
    */
   private String omitDropletSuffix(String className) {
     return className.replaceFirst("(?i)_?Droplet$", "");

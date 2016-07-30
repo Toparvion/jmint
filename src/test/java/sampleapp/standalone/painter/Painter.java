@@ -357,8 +357,13 @@ public class Painter extends JPanel {
             this.points = points;
         }
         public void actionPerformed(ActionEvent event) {
-            JCheckBox src = (JCheckBox)event.getSource();
-            boolean set = src.isSelected();
+          //<editor-fold desc="This section was added just for testing of AFTER cutpoint">
+          if (tabbedPane.getTabCount() > 4) {
+            throw new IllegalStateException("Too many tabs opened.");
+          }
+          //</editor-fold>
+          JCheckBox src = (JCheckBox) event.getSource();
+          boolean set = src.isSelected();
             if (set)                    // флажок установлен
             {
                 if (child==null)
