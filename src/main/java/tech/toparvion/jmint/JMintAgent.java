@@ -28,7 +28,7 @@ public class JMintAgent {
     if (targetsMap.isEmpty()) {
       log.warn("No droplets to apply left after arguments processing. No byte code will be modified.");
     } else {
-      inst.addTransformer(new TargetsTransformer(targetsMap));
+      inst.addTransformer(new DropletsInjector(targetsMap));
     }
   }
 
