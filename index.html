@@ -53,7 +53,7 @@
 <li>both application and third-party (library) code can be modified.</li>
 </ul>
 
-<p><g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Internally jMint is a wrapper around <a href="http://jboss-javassist.github.io/javassist/">Javassist</a> byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.<br>
+<p><g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> In a nutshell jMint is a wrapper around <a href="http://jboss-javassist.github.io/javassist/">Javassist</a> byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.<br>
 <g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection of classes (if any). It also knows nothing about legal aspects so that before deploying a modified application or library please make sure you do not violate its license.</p>
 
 <h2>
@@ -138,7 +138,7 @@ When used without parameters, <code>AFTER</code> cutpoint behaves like ordinary 
 <h2>
 <a id="download" class="anchor" href="#download" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Download</h2>
 
-<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.2/jmint-1.2.jar">jmint-1.2.jar</a>.<br>
+<p>Current version: <a href="https://github.com/Toparvion/jmint/releases/download/v1.3/jmint-1.3.jar">jmint-1.2.jar</a>.<br>
 <g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> Description of current version is available on the <a href="https://github.com/Toparvion/jmint/releases/latest">Latest Release page</a>.</p>
 
 <h1>
@@ -180,10 +180,12 @@ In the simplest case the whole javadoc definition may look like:<br>
 <g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Please remember about some limitations of modifying code (see corresponding section below).</em>
 All other class members will be ignored by jMint.<br>
 </li>
-<li>Repeat steps 2-4 for all the target methods of this class and then save the droplet anywhere you want.</li>
+<li>Repeat steps 2-4 for all the target methods of this class and then save the droplet anywhere you want.<br>
+<g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <em>Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.</em>
+</li>
 </ol>
 
-<p><g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <strong>Example.</strong> Here's a sample droplet created from copy of its target class (<em>FooDroplet.java</em>):</p>
+<p><strong>Example.</strong> Here's a sample droplet created from copy of its target class (<em>FooDroplet.java</em>):</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.example.coolapp</span>;
 
@@ -234,10 +236,12 @@ All other class members will be ignored by jMint.<br>
 <li>Write the body of the method according to selected cutpoint.<br>
 <g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Please remember about some limitations of modifying code (see corresponding section below).</em>
 </li>
-<li>Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.</li>
+<li>Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.<br>
+<g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <em>Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.</em>
+</li>
 </ol>
 
-<p><g-emoji alias="bulb" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/1f4a1.png">💡</g-emoji> <strong>Example.</strong> Here's a sample droplet created from scratch (<em>FooDroplet.java</em>):</p>
+<p><strong>Example.</strong> Here's a sample droplet created from scratch (<em>FooDroplet.java</em>):</p>
 
 <div class="highlight highlight-source-java"><pre><span class="pl-k">package</span> <span class="pl-smi">com.example.coolapp</span>;
 
@@ -278,7 +282,7 @@ java -javaagent:<span class="pl-smi">$JMINT</span>=<span class="pl-smi">$DROPLET
 <p>Started with such arguments JVM will launch jMint and let it modify byte code of classes being loaded.<br>
 <g-emoji alias="warning" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/26a0.png">⚠️</g-emoji> <em>Note that being unable to load an agent JVM will not start at all.</em><br>
 <g-emoji alias="information_source" fallback-src="https://assets-cdn.github.com/images/icons/emoji/unicode/2139.png">ℹ️</g-emoji> <em><code>javaagent</code> is not singleton option for JVM. You may add as many agents as you want declaring them as separate  <code>javaagent</code> arguments on the JVM launch command.</em><br>
-To ensure that your target methods have been modified correctly look for messages from class <code>tech.toparvion.jmint.TargetsTransformer</code> in the log (see <em>Logging</em> section).</p>
+To ensure that your target methods have been modified correctly look for messages from class <code>tech.toparvion.jmint.DropletsInjector</code> in the log (see <em>Logging</em> section).</p>
 
 <h1>
 <a id="limitations" class="anchor" href="#limitations" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Limitations</h1>
@@ -316,9 +320,9 @@ SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further detail
 ...
 [main] INFO tech.toparvion.jmint.JMintAgent - Droplets loading took: 1167 ms
 ... (later, at runtime) ...
-[main] INFO tech.toparvion.jmint.TargetsTransformer - Method 'sampleapp.standalone.painter.Painter.buildContent()' has been modified at AFTER cutpoint.
+[main] INFO tech.toparvion.jmint.DropletsInjector - Method 'sampleapp.standalone.painter.Painter.buildContent()' has been modified at AFTER.
 ...
-[main] INFO tech.toparvion.jmint.TargetsTransformer - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE cutpoint.
+[main] INFO tech.toparvion.jmint.DropletsInjector - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE.
 </code></pre>
 
 <h1>
