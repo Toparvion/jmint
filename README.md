@@ -65,7 +65,7 @@ Note that the parameter may be specified in various forms: `asFinally`, `AS_FINA
 For more info on droplets see Usage section.
 
 ## Download
-Current version: [jmint-1.2.jar](https://github.com/Toparvion/jmint/releases/download/v1.2/jmint-1.2.jar).  
+Current version: [jmint-1.2.jar](https://github.com/Toparvion/jmint/releases/download/v1.3/jmint-1.3.jar).  
 :information_source: Description of current version is available on the [Latest Release page](https://github.com/Toparvion/jmint/releases/latest).
 
 # Usage
@@ -93,9 +93,10 @@ In the simplest case the whole javadoc definition may look like:
 4. In the body of target method write (or change) the code you want to be injected according to selected cutpoint.  
 :warning: _Please remember about some limitations of modifying code (see corresponding section below)._
 All other class members will be ignored by jMint.  
-5. Repeat steps 2-4 for all the target methods of this class and then save the droplet anywhere you want.
+5. Repeat steps 2-4 for all the target methods of this class and then save the droplet anywhere you want.  
+:bulb: *Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.*
 
-:bulb: **Example.** Here's a sample droplet created from copy of its target class (_FooDroplet.java_):
+**Example.** Here's a sample droplet created from copy of its target class (_FooDroplet.java_):
 ```java
 package com.example.coolapp;
 
@@ -136,9 +137,10 @@ _Access modifiers as well as `throws` clause and annotations make no sense to dr
 _It's a good practice to write detailed description of modifying method here but the droplet itself requires only one custom javadoc tag - `@cutpoint` followed by one of values: `BEFORE`, `INSTEAD`, `AFTER`._
 6. Write the body of the method according to selected cutpoint.  
 :warning: _Please remember about some limitations of modifying code (see corresponding section below)._
-7. Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.
+7. Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.  
+:bulb: *Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.*
 
-:bulb: **Example.** Here's a sample droplet created from scratch (_FooDroplet.java_):
+**Example.** Here's a sample droplet created from scratch (_FooDroplet.java_):
 ```java
 package com.example.coolapp;
 
