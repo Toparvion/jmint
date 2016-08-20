@@ -357,7 +357,7 @@ public class Painter extends JPanel {
             this.points = points;
         }
         public void actionPerformed(ActionEvent event) {
-          //<editor-fold desc="This section was added just for testing of AFTER cutpoint">
+          //<editor-fold desc="This section was added just for testing AFTER cutpoint">
           if (tabbedPane.getTabCount() > 4) {
             throw new IllegalStateException("Too many tabs opened.");
           }

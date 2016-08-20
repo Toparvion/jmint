@@ -176,7 +176,7 @@ java -javaagent:$JMINT=$DROPLETS com.example.coolapp.Main
 Started with such arguments JVM will launch jMint and let it modify byte code of classes being loaded.  
 :warning: *Note that being unable to load an agent JVM will not start at all.*  
 :information_source: *`javaagent` is not singleton option for JVM. You may add as many agents as you want declaring them as separate  `javaagent` arguments on the JVM launch command.*  
-To ensure that your target methods have been modified correctly look for messages from class `tech.toparvion.jmint.TargetsTransformer` in the log (see _Logging_ section).
+To ensure that your target methods have been modified correctly look for messages from class `tech.toparvion.jmint.DropletsInjector` in the log (see _Logging_ section).
 
 # Limitations
 Unfortunately, source code of droplets' methods (the modifying code) can not be as rich and diverse as usual one.
@@ -206,9 +206,9 @@ Here's some sample messages emitted by jMint when `slf4j-simple` binding is pres
 ...
 [main] INFO tech.toparvion.jmint.JMintAgent - Droplets loading took: 1167 ms
 ... (later, at runtime) ...
-[main] INFO tech.toparvion.jmint.TargetsTransformer - Method 'sampleapp.standalone.painter.Painter.buildContent()' has been modified at AFTER cutpoint.
+[main] INFO tech.toparvion.jmint.DropletsInjector - Method 'sampleapp.standalone.painter.Painter.buildContent()' has been modified at AFTER.
 ...
-[main] INFO tech.toparvion.jmint.TargetsTransformer - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE cutpoint.
+[main] INFO tech.toparvion.jmint.DropletsInjector - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE.
 ```
 
 # Under the hood

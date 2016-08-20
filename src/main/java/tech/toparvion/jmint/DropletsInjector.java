@@ -20,8 +20,8 @@ import static tech.toparvion.jmint.model.CutpointType.IGNORE;
 /**
  * Created by Toparvion on 29.04.2016 12:50
  */
-class TargetsTransformer implements ClassFileTransformer {
-  private static final Logger log = LoggerFactory.getLogger(TargetsTransformer.class);
+class DropletsInjector implements ClassFileTransformer {
+  private static final Logger log = LoggerFactory.getLogger(DropletsInjector.class);
 
   /**
    * The package that is implicitly imported into every Javassist ClassPool instance and therefore should be considered
@@ -34,7 +34,7 @@ class TargetsTransformer implements ClassFileTransformer {
   private final Set<ClassLoader> knownLoaders = new HashSet<ClassLoader>();
   private final Set<String> knownPackages = new HashSet<String>();
 
-  TargetsTransformer(TargetsMap targetsMap) {
+  DropletsInjector(TargetsMap targetsMap) {
     this.targetsMap = targetsMap;
     this.pool = ClassPool.getDefault();
     // setup Javassist to dump all modified classes into directory specified via JVM option (if any)
@@ -106,7 +106,7 @@ class TargetsTransformer implements ClassFileTransformer {
           Cutpoint cutpoint = targetMethod.getCutpoint();
           MethodModifier modifier = cutpoint.getType().getModifier();
           modifier.apply(targetMethod.getText(), ctMethod, cutpoint.getAuxParams());
-          log.info("Method '{}' has been modified at {} cutpoint.", ctMethod.getLongName(), cutpoint);
+          log.info("Method '{}' has been modified at {}.", ctMethod.getLongName(), cutpoint);
 
         } catch (Exception e) {
           log.error(format("Failed to modify target method '%s#%s'. Skipped.",
