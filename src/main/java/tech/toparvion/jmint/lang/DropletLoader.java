@@ -24,6 +24,7 @@ public abstract class DropletLoader {
     // at the moment we support only one argument file format - droplet format, thus file extension doesn't matter
     TargetsMap overallMap = new TargetsMap();
     for (String argToken : argTokens) {
+      if (argToken.isEmpty()) continue;   // to support first line of composite arguments like 'DROPLETS=$DROPLETS;...'
       try {
         overallMap.putAll(loadSingleDroplet(argToken));
 
