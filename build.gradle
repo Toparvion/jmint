@@ -1,10 +1,13 @@
-group 'toparvion'
-version '1.3'
+group 'tech.toparvion'
+version '1.4-beta'
 
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
 
 sourceCompatibility = 1.6
 compileTestJava.options.encoding = 'UTF-8'
+archivesBaseName = "jmint"
 
 repositories {
     mavenCentral()
@@ -47,4 +50,66 @@ task runPainterWithDebug(type: JavaExec, dependsOn: jar) {
                        'src/test/java/sampleapp/standalone/painter/composite-droplet.zip'
     ].toList()
     debug = true            // Gradle default debug port is 5005
+}
+
+// ------------------  definitions for Central Repository compatibility -----------------------------------------------
+
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
+}
+task sourcesJar(type: Jar) {
+    classifier = 'sources'
+    from sourceSets.main.allSource
+}
+artifacts {
+    archives javadocJar, sourcesJar
+}
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
+                authentication(userName: ossrhUsername, password: ossrhPassword)
+            }
+
+            pom.project {
+                name 'jMint'
+                packaging 'jar'
+                // optionally artifactId can be defined here
+                description 'A side effect injection (SEI) Java tool aimed at simplicity of modifications expression'
+                url 'http://toparvion.tech'
+
+                scm {
+                    connection 'scm:git:git://github.com/Toparvion/jmint.git'
+                    developerConnection 'scm:git:ssh://github.com/Toparvion/jmint.git'
+                    url 'https://github.com/Toparvion/jmint'
+                }
+
+                licenses {
+                    license {
+                        name 'MIT License'
+                        url 'https://raw.githubusercontent.com/Toparvion/jmint/master/LICENSE.txt'
+                    }
+                }
+
+                developers {
+                    developer {
+                        id 'toparvion'
+                        name 'Toparvion'
+                        email 'toparvion@gmx.com'
+                    }
+                }
+            }
+        }
+    }
 }
