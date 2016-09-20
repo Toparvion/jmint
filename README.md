@@ -5,7 +5,7 @@
 + modification can be both extending and altering in relation to target method body;
 + both application and third-party (library) code can be modified.
 
-:information_source: Internally jMint is a wrapper around [Javassist](http://jboss-javassist.github.io/javassist/) byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.  
+:information_source: In a nutshell jMint is a wrapper around [Javassist](http://jboss-javassist.github.io/javassist/) byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.  
 :warning: jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection of classes (if any). It also knows nothing about legal aspects so that before deploying a modified application or library please make sure you do not violate its license.
 
 ## What is it for?
@@ -65,7 +65,7 @@ Note that the parameter may be specified in various forms: `asFinally`, `AS_FINA
 For more info on droplets see Usage section.
 
 ## Download
-Current version: [jmint-1.2.jar](https://github.com/Toparvion/jmint/releases/download/v1.3/jmint-1.3.jar).  
+Current version: [jmint-1.4-beta.jar](https://github.com/Toparvion/jmint/releases/download/v1.4-beta/jmint-1.4-beta.jar).  
 :information_source: Description of current version is available on the [Latest Release page](https://github.com/Toparvion/jmint/releases/latest).
 
 # Usage
