@@ -1,4 +1,5 @@
 #Overview
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint)
 ## What is jMint?
 *jMint* is a tool for modifying methods of a running Java application without changing its source code. jMint key features are:
 + modification is expressed in ordinary Java source code - *no byte code knowledge is required*;
