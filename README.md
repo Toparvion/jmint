@@ -1,5 +1,7 @@
-#Overview
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint)
+
+# Overview
+
 ## What is jMint?
 *jMint* is a tool for modifying methods of a running Java application without changing its source code. jMint key features are:
 + modification is expressed in ordinary Java source code - *no byte code knowledge is required*;
@@ -76,8 +78,8 @@ Usage of **jMint** includes two steps:
 2. Attach **jMint** to target application for applying created droplet(s).
 
 ## Step 1: Create droplet
-There are 2 general approaches to create a droplet: *from source code of target class* and *from scratch*.  
-- The first one is handy when you have source code of a class being modified and you want to apply its slightly changed version at runtime. The **advantage** of this approach is that you don't have to manually write droplet class, you may just copy the existing one and modify the target method(s) only. The **flaw** is that your droplet gets some excess source code (which may be confusing in case of large class _(and may provoke bugs in jMint:wink:)_).
+There are 2 general approaches to create a droplet: *from source code of target class* and *from scratch*. You are free to choose any of them.  Here are some hints that may help:  
+- The first approach is handy when you have source code of a class being modified and you want to apply its slightly changed version at runtime. The **advantage** of this approach is that you don't have to manually write droplet class, you may just copy the existing one and modify the target method(s) only. The **flaw** is that your droplet gets some excess source code (which may be confusing in case of large class _(and may provoke bugs in jMint:wink:)_).
 - The second approach is preferable when you don't want to copy the whole original source code and/or want to keep the droplet as simple as possible. The **pros and cons** of this approach are opposite to the first one: it makes you write some code manually but on the other hand it allows you to fill the droplet with the code you really need, without surpluses.
 
 #### Approach 1. Creating droplet from target class
