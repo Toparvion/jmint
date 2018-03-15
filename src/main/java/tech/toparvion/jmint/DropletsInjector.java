@@ -1,8 +1,8 @@
 package tech.toparvion.jmint;
 
 import javassist.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import tech.toparvion.jmint.model.Argument;
 import tech.toparvion.jmint.model.Cutpoint;
 import tech.toparvion.jmint.model.TargetMethod;
@@ -10,7 +10,6 @@ import tech.toparvion.jmint.model.TargetsMap;
 import tech.toparvion.jmint.modify.MethodModifier;
 
 import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
 import java.security.ProtectionDomain;
 import java.util.*;
 
@@ -21,7 +20,7 @@ import static tech.toparvion.jmint.model.CutpointType.IGNORE;
  * Created by Toparvion on 29.04.2016 12:50
  */
 class DropletsInjector implements ClassFileTransformer {
-  private static final Logger log = LoggerFactory.getLogger(DropletsInjector.class);
+  private static final Log log = LogFactory.getLog(DropletsInjector.class);
 
   /**
    * The package that is implicitly imported into every Javassist ClassPool instance and therefore should be considered
@@ -48,7 +47,7 @@ class DropletsInjector implements ClassFileTransformer {
                           String className,
                           Class<?> classBeingRedefined,
                           ProtectionDomain protectionDomain,
-                          byte[] classFileBuffer) throws IllegalClassFormatException {
+                          byte[] classFileBuffer) {
     // first of all let's check if we're interested in this class
     if (!targetsMap.containsKey(className)) {
       return null;
@@ -79,7 +78,7 @@ class DropletsInjector implements ClassFileTransformer {
       for (TargetMethod targetMethod : targetMethods) {
         try {
           if (IGNORE.equals(targetMethod.getCutpoint().getType())) {
-            log.info("Method '{}#{}' is skipped due to IGNORE cutpoint.", dottedClassName, targetMethod.getName());
+            log.info(format("Method '%s#%s' is skipped due to IGNORE cutpoint.", dottedClassName, targetMethod.getName()));
             continue;
           }
           // in order to precisely select method to modify we need CtClass representation of all its formal parameters
@@ -106,7 +105,7 @@ class DropletsInjector implements ClassFileTransformer {
           Cutpoint cutpoint = targetMethod.getCutpoint();
           MethodModifier modifier = cutpoint.getType().getModifier();
           modifier.apply(targetMethod.getText(), ctMethod, cutpoint.getAuxParams());
-          log.info("Method '{}' has been modified at {}.", ctMethod.getLongName(), cutpoint);
+          log.info(format("Method '%s' has been modified at %s.", ctMethod.getLongName(), cutpoint));
 
         } catch (Exception e) {
           log.error(format("Failed to modify target method '%s#%s'. Skipped.",

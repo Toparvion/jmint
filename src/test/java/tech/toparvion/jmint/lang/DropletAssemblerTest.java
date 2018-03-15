@@ -5,9 +5,9 @@ import org.antlr.v4.runtime.BufferedTokenStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.toparvion.jmint.lang.gen.DroppingJavaLexer;
 import tech.toparvion.jmint.lang.gen.DroppingJavaParser;
 import tech.toparvion.jmint.model.CutpointType;
@@ -17,13 +17,14 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
 
+import static java.lang.String.format;
 import static org.junit.Assert.assertEquals;
 
 /**
  * @author Toparvion
  */
 public class DropletAssemblerTest {
-  private static final Logger log = LoggerFactory.getLogger(DropletAssemblerTest.class);
+  private static final Log log = LogFactory.getLog(DropletAssemblerTest.class);
 
   @Test
   public void nestedClassesAreRecognizedFully() throws Exception {
@@ -253,7 +254,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/tech/toparvion/jmint/lang/samples/AfterCutpoint.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     CutpointType actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint().getType();
-    log.info("Actual cutpoint type: {}", actual);
+    log.info(format("Actual cutpoint type: %s", actual));
     assertEquals(CutpointType.AFTER, actual);
   }
 
@@ -262,7 +263,7 @@ public class DropletAssemblerTest {
     String dropletPath = "src/test/java/tech/toparvion/jmint/lang/samples/DefaultCutpoint.java";
     TargetsMap targetsMap = loadDroplet(dropletPath).getTargetsMap();
     CutpointType actual = targetsMap.entrySet().iterator().next().getValue().getFirst().getCutpoint().getType();
-    log.info("Actual cutpoint type (default): {}", actual);
+    log.info(format("Actual cutpoint type (default): %s", actual));
     assertEquals(CutpointType.DEFAULT_CUTPOINT_TYPE, actual);
   }
 

@@ -1,7 +1,9 @@
 package tech.toparvion.jmint.model;
 
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.LogFactory;
 import tech.toparvion.jmint.modify.*;
+
+import static java.lang.String.format;
 
 /**
  * Created by Toparvion on 29.04.2016 11:59
@@ -45,7 +47,7 @@ public enum CutpointType {
         return cutpointType;
       }
     }
-    LoggerFactory.getLogger(CutpointType.class).debug("Unknown cutpoint type encountered: {}", name);
+    LogFactory.getLog(CutpointType.class).debug(format("Unknown cutpoint type encountered: %s", name));
     return DEFAULT_CUTPOINT_TYPE;
   }
 

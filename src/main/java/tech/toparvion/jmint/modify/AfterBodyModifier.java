@@ -2,18 +2,19 @@ package tech.toparvion.jmint.modify;
 
 import javassist.CannotCompileException;
 import javassist.CtBehavior;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static java.util.regex.Pattern.CASE_INSENSITIVE;
 
 /**
  * Created by Toparvion on 29.04.2016 14:51
  */
 public class AfterBodyModifier implements MethodModifier {
-  private static final Logger log = LoggerFactory.getLogger(AfterBodyModifier.class);
+  private static final Log log = LogFactory.getLog(AfterBodyModifier.class);
   private static final Pattern AS_FINALLY_PATTERN = Pattern.compile("as[-_ ]?finally", CASE_INSENSITIVE);
 
   @Override
@@ -26,8 +27,8 @@ public class AfterBodyModifier implements MethodModifier {
       }
       asFinally = AS_FINALLY_PATTERN.matcher(paramValue.trim()).matches();
     }
-    log.info("AFTER cutpoint for method '{}' {} be applied as finally block.", method.getName(),
-            asFinally ? "will" : "won't");
+    log.info(format("AFTER cutpoint for method '%s' %s be applied as finally block.", method.getName(),
+            asFinally ? "will" : "won't"));
     method.insertAfter(injection, asFinally);
   }
 }

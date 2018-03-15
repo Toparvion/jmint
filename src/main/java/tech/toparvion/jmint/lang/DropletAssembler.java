@@ -4,8 +4,8 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import tech.toparvion.jmint.lang.gen.*;
 import tech.toparvion.jmint.model.Argument;
 import tech.toparvion.jmint.model.Cutpoint;
@@ -16,6 +16,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.lang.String.format;
 import static java.util.regex.Matcher.quoteReplacement;
 import static tech.toparvion.jmint.model.Cutpoint.DEFAULT_CUTPOINT;
 import static tech.toparvion.jmint.model.CutpointType.IGNORE;
@@ -26,7 +27,7 @@ import static tech.toparvion.jmint.model.CutpointType.IGNORE;
  * @author Toparvion
  */
 class DropletAssembler extends DroppingJavaBaseListener {
-  private static final Logger log = LoggerFactory.getLogger(DropletAssembler.class);
+  private static final Log log = LogFactory.getLog(DropletAssembler.class);
 
   /**
    * Mapping between all target classes and lists of their methods. These methods are targets for byte
@@ -105,10 +106,10 @@ class DropletAssembler extends DroppingJavaBaseListener {
       help of warning.
      */
     Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
-    String offendingImportString = String.format("import static %s.*;", ctx.typeName().getText());
-    log.warn("Static imports on demand are not supported. If they are used in not ignored methods please replace " +
-            "them with a set of single static imports.\nLine {}:{} - {}\n",
-            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString);
+    String offendingImportString = format("import static %s.*;", ctx.typeName().getText());
+    log.warn(format("Static imports on demand are not supported. If they are used in not ignored methods please replace " +
+            "them with a set of single static imports.\nLine %s:%s - %s\n", offendingToken.getLine(), offendingToken
+        .getCharPositionInLine(), offendingImportString));
   }
 
   @Override
@@ -320,7 +321,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
       return assembler.getCutpoint();
 
     } catch (Exception e) {   // we can't be sure about anything in comments so that we need a defense line
-      log.info("Couldn't extract cutpoint from javadoc comments: '{}'. Falling back to default.", e.getMessage());
+      log.info(format("Couldn't extract cutpoint from javadoc comments: '%s'. Falling back to default.",
+          e.getMessage()));
       return DEFAULT_CUTPOINT;
     }
   }
@@ -388,6 +390,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
    * containing type (e.g. {@code KeyStore.Builder}). In the latter case the resolving will be applied to containing
    * type ({@code KeyStore}), not the contained one ({@code Builder}).
    */
+  @SuppressWarnings("BooleanMethodIsAlwaysInverted")      // inverted method is easier for understanding
   private boolean isNameAlreadyQualified(String wholeText, int typeNameStartPosition) {
     int precedingSymbolStartPosition = Math.max(0, (typeNameStartPosition-2));
     return ". ".equals(wholeText.substring(precedingSymbolStartPosition, typeNameStartPosition));
@@ -445,7 +448,7 @@ class DropletAssembler extends DroppingJavaBaseListener {
     DroppingJavaVisitor<ParserRuleContext> visitor = new GenericTypeSearchVisitor();
     ParserRuleContext token = visitor.visit(ctx);
     if (token != null) {
-      String message = String.format("Line %d:%d - %s: %s", token.getStart().getLine(),
+      String message = format("Line %d:%d - %s: %s", token.getStart().getLine(),
               token.getStart().getCharPositionInLine(),
               "Methods with parametrized types are not supported", new BodyComposingVisitor().visit(token));
       throw new DropletFormatException(message);
