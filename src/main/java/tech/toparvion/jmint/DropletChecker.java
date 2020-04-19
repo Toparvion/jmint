@@ -20,10 +20,10 @@ public class DropletChecker {
     System.out.println("\nListed droplet(s) format is OK.");
   }
 
-  private static final String USAGE_HELP = "Usage: java -jar dropper.jar <droplet-list>\n" +
+  private static final String USAGE_HELP = "Usage: java -jar jmint.jar <droplet-list>\n" +
           "   Argument <droplet-list> is a semicolon-separated list of droplet files to check.\n" +
           "   The list is exactly the" +
           " same as one that should be given to dropper in usual (java agent) mode after '=' sign,\n" +
-          "   i.e. -javaagent:dropper.jar=BusinessClassDroplet.java;SystemClassDroplet.java.\nExample:\n" +
-          "   java -jar dropper.jar BusinessClassDroplet.java;SystemClassDroplet.java";
+          "   i.e. -javaagent:jmint.jar=BusinessClassDroplet.java;SystemClassDroplet.java.\nExample:\n" +
+          "   java -jar jmint.jar BusinessClassDroplet.java;SystemClassDroplet.java";
 }

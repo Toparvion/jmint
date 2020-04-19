@@ -22,8 +22,8 @@ Typical use cases of *jMint* include (but not restricted to) testing stage when 
 
 ## How does it work?
 jMint operates as Java agent - special kind of application that is launched by JVM and is able to modify byte code of classes being loaded by JVM.
-* First, **jMint** loads and parses the modifying behavior in the form of **_droplet_** - Java source file describing the target of modification (class, method, etc) and the modifying code itself _(see next section)_.
-* Then, at the time of target class loading the modifying code gets compiled against the class and **jMint** passes it to JVM alongside with the original byte code just like if it was loaded in usual way.
+* First, **jMint** loads and parses the modifying behavior in the form of [**_droplet_**](#what-is-droplet) - Java source file describing the target of modification (class, method, etc) and the modifying code itself.
+* Then, at the time of target class loading, the modifying code gets compiled against the class and **jMint** passes it to JVM alongside with the original byte code just like if it was loaded in usual way.
 
 ## What is droplet?
 **Droplet** *(in the sense of injection)* is an ordinary Java source code file that is used by **jMint** to find out 2 things:
@@ -32,7 +32,8 @@ jMint operates as Java agent - special kind of application that is launched by J
 2. The modifying code itself.
 
 Droplets look like all other Java type definitions (classes, interfaces, enums) but in fact they are not. Their classes' and methods' signatures do not define anything new, instead they just specify the target of modification.  
-:bulb: _**Example.**_ If you have class `com.example.coolapp.Saver` with method `private void save(BusinessEntity entity)` and you want to prepend it with dumping of argument to standard output then your droplet may look like (*Saver.java*):
+:bulb: _**Example.**_ If you have class `com.example.coolapp.Saver` with method `private void save(BusinessEntity entity)` and you want to prepend it with dumping of argument to standard output then your droplet may look like  this (*Saver.java*):
+
 ```java
 package com.example.coolapp;
 import com.example.coolapp.model.BusinessEntity;
@@ -223,4 +224,4 @@ jMint is built upon three great tools: Java Byte Code Instrumentation API, Javas
 jMint is distributed under MIT License (see [LICENSE.txt](https://github.com/Toparvion/jmint/blob/master/LICENSE.txt)).
 
 # Support & feedback
-jMint is being developed by single person (@Toparvion) in free time as a helpful tool for day-to-day tasks. It is not finished yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post [issues](https://github.com/Toparvion/jmint/issues) or contact the author directly: `toparvion[at]gmx[dot]com`. Testing assistance is extremely appreciated:wink:
+jMint is being developed by single person (@Toparvion) in free time as a helpful tool for day-to-day tasks. It is not finished yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post [issues](https://github.com/Toparvion/jmint/issues) or contact the author directly: `toparvion[at]gmx[dot]com`. Testing assistance is also extremely appreciated:wink:
