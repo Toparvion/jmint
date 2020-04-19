@@ -1,11 +1,12 @@
 group 'tech.toparvion'
-version '1.4-beta'
+version '1.5-beta'
 
 apply plugin: 'java'
+apply plugin: 'jacoco'
 apply plugin: 'maven'
-apply plugin: 'signing'
 
-sourceCompatibility = 1.6
+sourceCompatibility = JavaVersion.VERSION_1_6
+targetCompatibility = JavaVersion.VERSION_1_6
 compileTestJava.options.encoding = 'UTF-8'
 archivesBaseName = "jmint"
 
@@ -19,9 +20,10 @@ configurations {
 }
 
 dependencies {
-    compile 'org.javassist:javassist:3.20.0-GA'
-    compile 'org.slf4j:slf4j-api:1.7.7'
+    compile group: 'org.javassist', name: 'javassist', version: '3.20.0-GA'
+    compile group: 'org.slf4j', name: 'slf4j-api', version: '1.7.7'
     compile group: 'org.antlr', name: 'antlr4-runtime', version: '4.5.3'
+    
     testCompile group: 'junit', name: 'junit', version: '4.11'
     testRuntime group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.7'
 }
@@ -29,7 +31,7 @@ dependencies {
 jar {
     manifest {
         attributes("Implementation-Title": "jMint",
-                "Implementation-Version": version,
+                "Implementation-Version": archiveVersion.get(),
                 "Implementation-Vendor": "Toparvion",
                 "Premain-Class": "tech.toparvion.jmint.JMintAgent",
                 "Main-Class": "tech.toparvion.jmint.DropletChecker")
@@ -50,66 +52,4 @@ task runPainterWithDebug(type: JavaExec, dependsOn: jar) {
                        'src/test/java/sampleapp/standalone/painter/composite-droplet.zip'
     ].toList()
     debug = true            // Gradle default debug port is 5005
-}
-
-// ------------------  definitions for Central Repository compatibility -----------------------------------------------
-
-task javadocJar(type: Jar) {
-    classifier = 'javadoc'
-    from javadoc
-}
-task sourcesJar(type: Jar) {
-    classifier = 'sources'
-    from sourceSets.main.allSource
-}
-artifacts {
-    archives javadocJar, sourcesJar
-}
-signing {
-    sign configurations.archives
-}
-
-uploadArchives {
-    repositories {
-        mavenDeployer {
-            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-
-            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            snapshotRepository(url: "https://oss.sonatype.org/content/repositories/snapshots/") {
-                authentication(userName: ossrhUsername, password: ossrhPassword)
-            }
-
-            pom.project {
-                name 'jMint'
-                packaging 'jar'
-                // optionally artifactId can be defined here
-                description 'A side effect injection (SEI) Java tool aimed at simplicity of modifications expression'
-                url 'http://toparvion.tech'
-
-                scm {
-                    connection 'scm:git:git://github.com/Toparvion/jmint.git'
-                    developerConnection 'scm:git:ssh://github.com/Toparvion/jmint.git'
-                    url 'https://github.com/Toparvion/jmint'
-                }
-
-                licenses {
-                    license {
-                        name 'MIT License'
-                        url 'https://raw.githubusercontent.com/Toparvion/jmint/master/LICENSE.txt'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id 'toparvion'
-                        name 'Toparvion'
-                        email 'toparvion@gmx.com'
-                    }
-                }
-            }
-        }
-    }
 }
