@@ -20,9 +20,12 @@ public abstract class DropletLoader {
   private static final Logger log = LoggerFactory.getLogger(DropletLoader.class);
 
   public static TargetsMap loadDroplets(String args) {
-    String[] argTokens = args.split("[;,]");
     // at the moment we support only one argument file format - droplet format, thus file extension doesn't matter
     TargetsMap overallMap = new TargetsMap();
+    if (args == null) {
+      throw new IllegalArgumentException("No droplets specified for applying by jMint");
+    }
+    String[] argTokens = args.split("[;,]");
     for (String argToken : argTokens) {
       if (argToken.isEmpty()) continue;   // to support first line of composite arguments like 'DROPLETS=$DROPLETS;...'
       try {
