@@ -1,4 +1,5 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint)
+ [![Build Status](https://travis-ci.com/Toparvion/jmint.svg?branch=master)](https://travis-ci.com/Toparvion/jmint)
 
 # Overview
 
