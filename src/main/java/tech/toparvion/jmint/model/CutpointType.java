@@ -1,7 +1,10 @@
 package tech.toparvion.jmint.model;
 
-import org.slf4j.LoggerFactory;
 import tech.toparvion.jmint.modify.*;
+
+import java.util.logging.Logger;
+
+import static java.util.logging.Level.SEVERE;
 
 /**
  * Created by Toparvion on 29.04.2016 11:59
@@ -16,7 +19,7 @@ public enum CutpointType {
    * mean that the method must not be included into targets map. It is still included there to avoid breaking the
    * order of tree walking.
    */
-  IGNORE(MethodModifier.class /* <- the modifier is just a stub as this cutpoint is never actually applied */);
+  IGNORE(MethodModifier.class /* <- the modifier is just a stub since this cutpoint is never actually applied */);
 
   /**
    * The cutpoint which gets selected if none of cutpoints matches the given name.
@@ -45,7 +48,7 @@ public enum CutpointType {
         return cutpointType;
       }
     }
-    LoggerFactory.getLogger(CutpointType.class).debug("Unknown cutpoint type encountered: {}", name);
+    Logger.getLogger(CutpointType.class.getName()).log(SEVERE, "Unknown cutpoint type encountered: " + name);
     return DEFAULT_CUTPOINT_TYPE;
   }
 

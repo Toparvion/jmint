@@ -1,5 +1,4 @@
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint/badge.svg?style=plastic)](https://maven-badges.herokuapp.com/maven-central/tech.toparvion/jmint)
- [![Build Status](https://travis-ci.com/Toparvion/jmint.svg?branch=master)](https://travis-ci.com/Toparvion/jmint)
+![Travis (.com)](https://img.shields.io/travis/com/toparvion/jmint?style=plastic) ![Maven Central](https://img.shields.io/maven-central/v/tech.toparvion/jmint?color=green&style=plastic) ![Download from GitHub](https://img.shields.io/github/downloads/toparvion/jmint/total?label=GitHub%20downloads&style=plastic)
 
 # Overview
 

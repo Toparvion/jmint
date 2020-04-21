@@ -4,8 +4,6 @@ import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
 import org.antlr.v4.runtime.tree.TerminalNode;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.toparvion.jmint.lang.gen.*;
 import tech.toparvion.jmint.model.Argument;
 import tech.toparvion.jmint.model.Cutpoint;
@@ -13,9 +11,12 @@ import tech.toparvion.jmint.model.TargetMethod;
 import tech.toparvion.jmint.model.TargetsMap;
 
 import java.util.*;
+import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.WARNING;
 import static java.util.regex.Matcher.quoteReplacement;
 import static tech.toparvion.jmint.model.Cutpoint.DEFAULT_CUTPOINT;
 import static tech.toparvion.jmint.model.CutpointType.IGNORE;
@@ -26,7 +27,7 @@ import static tech.toparvion.jmint.model.CutpointType.IGNORE;
  * @author Toparvion
  */
 class DropletAssembler extends DroppingJavaBaseListener {
-  private static final Logger log = LoggerFactory.getLogger(DropletAssembler.class);
+  private static final Logger log = Logger.getLogger(DropletAssembler.class.getName());
 
   /**
    * Mapping between all target classes and lists of their methods. These methods are targets for byte
@@ -106,9 +107,9 @@ class DropletAssembler extends DroppingJavaBaseListener {
      */
     Token offendingToken = ctx.getToken(DroppingJavaParser.IMPORT, 0).getSymbol();
     String offendingImportString = String.format("import static %s.*;", ctx.typeName().getText());
-    log.warn("Static imports on demand are not supported. If they are used in not ignored methods please replace " +
-            "them with a set of single static imports.\nLine {}:{} - {}\n",
-            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString);
+    log.log(WARNING, String.format("Static imports on demand are not supported. If they are used in not ignored " +
+                    "methods please replace them with a set of single static imports.\nLine %s:%s - %s\n",
+            offendingToken.getLine(), offendingToken.getCharPositionInLine(), offendingImportString));
   }
 
   @Override
@@ -320,7 +321,8 @@ class DropletAssembler extends DroppingJavaBaseListener {
       return assembler.getCutpoint();
 
     } catch (Exception e) {   // we can't be sure about anything in comments so that we need a defense line
-      log.info("Couldn't extract cutpoint from javadoc comments: '{}'. Falling back to default.", e.getMessage());
+      log.log(INFO, String.format("Couldn't extract cutpoint from javadoc comments: '%s'. " +
+              "Falling back to default.", e.getMessage()));
       return DEFAULT_CUTPOINT;
     }
   }

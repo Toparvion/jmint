@@ -3,21 +3,23 @@ package tech.toparvion.jmint.lang;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.antlr.v4.runtime.tree.ParseTreeWalker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import tech.toparvion.jmint.lang.gen.DroppingJavaLexer;
 import tech.toparvion.jmint.lang.gen.DroppingJavaParser;
 import tech.toparvion.jmint.model.TargetsMap;
 
 import java.io.*;
+import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
+
+import static java.util.logging.Level.INFO;
+import static java.util.logging.Level.SEVERE;
 
 /**
  * @author Toparvion
  */
 public abstract class DropletLoader {
-  private static final Logger log = LoggerFactory.getLogger(DropletLoader.class);
+  private static final Logger log = Logger.getLogger(DropletLoader.class.getName());
 
   public static TargetsMap loadDroplets(String args) {
     // at the moment we support only one argument file format - droplet format, thus file extension doesn't matter
@@ -32,14 +34,14 @@ public abstract class DropletLoader {
         overallMap.putAll(loadSingleDroplet(argToken));
 
       } catch (IOException e) {
-        log.error(String.format("Failed to load droplet '%s'. Skipped.", argToken), e);
+        log.log(SEVERE, String.format("Failed to load droplet '%s'. Skipped.", argToken), e);
 
       } catch (DropletFormatException e) {
-        log.error(String.format("Error during parsing droplet '%s'. Droplet is skipped.\n%s",
+        log.log(SEVERE, String.format("Error during parsing droplet '%s'. Droplet is skipped.\n%s",
                 argToken, e.getMessage()), e);
 
       } catch (Exception e) {
-        log.error(String.format("Failed to load droplet '%s'. Skipped.", argToken), e);
+        log.log(SEVERE, String.format("Failed to load droplet '%s'. Skipped.", argToken), e);
       }
     }
     return overallMap;
@@ -56,7 +58,7 @@ public abstract class DropletLoader {
         ZipEntry nextEntry;
         while ((nextEntry = zis.getNextEntry()) != null) {
           if (!nextEntry.getName().toLowerCase().endsWith(".java")) continue;     // including directories
-          log.debug("Processing entry: {}", nextEntry.getName());
+          log.log(INFO, String.format("Processing entry: %s", nextEntry.getName()));
           compositeTargetMap.putAll(parseDroplet(new NotClosingReader(zis)));
           zis.closeEntry();
         }
@@ -96,7 +98,7 @@ public abstract class DropletLoader {
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() {
       /* Here we're deliberately NOPing close operation as it must (and actually will) be done
       on ZipEntry but not ZipInputStream. */
     }
