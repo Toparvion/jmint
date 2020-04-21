@@ -1,11 +1,11 @@
-![Travis (.com)](https://img.shields.io/travis/com/toparvion/jmint?style=plastic) ![Maven Central](https://img.shields.io/maven-central/v/tech.toparvion/jmint?color=green&style=plastic) ![Download from GitHub](https://img.shields.io/github/downloads/toparvion/jmint/total?label=GitHub%20downloads&style=plastic)
+[![Travis (.com)](https://img.shields.io/travis/com/toparvion/jmint?style=plastic)](https://travis-ci.com/github/Toparvion/jmint) [![Maven Central](https://img.shields.io/maven-central/v/tech.toparvion/jmint?color=green&style=plastic)](https://search.maven.org/artifact/tech.toparvion/jmint/1.4-beta/jar) [![Download from GitHub](https://img.shields.io/github/downloads/toparvion/jmint/total?label=GitHub%20downloads&style=plastic)](https://github.com/Toparvion/jmint/releases)
 
 # Overview
 
 ## What is jMint?
 *jMint* is a tool for modifying methods of a running Java application without changing its source code. jMint key features are:
-+ modification is expressed in ordinary Java source code - *no byte code knowledge is required*;
-+ modification can be both extending and altering in relation to target method body;
++ modifications are expressed in ordinary Java source code - *no byte code knowledge is required*;
++ modifications can be both extending and altering in relation to target method body;
 + both application and third-party (library) code can be modified.
 
 :information_source: In a nutshell jMint is a wrapper around [Javassist](http://jboss-javassist.github.io/javassist/) byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.  
