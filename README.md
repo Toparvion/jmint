@@ -1,4 +1,4 @@
-[![Travis (.com)](https://img.shields.io/travis/com/toparvion/jmint?style=plastic)](https://travis-ci.com/github/Toparvion/jmint) [![Maven Central](https://img.shields.io/maven-central/v/tech.toparvion/jmint?color=green&style=plastic)](https://search.maven.org/artifact/tech.toparvion/jmint/1.4-beta/jar) [![Download from GitHub](https://img.shields.io/github/downloads/toparvion/jmint/total?label=GitHub%20downloads&style=plastic)](https://github.com/Toparvion/jmint/releases)
+[![Travis (.com)](https://img.shields.io/travis/com/toparvion/jmint?style=plastic)](https://travis-ci.com/github/Toparvion/jmint) [![Codecov branch](https://img.shields.io/codecov/c/gh/toparvion/jmint/master?style=plastic)](https://codecov.io/gh/Toparvion/jmint)  [![Maven Central](https://img.shields.io/maven-central/v/tech.toparvion/jmint?color=green&style=plastic)](https://search.maven.org/artifact/tech.toparvion/jmint/1.4-beta/jar) [![Download from GitHub](https://img.shields.io/github/downloads/toparvion/jmint/total?label=GitHub%20downloads&style=plastic)](https://github.com/Toparvion/jmint/releases)
 
 # Overview
 
@@ -24,7 +24,7 @@ Typical use cases of *jMint* include (but not restricted to) testing stage when 
 
 ## How does it work?
 
-jMint operates as Java agent – special kind of application that is launched by (usually HotSpot) JVM and is able to modify byte code of classes being loaded by JVM.
+jMint operates as Java agent – special kind of application that is launched by (usually HotSpotJVM and is able to modify byte code of classes being loaded by JVM.
 * First, **jMint** loads and parses the modifying behavior in the form of [**_droplet_**](#what-is-droplet) – a Java source file describing the target of modification (class, method, etc) and the modifying code itself.
 * Then, at the time of target class loading, the modifying code gets compiled against the class and **jMint** passes it to JVM alongside with the original byte code just like if it was loaded in usual way.
 
