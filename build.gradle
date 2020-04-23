@@ -53,3 +53,10 @@ task runPainterWithDebug(type: JavaExec, dependsOn: jar) {
     ].toList()
     debug = true            // Gradle default debug port is 5005
 }
+
+jacocoTestReport {
+    reports {
+        xml.enabled true
+        html.enabled false
+    }
+}
