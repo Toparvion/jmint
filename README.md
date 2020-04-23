@@ -3,8 +3,9 @@
 # Overview
 
 ## What is jMint?
-*jMint* is a tool for modifying methods of a running Java application without changing its source code. jMint key features are:
-+ modifications are expressed in ordinary Java source code - *no byte code knowledge is required*;
+*jMint* is a tool for modifying methods of a running Java&trade; application without changing its source code. jMint key features are:
+
++ modifications are expressed in ordinary Java source code – *no byte code knowledge is required*;
 + modifications can be both extending and altering in relation to target method body;
 + both application and third-party (library) code can be modified.
 
@@ -15,17 +16,20 @@
 Typical use cases of *jMint* include (but not restricted to) testing stage when some custom behavior should not (or even can not) be included into the source code. For example:
 - to reproduce complicated test cases by injecting side effects right into the running app;
 - to include simple stubs/mocks into the app at runtime;
-- to prevent undesired scenario;
+- to prevent undesired behavior;
+- to fix unpredictable/uncontrollable results (e.g. time or random dependent);
 - to add some logging to where it wasn't provided initially;
 - to fix a bug in a library without having its source code, etc
-- _(welcome to add yours one:wink:)_ 
+- _(welcome to add your use cases)_ 
 
 ## How does it work?
-jMint operates as Java agent - special kind of application that is launched by JVM and is able to modify byte code of classes being loaded by JVM.
-* First, **jMint** loads and parses the modifying behavior in the form of [**_droplet_**](#what-is-droplet) - Java source file describing the target of modification (class, method, etc) and the modifying code itself.
+
+jMint operates as Java agent – special kind of application that is launched by (usually HotSpot) JVM and is able to modify byte code of classes being loaded by JVM.
+* First, **jMint** loads and parses the modifying behavior in the form of [**_droplet_**](#what-is-droplet) – a Java source file describing the target of modification (class, method, etc) and the modifying code itself.
 * Then, at the time of target class loading, the modifying code gets compiled against the class and **jMint** passes it to JVM alongside with the original byte code just like if it was loaded in usual way.
 
 ## What is droplet?
+
 **Droplet** *(in the sense of injection)* is an ordinary Java source code file that is used by **jMint** to find out 2 things:
 
 1. The target of modification - a place in the application where the modification must be applied;
@@ -66,11 +70,15 @@ Note that the parameter may be specified in various forms: `asFinally`, `AS_FINA
 :bulb: There is also auxiliary `IGNORE` cutpoint which is applied by default to all methods with no explicit cutpoint tag. This cutpoint may be applied explicitly to the methods left in the droplet in order to maintain its semantic correctness.  
 :construction: *Dedicated `CATCH` cutpoint  for certain exceptions is planned to be implemented in one of upcoming releases. Please feel free to send feedback (via email or issues) if you'd like it to be released sooner.*
 
-For more info on droplets see Usage section.
+For more info on droplets see [Usage](#usage) section.
 
-## Download
-Current version: [jmint-1.4-beta.jar](https://github.com/Toparvion/jmint/releases/download/v1.4-beta/jmint-1.4-beta.jar).  
-:information_source: Description of current version is available on the [Latest Release page](https://github.com/Toparvion/jmint/releases/latest).
+
+
+# Download
+
+The latest release alongside with its description is available on the [Latest Release page](https://github.com/Toparvion/jmint/releases/latest).
+
+
 
 # Usage
 Usage of **jMint** includes two steps:
@@ -138,7 +146,7 @@ _Access modifiers as well as `extends`/`implements` clauses and annotations make
 4. Define the target method just like if you'd create it.  
 _Access modifiers as well as `throws` clause and annotations make no sense to droplets and thus may be omitted._
 5. Prepend the target method with javadoc description.  
-_It's a good practice to write detailed description of modifying method here but the droplet itself requires only one custom javadoc tag - `@cutpoint` followed by one of values: `BEFORE`, `INSTEAD`, `AFTER`._
+_It's a good practice to write detailed description of modifying method here but the droplet itself requires only one custom javadoc tag – `@cutpoint` followed by one of values: `BEFORE`, `INSTEAD`, `AFTER`._
 6. Write the body of the method according to selected cutpoint.  
 :warning: _Please remember about some limitations of modifying code (see corresponding section below)._
 7. Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.  
@@ -184,7 +192,18 @@ Started with such arguments JVM will launch jMint and let it modify byte code of
 :information_source: *`javaagent` is not singleton option for JVM. You may add as many agents as you want declaring them as separate  `javaagent` arguments on the JVM launch command.*  
 To ensure that your target methods have been modified correctly look for messages from class `tech.toparvion.jmint.DropletsInjector` in the log (see _Logging_ section).
 
+
+
+# Java&trade;  versions compatibility
+
+While jMint itself builds on JDK 8, its source code and compilation target are both set to **JDK 6**. This is to make jMint compatible with legacy applications where Side Effect Injection approach is often the only solution.
+
+Nonetheless, you can use jMint to instrument bytecode of modern applications including those on JDK 11 and higher.
+
+
+
 # Limitations
+
 Unfortunately, source code of droplets' methods (the modifying code) can not be as rich and diverse as usual one.
 The modifying code must not contain:
 - anonymous classes (including lambdas);
@@ -198,17 +217,15 @@ The modifying code must not contain:
 
 The reasons explanation is beyond this document; you may see [Limitations](https://jboss-javassist.github.io/javassist/tutorial/tutorial2.html#limit) chapter of Javassist Tutorial for more info.
 
+
+
 # Logging
-jMint emits some messages about its work to the log using [SLF4J](http://slf4j.org/) logging facade. Therefore the actual logging implementation depends on SLF4J binding present on the application classpath. If there is no binding, jMint emits the only message to standard error output and stays silent till the end:
-```
-SLF4J: Failed to load class "org.slf4j.impl.StaticLoggerBinder".
-SLF4J: Defaulting to no-operation (NOP) logger implementation
-SLF4J: See http://www.slf4j.org/codes.html#StaticLoggerBinder for further details.
-```
-Here's some sample messages emitted by jMint when `slf4j-simple` binding is present on the classpath:
+jMint emits some log messages about its work using Java Util Logging (JUL) façade. By default, all log messages are directed to error output, but this can be changed by leveraging either [JUL configuration](https://docs.oracle.com/javase/6/docs/technotes/guides/logging/overview.html#1.8) or a bridge to another logging system, for example [jul-to-slf4j bridge](http://www.slf4j.org/legacy.html#jul-to-slf4j).
+
+Here's some sample log output emitted by jMint during its initialization and injection stages:
 ```
 ... (at the start of JVM) ...
-[main] INFO tech.toparvion.jmint.JMintAgent - jMint started (version: 1.1).
+[main] INFO tech.toparvion.jmint.JMintAgent - jMint started (version: 1.5-beta).
 ...
 [main] INFO tech.toparvion.jmint.JMintAgent - Droplets loading took: 1167 ms
 ... (later, at runtime) ...
@@ -217,11 +234,37 @@ Here's some sample messages emitted by jMint when `slf4j-simple` binding is pres
 [main] INFO tech.toparvion.jmint.DropletsInjector - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE.
 ```
 
+:bulb: Also note that you can use target application’s logging system right from your droplets to emit log messages on behalf of modified class. For example, if class to modify has SLF4J logger attached like:
+
+```java
+private static final Logger log = LoggerFactory.getLogger(MyClass.class);
+```
+
+then your droplet may use it to emit its own messages like:
+
+```java
+  /**
+   * @cutpoint BEFORE
+   */
+  public void checkAuthorized() {
+    log.warn("DROPLET: checkAuthorized method is stubbed, no actual check performed!");
+  }
+```
+
+
+
 # Under the hood
-jMint is built upon three great tools: Java Byte Code Instrumentation API, Javassist byte code manipulating library and ANTLR4 language recognition tool. The latter (created by professor of genius Terence Parr (@parrt)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented Shigeru Chiba (@chibash)) and returns it back to JVM.
+
+jMint is built upon three great tools: Java Byte Code [Instrumentation](https://docs.oracle.com/javase/6/docs/api/java/lang/instrument/Instrumentation.html) API, [Javassist](https://www.javassist.org/) byte code manipulating library and [ANTLR4](https://www.antlr.org/) language recognition tool. The latter (created by professor of genius [Terence Parr](https://twitter.com/the_antlr_guy)) is used by jMint during startup to parse droplets and extract all the required information from them. Then with the help of Instrumentation API jMint registers itself as an interceptor for all the class loadings happening in JVM. When loading of some target class is detected jMint transforms its byte code by means of Javassist library (created by incredibly talented [Shigeru Chiba](https://github.com/chibash)) and returns it back to JVM.
+
+
 
 # License
+
 jMint is distributed under MIT License (see [LICENSE.txt](https://github.com/Toparvion/jmint/blob/master/LICENSE.txt)).
 
+
+
 # Support & feedback
-jMint is being developed by single person (@Toparvion) in free time as a helpful tool for day-to-day tasks. It is not finished yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post [issues](https://github.com/Toparvion/jmint/issues) or contact the author directly: `toparvion[at]gmx[dot]com`. Testing assistance is also extremely appreciated:wink:
+
+jMint is being developed by single person (@Toparvion) in spare time as a helpful tool for day-to-day tasks. It is not considered feature-completed yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post [issues](https://github.com/Toparvion/jmint/issues) or contact the author directly: `toparvion[at]gmx[dot]com`. Testing assistance is also extremely appreciated!
