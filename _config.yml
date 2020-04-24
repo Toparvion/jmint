@@ -1,7 +1,7 @@
 title: jMint
 description: Turning dirty hacks into charity
 google_analytics: 
-show_downloads: true
+show_downloads: false
 theme: jekyll-theme-leap-day
 
 gems:

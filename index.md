@@ -7,8 +7,8 @@
 + modifications can be both extending and altering in relation to target method body;
 + both application and third-party (library) code can be modified.
 
-:information_source: In a nutshell jMint is a wrapper around [Javassist](http://jboss-javassist.github.io/javassist/) byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.  
-:warning: jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection of classes (if any). It also knows nothing about legal aspects so that before deploying a modified application or library please make sure you do not violate its license.
+ℹ​ In a nutshell jMint is a wrapper around [Javassist](http://jboss-javassist.github.io/javassist/) byte code manipulation library. The latter is used to compile source code and modify byte code whilst jMint itself exposes developer-friendly interface and preprocesses the input data.  
+​⚠​ jMint is not a hacking tool and therefore doesn't contain any facilities to break the protection of classes (if any). It also knows nothing about legal aspects so that before deploying a modified application or library please make sure you do not violate its license.
 
 ## What is it for?
 Typical use cases of *jMint* include (but not restricted to) testing stage when some custom behavior should not (or even can not) be included into the source code. For example:
@@ -34,7 +34,7 @@ jMint operates as Java agent – special kind of application that is launched by
 2. The modifying code itself.
 
 Droplets look like all other Java type definitions (classes, interfaces, enums) but in fact they are not. Their classes' and methods' signatures do not define anything new, instead they just specify the target of modification.  
-:bulb: _**Example.**_ If you have class `com.example.coolapp.Saver` with method `private void save(BusinessEntity entity)` and you want to prepend it with dumping of argument to standard output then your droplet may look like  this (*Saver.java*):
+​💡​ _**Example.**_ If you have class `com.example.coolapp.Saver` with method `private void save(BusinessEntity entity)` and you want to prepend it with dumping of argument to standard output then your droplet may look like  this (*Saver.java*):
 
 ```java
 package com.example.coolapp;
@@ -186,7 +186,7 @@ Started with such arguments JVM will launch jMint and let it modify byte code of
 :information_source: *`javaagent` is not singleton option for JVM. You may add as many agents as you want declaring them as separate  `javaagent` arguments on the JVM launch command.*  
 To ensure that your target methods have been modified correctly look for messages from class `tech.toparvion.jmint.DropletsInjector` in the log (see _Logging_ section).
 
-# Java&trade;  versions compatibility
+# Java&trade; compatibility
 
 While jMint itself builds on JDK 8, its source code and compilation target are both set to **JDK 6**. This is to make jMint compatible with legacy applications where Side Effect Injection approach is often the only solution.
 
