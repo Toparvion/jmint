@@ -1,0 +1,8 @@
+title: jMint
+description: Turning dirty hacks into charity
+google_analytics: 
+show_downloads: true
+theme: jekyll-theme-leap-day
+
+gems:
+  - jekyll-mentions
