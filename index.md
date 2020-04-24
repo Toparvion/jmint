@@ -65,8 +65,8 @@ When used without parameters, `AFTER` cutpoint behaves like ordinary code append
     public void actionPerformed(ActionEvent event) {
 ```
 Note that the parameter may be specified in various forms: `asFinally`, `AS_FINALLY`, `as-finally` or even `as finally`.  
-:bulb: There is also auxiliary `IGNORE` cutpoint which is applied by default to all methods with no explicit cutpoint tag. This cutpoint may be applied explicitly to the methods left in the droplet in order to maintain its semantic correctness.  
-:construction: *Dedicated `CATCH` cutpoint  for certain exceptions is planned to be implemented in one of upcoming releases. Please feel free to send feedback (via email or issues) if you'd like it to be released sooner.*
+💡 There is also auxiliary `IGNORE` cutpoint which is applied by default to all methods with no explicit cutpoint tag. This cutpoint may be applied explicitly to the methods left in the droplet in order to maintain its semantic correctness.  
+​🚧​ *Dedicated `CATCH` cutpoint  for certain exceptions is planned to be implemented in one of upcoming releases. Please feel free to send feedback (via email or issues) if you'd like it to be released sooner.*
 
 For more info on droplets see [Usage](#usage) section.
 
@@ -82,25 +82,25 @@ Usage of **jMint** includes two steps:
 
 ## Step 1: Create droplet
 There are 2 general approaches to create a droplet: *from source code of target class* and *from scratch*. You are free to choose any of them.  Here are some hints that may help:  
-- The first approach is handy when you have source code of a class being modified and you want to apply its slightly changed version at runtime. The **advantage** of this approach is that you don't have to manually write droplet class, you may just copy the existing one and modify the target method(s) only. The **flaw** is that your droplet gets some excess source code (which may be confusing in case of large class _(and may provoke bugs in jMint:wink:)_).
+- The first approach is handy when you have source code of a class being modified and you want to apply its slightly changed version at runtime. The **advantage** of this approach is that you don't have to manually write droplet class, you may just copy the existing one and modify the target method(s) only. The **flaw** is that your droplet gets some excess source code (which may be confusing in case of large class _(and may provoke bugs in jMint😉)_).
 - The second approach is preferable when you don't want to copy the whole original source code and/or want to keep the droplet as simple as possible. The **pros and cons** of this approach are opposite to the first one: it makes you write some code manually but on the other hand it allows you to fill the droplet with the code you really need, without surpluses.
 
 #### Approach 1. Creating droplet from target class
 
 1. Make a copy of the target class's source code file with `Droplet` or `_Droplet` suffix (in any case) in the same package, for example `com.example.coolapp.TheAppDroplet` or `com.example.coolapp.TheApp_droplet`.  
-:information_source: _If your target class name already ends with `Droplet` just add it again. Only the last one will be omitted._  
+​ℹ​ _If your target class name already ends with `Droplet` just add it again. Only the last one will be omitted._  
 The suffix is needed to distinguish the original class from droplet. It will be omitted by jMint during parsing the droplet. The target type must not necessarily be a class, it can be an enum or an interface (but not annotation) as well as can be inner type on any level.  
-:bulb: _In order to prevent accidental committing of droplet to your Version Control System (VCS) add droplets suffix into the list of exclusions. For instance in Git it can be achieved by adding the following line into `.gitignore` file:_
+​💡​ _In order to prevent accidental committing of droplet to your Version Control System (VCS) add droplets suffix into the list of exclusions. For instance in Git it can be achieved by adding the following line into `.gitignore` file:_
 ` *Droplet.java`
 2. Find the target method(s) in the copied class and make sure it have javadoc description _(a block comment starting with forward slash and double asterisk (`/**`) located just before the method definition)_. If not, add one.
 3. Add custom javadoc tag `@cutpoint` with one of values: `BEFORE`, `INSTEAD`, `AFTER`.
 In the simplest case the whole javadoc definition may look like:  
 `/** @cutpoint INSTEAD */`
 4. In the body of target method write (or change) the code you want to be injected according to selected cutpoint.  
-:warning: _Please remember about some limitations of modifying code (see corresponding section below)._
+​⚠​ _Please remember about some limitations of modifying code (see corresponding section below)._
 All other class members will be ignored by jMint.  
 5. Repeat steps 2-4 for all the target methods of this class and then save the droplet anywhere you want.  
-:bulb: *Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.*
+​💡​ *Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.*
 
 **Example.** Here's a sample droplet created from copy of its target class (_FooDroplet.java_):
 ```java
@@ -133,7 +133,7 @@ As you can see there is plenty of code that doesn't concerns the droplet. Compar
 ***
 #### Approach 2. Creating a droplet from scratch
 1. Create a text file with name `<TargetClassSimpleName>Droplet.java` in any directory.  
-:information_source: _This name format is just a kind of best practice; you may give the file any name._
+​ℹ​ _This name format is just a kind of best practice; you may give the file any name._
 2. Inside the file specify the package of target class just like if you'd create it.
 3. Specify the target class (or enum, or interface) just like if you'd create it.  
 _Access modifiers as well as `extends`/`implements` clauses and annotations make no sense to droplets and thus may be omitted. Arbitrary combinations of inner types are supported by jMint._
@@ -142,9 +142,9 @@ _Access modifiers as well as `throws` clause and annotations make no sense to dr
 5. Prepend the target method with javadoc description.  
 _It's a good practice to write detailed description of modifying method here but the droplet itself requires only one custom javadoc tag – `@cutpoint` followed by one of values: `BEFORE`, `INSTEAD`, `AFTER`._
 6. Write the body of the method according to selected cutpoint.  
-:warning: _Please remember about some limitations of modifying code (see corresponding section below)._
+​⚠​ _Please remember about some limitations of modifying code (see corresponding section below)._
 7. Repeat steps 4-6 for all the methods you'd like to modify and then save the droplet.  
-:bulb: *Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.*
+​💡​ *Note that in case of creating several droplets for the same purpose you can put them all into single ZIP or JAR archive and then use just like ordinary (separate) droplet.*
 
 **Example.** Here's a sample droplet created from scratch (_FooDroplet.java_):
 ```java
@@ -167,7 +167,7 @@ Because jMint ships as Java agent, it is attached to JVM through its startup arg
 ```bash
 java -javaagent:path/to/jmint.jar=a/long/way/to/droplets/FirstDroplet.java;a/long/way/to/droplets/SecondDroplet.java com.example.coolapp.Main
 ```
-:bulb: _To shorten the record you may introduce a couple of variables in the launch script to hold the prefix paths:_
+💡 _To shorten the record you may introduce a couple of variables in the launch script to hold the prefix paths:_
 ```bash
 JMINT_PATH=path/to/jmint.jar
 DROPLETS_HOME=a/long/way/to/droplets
@@ -182,8 +182,8 @@ java -javaagent:$JMINT=$DROPLETS com.example.coolapp.Main
 
 ```
 Started with such arguments JVM will launch jMint and let it modify byte code of classes being loaded.  
-:warning: *Note that being unable to load an agent JVM will not start at all.*  
-:information_source: *`javaagent` is not singleton option for JVM. You may add as many agents as you want declaring them as separate  `javaagent` arguments on the JVM launch command.*  
+⚠ *Note that being unable to load an agent JVM will not start at all.*  
+​ℹ​ *`javaagent` is not singleton option for JVM. You may add as many agents as you want declaring them as separate  `javaagent` arguments on the JVM launch command.*  
 To ensure that your target methods have been modified correctly look for messages from class `tech.toparvion.jmint.DropletsInjector` in the log (see _Logging_ section).
 
 # Java&trade; compatibility
@@ -222,7 +222,7 @@ Here's some sample log output emitted by jMint during its initialization and inj
 [main] INFO tech.toparvion.jmint.DropletsInjector - Method 'sampleapp.standalone.painter.Painter#main' is skipped due to IGNORE.
 ```
 
-:bulb: Also note that you can use target application’s logging system right from your droplets to emit log messages on behalf of modified class. For example, if class to modify has SLF4J logger attached like:
+💡​ Also note that you can use target application’s logging system right from your droplets to emit log messages on behalf of modified class. For example, if class to modify has SLF4J logger attached like:
 
 ```java
 private static final Logger log = LoggerFactory.getLogger(MyClass.class);
@@ -249,4 +249,6 @@ jMint is distributed under MIT License (see [LICENSE.txt](https://github.com/Top
 
 # Support & feedback
 
-jMint is being developed by single person (@Toparvion) in spare time as a helpful tool for day-to-day tasks. It is not considered feature-completed yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post [issues](https://github.com/Toparvion/jmint/issues) or contact the author directly: `toparvion[at]gmx[dot]com`. Testing assistance is also extremely appreciated!
+jMint is being developed by single person ([@Toparvion](https://twitter.com/toparvion)) in spare time as a helpful tool for day-to-day tasks. It is not considered feature-completed yet so that new features (alongside with bug fixes) are expected in the foreseeable future. The priorities in choosing features to implement (and bugs to fix) depend heavily on the feedback going from the tool's users. You're welcome to post [issues](https://github.com/Toparvion/jmint/issues) or contact the author directly: `toparvion[at]gmx[dot]com`.
+
+Development contributions as well as testing assistance are also extremely appreciated! 🤗
